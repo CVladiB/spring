@@ -1,0 +1,18 @@
+plugins {
+    id 'java'
+}
+
+group = 'ru.baranova'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework:spring-context:5.3.20'
+
+}
+
