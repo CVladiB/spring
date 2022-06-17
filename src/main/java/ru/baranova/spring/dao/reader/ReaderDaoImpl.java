@@ -1,27 +1,24 @@
 package ru.baranova.spring.dao.reader;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.lang.Nullable;
-import ru.baranova.spring.exception.AppException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-@Data
+/**
+ * 2я реализация работы с ресурсами (метод Spring)
+ */
 @Slf4j
-public class ReaderDaoFile implements ReaderDao {
-
+public class ReaderDaoImpl implements ReaderDao {
     @Nullable
     @Override
     public InputStream getResource(String path) {
         try {
-            return getClass().getClassLoader().getResourceAsStream(path);
+            return new ClassPathResource(path).getInputStream();
         } catch (Exception e) {
             log.error("The file was missing");
             return null;
         }
     }
-
 }

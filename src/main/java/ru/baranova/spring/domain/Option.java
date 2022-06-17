@@ -7,7 +7,6 @@ import lombok.ToString;
 @Data
 @AllArgsConstructor
 @ToString(includeFieldNames = false)
-public class User {
-    private String name;
-    private String surname;
+public class Option {
+    private String option;
 }

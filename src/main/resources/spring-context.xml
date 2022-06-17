@@ -2,7 +2,21 @@
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <bean id="readerDao" class="ru.baranova.spring.dao.reader.ReaderDaoFile">
+    </bean>
+
+    <bean id="readerDaoImpl" class="ru.baranova.spring.dao.reader.ReaderDaoImpl">
+    </bean>
+
+
+    <bean id="questionDao" class="ru.baranova.spring.dao.QuestionDaoCsv">
+        <constructor-arg name="readerDao" ref="readerDao"/>
+        <constructor-arg name="readerDaoImpl" ref="readerDaoImpl"/>
+        <property name="path" value="questionnaire.csv"/>
+        <property name="delimiter" value=";"/>
+
+    </bean>
 
 </beans>
