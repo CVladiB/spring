@@ -1,6 +1,7 @@
 package ru.baranova.spring.dao;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import ru.baranova.spring.dao.reader.ReaderDao;
@@ -17,22 +18,29 @@ import java.util.stream.Collectors;
 
 @Data
 @Slf4j
-
 public class QuestionDaoCsv implements QuestionDao {
 
+    private final ReaderDao readerDao;
     private String path;
     private String delimiter;
+    private int questionPosition;
+    private int rightAnswerPosition;
+    private int optionPosition;
 
-    private final ReaderDao readerDao;
-
-    /**
-     * демонстраиция конфигурации бинов разных реализаций
-     */
-    private final ReaderDao readerDaoImpl;
-
-    public QuestionDaoCsv(ReaderDao readerDao, ReaderDao readerDaoImpl) {
+    public QuestionDaoCsv(ReaderDao readerDao) {
         this.readerDao = readerDao;
-        this.readerDaoImpl = readerDaoImpl;
+    }
+
+    public void setQuestionPosition(int questionPosition) {
+        this.questionPosition = questionPosition - 1;
+    }
+
+    public void setRightAnswerPosition(int rightAnswerPosition) {
+        this.rightAnswerPosition = rightAnswerPosition - 1;
+    }
+
+    public void setOptionPosition(int optionPosition) {
+        this.optionPosition = optionPosition - 1;
     }
 
     @Override
@@ -47,22 +55,24 @@ public class QuestionDaoCsv implements QuestionDao {
         return parseStrings(lines);
     }
 
-    private List<Question> parseStrings(@NonNull List<String> lines) {
+    public List<Question> parseStrings(@NonNull List<String> lines) {
         List<Question> questions = new ArrayList<>();
         for (String line : lines) {
             String[] arr = line.split(delimiter);
             if (arr.length == 1) {
-                questions.add(new Question(arr[0]));
+                questions.add(new Question(arr[getQuestionPosition()]));
             } else if (arr.length == 2) {
-                questions.add(new Question(arr[0], new Answer(arr[1])));
+                questions.add(new Question(arr[getQuestionPosition()], new Answer(arr[getRightAnswerPosition()])));
             } else if (arr.length > 2) {
                 List<Option> listOption = new ArrayList<>();
-                for (int j = 2; j < arr.length; j++) {
-                    listOption.add(new Option(arr[j]));
+                for (int j = 0; j < arr.length; j++) {
+                    if (j != getQuestionPosition() && j != getRightAnswerPosition()) {
+                        listOption.add(new Option(arr[j]));
+                    }
                 }
-                questions.add(new Question(arr[0], new Answer(arr[1]), listOption));
+                questions.add(new Question(arr[getQuestionPosition()], new Answer(arr[getRightAnswerPosition()]), listOption));
             } else {
-                return new ArrayList<>();
+                log.error("Неудачная попытка разобрать вопросы");
             }
         }
         return questions;

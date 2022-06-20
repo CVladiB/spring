@@ -3,10 +3,7 @@ package ru.baranova.spring.dao.reader;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
-import ru.baranova.spring.exception.AppException;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 
 @Data

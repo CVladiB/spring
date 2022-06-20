@@ -1,6 +1,8 @@
 package ru.baranova.spring.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @AllArgsConstructor

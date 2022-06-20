@@ -1,16 +1,11 @@
 package ru.baranova.spring.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Data
-@ToString(includeFieldNames = false, exclude = "rightAnswer")
 public class Question {
     private String question;
     private Answer rightAnswer;
@@ -18,7 +13,7 @@ public class Question {
 
     /**
      * Unanswered question
-     * */
+     */
     public Question(String question) {
         this.question = question;
         this.rightAnswer = new Answer("Unanswered question");
@@ -26,8 +21,8 @@ public class Question {
     }
 
     /**
-    * Open-ended question
-    * */
+     * Open-ended question
+     */
     public Question(String question, Answer rightAnswer) {
         this.question = question;
         this.rightAnswer = rightAnswer;
@@ -38,5 +33,11 @@ public class Question {
         this.question = question;
         this.rightAnswer = rightAnswer;
         this.optionAnswers = optionAnswers;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + question + '\'' + optionAnswers +
+                "}\n";
     }
 }

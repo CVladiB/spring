@@ -4,5 +4,5 @@ import ru.baranova.spring.domain.User;
 
 public interface UserDao {
 
-    User getUser(String name , String surname);
+    User getUser(String name, String surname);
 }
