@@ -3,13 +3,14 @@ package ru.baranova.spring.dao.io;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
 @Slf4j
-@Data
+@Component
 public class InputDaoReader implements InputDao {
 
     @Nullable
