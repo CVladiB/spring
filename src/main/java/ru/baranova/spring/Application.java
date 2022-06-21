@@ -1,17 +1,20 @@
 package ru.baranova.spring;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import ru.baranova.spring.dao.QuestionDao;
-import ru.baranova.spring.services.AppService;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import ru.baranova.spring.services.TestService;
+import ru.baranova.spring.services.TestServiceImpl;
 
+@Component
+@ComponentScan
+@PropertySource("classpath:application.properties")
 public class Application {
     public static void main(String[] args) {
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("/spring-context.xml");
-        AppService appService = context.getBean(AppService.class);
-        appService.echo();
-        QuestionDao questionDao = context.getBean(QuestionDao.class);
-        questionDao.loadQuestion().forEach(System.out::println);
-
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(Application.class);
+        TestService testService = context.getBean(TestServiceImpl.class);
+        testService.test();
         context.close();
     }
 }
