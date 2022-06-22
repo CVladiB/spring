@@ -12,11 +12,19 @@ import java.io.InputStreamReader;
 @Component
 public class InputDaoReader implements InputDao {
 
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+
     @Nullable
     @Override
     public String inputLine() {
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-            return reader.readLine();
+        log.info("enter method");
+        try {
+            String value = null;
+            while (value == null) {
+                value = reader.readLine();
+            }
+            return value;
         } catch (IOException e) {
             log.error("Не удалось прочесть");
             return null;

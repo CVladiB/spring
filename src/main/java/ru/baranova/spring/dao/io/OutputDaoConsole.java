@@ -8,10 +8,11 @@ import java.io.PrintWriter;
 @Slf4j
 @Component
 public class OutputDaoConsole implements OutputDao {
+
+    private final PrintWriter writer = new PrintWriter(System.out, true);
+
     @Override
     public void outputLine(String line) {
-        PrintWriter writer = new PrintWriter(System.out);
-        writer.print(line);
-        writer.flush();
+        writer.println(line);
     }
 }
