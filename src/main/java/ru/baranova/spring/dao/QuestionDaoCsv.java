@@ -1,11 +1,11 @@
 package ru.baranova.spring.dao;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
@@ -19,32 +19,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class QuestionDaoCsv implements QuestionDao {
-
+    private final InputDao inputReaderDao;
     private final ReaderDao readerDaoFile;
-
     @Value("${app.bean.questionDaoCsv.path}")
     private String path;
     @Value("${app.bean.questionDaoCsv.delimiter}")
     private String delimiter;
-    @Value("${app.bean.questionDaoCsv.questionPosition}")
-    private Integer questionPosition;
-    @Value("${app.bean.questionDaoCsv.rightAnswerPosition}")
-    private Integer rightAnswerPosition;
-//    @Value("${app.bean.questionDaoCsv.optionPosition}")
-//    private Integer optionPosition;
+    private int questionPosition;
+    private int rightAnswerPosition;
 
-    public void setQuestionPosition(int questionPosition) {
+    @Value("${app.bean.questionDaoCsv.questionPosition}")
+    public void setQuestionPosition( int questionPosition) {
         this.questionPosition = questionPosition - 1;
     }
-    public void setRightAnswerPosition(int rightAnswerPosition) {
+    @Value("${app.bean.questionDaoCsv.rightAnswerPosition}")
+    public void setRightAnswerPosition( int rightAnswerPosition) {
         this.rightAnswerPosition = rightAnswerPosition - 1;
     }
-//    public void setOptionPosition(int optionPosition) {
-//        this.optionPosition = optionPosition - 1;
-//    }
 
     @Override
     public List<Question> loadQuestion() {
@@ -61,6 +55,10 @@ public class QuestionDaoCsv implements QuestionDao {
     public List<Question> parseStrings(@NonNull List<String> lines) {
         List<Question> questions = new ArrayList<>();
         for (String line : lines) {
+            if (line == null || line.isEmpty()) {
+                continue;
+            }
+
             String[] arr = line.split(delimiter);
             if (arr.length == 1) {
                 questions.add(new Question(arr[questionPosition]));

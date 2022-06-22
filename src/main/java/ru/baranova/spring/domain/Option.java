@@ -1,10 +1,12 @@
 package ru.baranova.spring.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 
-@Data
+@Getter
 @AllArgsConstructor
+@ToString(includeFieldNames = false)
 public class Option {
     private String option;
 }

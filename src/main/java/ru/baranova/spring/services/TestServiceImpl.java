@@ -20,6 +20,8 @@ public class TestServiceImpl implements TestService {
     private final QuestionDao questionDaoCsv;
     private final UserService userServiceImpl;
     private final QuestionService questionServiceImpl;
+    @Value("${app.bean.testServiceImpl.partRightAnswers}")
+    private int partRightAnswers;
     @Value("${app.bean.testServiceImpl.start}")
     private String start;
     @Value("${app.bean.testServiceImpl.inputAnswer}")
@@ -47,5 +49,16 @@ public class TestServiceImpl implements TestService {
             }
         }
 
+        if (partRightAnswers > questions.size()) {
+            partRightAnswers  = (int) Math.round(partRightAnswers * questions.size() / 100.0);
+        }
+
+        if (countCorrectAnswer >= partRightAnswers) {
+            outputDaoConsole.outputFormatLine(win, countCorrectAnswer, questions.size());
+        } else {
+            outputDaoConsole.outputFormatLine(fail, countCorrectAnswer, questions.size());
+        }
+
+        outputDaoConsole.outputFormatLine(finish);
     }
 }

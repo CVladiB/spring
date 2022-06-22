@@ -17,14 +17,23 @@ public class QuestionServiceImpl implements QuestionService{
 
     public void printQuestion (Question question) {
         outputDaoConsole.outputLine(question.getQuestion());
-        int count = 0;
+        int count = 1;
         for(Option temp : question.getOptionAnswers()) {
             outputDaoConsole.outputLine(count++ + ") " +  temp.getOption());
         }
     }
 
     public boolean checkCorrect(Question question, int inputAnswer) {
-
-        return true;
+        String textInputAnswer = null;
+        while (true) {
+            try {
+                textInputAnswer = question.getOptionAnswers().get(inputAnswer - 1).getOption();
+                return textInputAnswer.equals(question.getRightAnswer().getAnswer());
+            } catch (IndexOutOfBoundsException e) {
+                log.info("Введен несуществующий номер, попробуйте снова");
+                printQuestion(question);
+                inputAnswer = Integer.parseInt(inputDaoReader.inputLine());
+            }
+        }
     }
 }

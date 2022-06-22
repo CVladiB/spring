@@ -6,19 +6,22 @@ import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 @Slf4j
 @Component
 public class InputDaoReader implements InputDao {
 
-    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    private final BufferedReader reader;
 
+    public  InputDaoReader(InputStream systemInputStream) {
+        this.reader = new BufferedReader(new InputStreamReader(systemInputStream));
+    }
 
     @Nullable
     @Override
     public String inputLine() {
-        log.info("enter method");
         try {
             String value = null;
             while (value == null) {
