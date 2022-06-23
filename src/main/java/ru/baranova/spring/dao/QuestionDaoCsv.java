@@ -1,6 +1,9 @@
 package ru.baranova.spring.dao;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -19,10 +22,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Setter
+@Getter
 @Component
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public class QuestionDaoCsv implements QuestionDao {
-    private final InputDao inputReaderDao;
     private final ReaderDao readerDaoFile;
     @Value("${app.bean.questionDaoCsv.path}")
     private String path;

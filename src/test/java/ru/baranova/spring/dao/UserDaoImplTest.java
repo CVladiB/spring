@@ -1,13 +1,16 @@
 package ru.baranova.spring.dao;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.domain.User;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Test class UserDaoImpl")
+@ContextConfiguration(classes = UserDaoImplTest.class)
 public class UserDaoImplTest {
 
     @Test

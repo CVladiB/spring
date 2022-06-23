@@ -1,5 +1,6 @@
 package ru.baranova.spring.services;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Service
+@Getter
 public class TestServiceImpl implements TestService {
     private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
@@ -38,8 +40,8 @@ public class TestServiceImpl implements TestService {
         List<Question> questions = questionDaoCsv.loadQuestion();
         outputDaoConsole.outputLine(start);
         User user = userServiceImpl.createUser();
-
         int countCorrectAnswer = 0;
+
         for (Question question : questions) {
             questionServiceImpl.printQuestion(question);
             outputDaoConsole.outputLine(inputAnswer);
@@ -49,16 +51,23 @@ public class TestServiceImpl implements TestService {
             }
         }
 
-        if (partRightAnswers > questions.size()) {
-            partRightAnswers  = (int) Math.round(partRightAnswers * questions.size() / 100.0);
-        }
-
-        if (countCorrectAnswer >= partRightAnswers) {
-            outputDaoConsole.outputFormatLine(win, countCorrectAnswer, questions.size());
-        } else {
-            outputDaoConsole.outputFormatLine(fail, countCorrectAnswer, questions.size());
-        }
+        correctPartRightAnswers(questions.size());
+        passTest(countCorrectAnswer, questions.size());
 
         outputDaoConsole.outputFormatLine(finish);
+    }
+
+    private void correctPartRightAnswers (int numberOfQuestions) {
+        if (partRightAnswers > numberOfQuestions) {
+            partRightAnswers  = (int) Math.round(partRightAnswers * numberOfQuestions / 100.0);
+        }
+    }
+
+    private void passTest (int countCorrectAnswer, int numberOfQuestions) {
+        if (countCorrectAnswer >= partRightAnswers) {
+            outputDaoConsole.outputFormatLine(win, countCorrectAnswer, numberOfQuestions);
+        } else {
+            outputDaoConsole.outputFormatLine(fail, countCorrectAnswer, numberOfQuestions);
+        }
     }
 }

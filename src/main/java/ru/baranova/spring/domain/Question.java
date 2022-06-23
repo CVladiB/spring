@@ -1,5 +1,6 @@
 package ru.baranova.spring.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString(includeFieldNames = false)
+@EqualsAndHashCode
 public class Question {
     private String question;
     private Answer rightAnswer;

@@ -1,11 +1,11 @@
 package ru.baranova.spring.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
+@EqualsAndHashCode
 @ToString(includeFieldNames = false)
 public class User {
     private String name;
