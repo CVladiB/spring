@@ -16,16 +16,9 @@ import ru.baranova.spring.services.TestServiceImpl;
 @ComponentScan()
 @PropertySource("classpath:application.properties")
 public class Application {
-
-
-    @Autowired
-    private static ApplicationContext context;
-
     public static void main(String[] args) {
-        context = new AnnotationConfigApplicationContext(Application.class);
-        TestService testService = context.getBean(TestServiceImpl.class);
-        testService.test();
+        new AnnotationConfigApplicationContext(Application.class)
+                .getBean(TestServiceImpl.class)
+                .test();
     }
-
-
 }
