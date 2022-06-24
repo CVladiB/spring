@@ -24,7 +24,7 @@ public class TestServiceImpl implements TestService {
     private final QuestionService questionServiceImpl;
     @Value("${app.bean.testServiceImpl.partRightAnswers}")
     private int partRightAnswers;
-    @Value("${app.bean.testServiceImpl.start}")
+    @Value("${app.bean.testServiceImpl.start:Hi}")
     private String start;
     @Value("${app.bean.testServiceImpl.inputAnswer}")
     private String inputAnswer;

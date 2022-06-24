@@ -5,28 +5,23 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.baranova.spring.dao.reader.ReaderDao;
-import ru.baranova.spring.dao.reader.ReaderDaoFile;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
-import ru.baranova.spring.services.QuestionServiceImpl;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @DisplayName("Test class QuestionDaoCsv")
 @ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@PropertySource("classpath:testApplication.properties")
+@PropertySource("classpath:application.properties")
 public class QuestionDaoCsvTest {
     private QuestionDaoCsv questionDaoCsv;
     @Mock
@@ -71,11 +66,10 @@ public class QuestionDaoCsvTest {
         optionTwo = "Answer Second";
     }
 
-    // todo fix thenReturn in Mockito
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct List Question")
     void shouldHaveCorrectLoadQuestion() {
-        //Mockito.when(readerDaoFile.getResource(path)).thenReturn(ApplicationContext.getResource(path).getInputStream());
+        Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath())).thenReturn(new ByteArrayInputStream(initialString.getBytes(StandardCharsets.UTF_8)));
 
         List<Question> expected = questionDaoCsv.loadQuestion();
         List<Question> actual = new ArrayList<>();
