@@ -21,7 +21,6 @@ public class ReaderDaoFile implements ReaderDao {
         try {
             log.info(path);
             return ctx.getResource(path).getInputStream();
-//            return Files.newInputStream(Path.of(path));
         } catch (Exception e) {
             log.error(String.valueOf(e));
             return null;

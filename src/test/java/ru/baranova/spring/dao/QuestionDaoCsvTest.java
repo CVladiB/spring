@@ -1,27 +1,22 @@
 package ru.baranova.spring.dao;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.PropertySource;
-
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
-
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SpringBootTest
 @DisplayName("Test class QuestionDaoCsv")
-@ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@PropertySource("classpath:application.properties")
 public class QuestionDaoCsvTest {
     private QuestionDaoCsv questionDaoCsv;
     @Mock

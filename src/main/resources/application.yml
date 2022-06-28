@@ -1,0 +1,22 @@
+server:
+  port: 8801
+app:
+  dao:
+    question-dao-csv:
+      path: "classpath:questionnaire.csv"
+      delimiter: ";"
+      question-position: 1
+      right-answer-position: 2
+  services:
+    test-service-impl:
+      part-right-answers: 70
+      start: Hi
+      input-answer: Input number of your answer
+      finish: "Bye, %s %s!\n"
+      win: "You win,  %d / %d\n!"
+      fail: "You fail,  %d / %d\n!"
+    question-service-impl:
+      input-answer: Input number of your answer
+    user-service-impl:
+      input-name: Input your name
+      input-surname: Input your surname

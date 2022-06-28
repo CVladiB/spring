@@ -1,27 +1,25 @@
 package ru.baranova.spring.services;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.baranova.spring.dao.UserDao;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@SpringBootTest
 @DisplayName("Test class UserServiceImpl")
-@ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@TestPropertySource("classpath:testApplication.properties")
+@TestPropertySource("classpath:testApplication.yml")
 @ContextConfiguration(classes = {UserServiceImpl.class, UserServiceImplTestConfig.class})
 class UserServiceImplTest {
     @InjectMocks
@@ -52,7 +50,7 @@ class UserServiceImplTest {
     }
 
     @Disabled
-    // todo Пофиксить, непонятная ошибка
+    // todo
     @Test
     @DisplayName("Test class UserServiceImpl, method createUser, message before creating new User")
     void shouldHaveMessageBeforeInputUser() {

@@ -2,7 +2,6 @@ package ru.baranova.spring.dao.io;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -23,7 +22,6 @@ public class OutputDaoConsole implements OutputDao {
 
     @Override
     public void outputFormatLine(String formatLine, Object... args) {
-//        outputLine(String.format(formatLine, args));
         writer.printf(formatLine, args);
     }
 

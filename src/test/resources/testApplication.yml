@@ -1,0 +1,31 @@
+test:
+  bean:
+    questionDaoCsv:
+      initialString: Question First;Answer Second;Answer First;Answer Second
+      optionTwo: Answer Second
+      initialStringOpenEndedQuestion: Question First;Answer Second
+      question: Question First
+      optionOne: Answer First
+      rightAnswer: Answer Second
+      initialStringUnansweredQuestion: Question First
+      path: testQuestionnaire.csv
+app:
+  bean:
+    testServiceImpl:
+      inputAnswer: Input number of your answer
+      fail: You fail!  %d / %d
+      partRightAnswers: '71'
+      win: You win!  %d / %d
+      finish: Bye, %s %s!
+      start: Hi
+    questionDaoCsv:
+      questionPosition: '1'
+      delimiter: ;
+      path: classpath:questionnaire.csv
+      rightAnswerPosition: '2'
+    userServiceImpl:
+      surname: Input your surname
+      name: Input your name
+logging:
+  level:
+    root: info

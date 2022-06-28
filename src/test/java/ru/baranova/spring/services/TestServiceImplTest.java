@@ -1,14 +1,12 @@
 package ru.baranova.spring.services;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.baranova.spring.dao.QuestionDao;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
@@ -16,15 +14,14 @@ import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;
-
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+@SpringBootTest
 @DisplayName("Test class TestServiceImpl")
-@ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@TestPropertySource("classpath:testApplication.properties")
+@TestPropertySource("classpath:testApplication.yml")
 @ContextConfiguration(classes = {TestServiceImpl.class, TestServiceImplTestConfig.class})
 class TestServiceImplTest {
     @Autowired

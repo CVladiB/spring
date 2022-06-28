@@ -6,14 +6,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,25 +22,21 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Setter
-@Getter
-@Component
 @RequiredArgsConstructor
 @EqualsAndHashCode
+@Component
+@ConfigurationProperties(prefix = "app.dao.question-dao-csv")
 public class QuestionDaoCsv implements QuestionDao {
     private final ReaderDao readerDaoFile;
-    @Value("${app.bean.questionDaoCsv.path}")
+    @Getter
     private String path;
-    @Value("${app.bean.questionDaoCsv.delimiter}")
     private String delimiter;
     private int questionPosition;
     private int rightAnswerPosition;
-
-    @Value("${app.bean.questionDaoCsv.questionPosition}")
-    public void setQuestionPosition( int questionPosition) {
+    public void setQuestionPosition(int questionPosition) {
         this.questionPosition = questionPosition - 1;
     }
-    @Value("${app.bean.questionDaoCsv.rightAnswerPosition}")
-    public void setRightAnswerPosition( int rightAnswerPosition) {
+    public void setRightAnswerPosition(int rightAnswerPosition) {
         this.rightAnswerPosition = rightAnswerPosition - 1;
     }
 
@@ -57,6 +52,7 @@ public class QuestionDaoCsv implements QuestionDao {
         return parseStrings(lines);
     }
 
+    @Override
     public List<Question> parseStrings(@NonNull List<String> lines) {
         List<Question> questions = new ArrayList<>();
         for (String line : lines) {
