@@ -50,8 +50,8 @@ public class QuestionDaoCsv implements QuestionDao {
         List<String> lines;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(readerDaoFile.getResource(path)))) {
             lines = reader.lines().collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error("Нет вопросов");
+        } catch (IOException | NullPointerException e) {
+            log.error("Ошибка загрузки вопросов, обратитесь к администратору");
             lines = new ArrayList<>();
         }
         return parseStrings(lines);

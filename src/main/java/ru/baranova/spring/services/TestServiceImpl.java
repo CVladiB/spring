@@ -2,6 +2,7 @@ package ru.baranova.spring.services;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,10 +13,12 @@ import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;
 
 import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 @Getter
+@Setter
 public class TestServiceImpl implements TestService {
     private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
@@ -37,37 +40,32 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void test() {
-        List<Question> questions = questionDaoCsv.loadQuestion();
         outputDaoConsole.outputLine(start);
         User user = userServiceImpl.createUser();
-        int countCorrectAnswer = 0;
+        List<Question> questions = questionDaoCsv.loadQuestion();
+        if (!questions.isEmpty()) {
+            int countCorrectAnswer = 0;
 
-        for (Question question : questions) {
-            questionServiceImpl.printQuestion(question);
-            outputDaoConsole.outputLine(inputAnswer);
-            int numberAnswer = Integer.parseInt(inputDaoReader.inputLine());
-            if (questionServiceImpl.checkCorrect(question, numberAnswer)) {
-                ++countCorrectAnswer;
+            for (Question question : questions) {
+                questionServiceImpl.printQuestion(question);
+                int numberAnswer = questionServiceImpl.getAnswer(question);
+                if (questionServiceImpl.checkCorrect(question, numberAnswer)) {
+                    ++countCorrectAnswer;
+                }
             }
-        }
 
-        correctPartRightAnswers(questions.size());
-        passTest(countCorrectAnswer, questions.size());
+            int numberOfQuestions = questions.size();
 
-        outputDaoConsole.outputFormatLine(finish);
-    }
+            outputDaoConsole.outputFormatLine(passTest(countCorrectAnswer, numberOfQuestions) ? win : fail, countCorrectAnswer, numberOfQuestions);
 
-    private void correctPartRightAnswers (int numberOfQuestions) {
-        if (partRightAnswers > numberOfQuestions) {
-            partRightAnswers  = (int) Math.round(partRightAnswers * numberOfQuestions / 100.0);
-        }
-    }
-
-    private void passTest (int countCorrectAnswer, int numberOfQuestions) {
-        if (countCorrectAnswer >= partRightAnswers) {
-            outputDaoConsole.outputFormatLine(win, countCorrectAnswer, numberOfQuestions);
         } else {
-            outputDaoConsole.outputFormatLine(fail, countCorrectAnswer, numberOfQuestions);
+            outputDaoConsole.outputLine("Упс! Чип И Дейл спешат на помощь");
         }
+        outputDaoConsole.outputFormatLine(finish, user.getName(), user.getSurname());
+    }
+
+    public boolean passTest(double countCorrectAnswer, int numberOfQuestions) {
+        int result = (int) Math.round(countCorrectAnswer / numberOfQuestions * 100);
+        return result >= partRightAnswers;
     }
 }

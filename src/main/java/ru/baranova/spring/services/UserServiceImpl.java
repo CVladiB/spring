@@ -23,11 +23,33 @@ public class UserServiceImpl implements UserService {
     private String inputSurname;
 
     public User createUser() {
-        outputDaoConsole.outputLine(inputName);
-        String name = inputDaoReader.inputLine();
-        outputDaoConsole.outputLine(inputSurname);
-        String surname = inputDaoReader.inputLine();
+        String name;
+        String surname;
+        boolean flag = true;
+        do {
+            outputDaoConsole.outputLine(inputName);
+            name = inputDaoReader.inputLine();
+            flag = isCorrectInput(name);
+        } while (!flag);
+        do {
+            outputDaoConsole.outputLine(inputSurname);
+            surname = inputDaoReader.inputLine();
+            flag = isCorrectInput(surname);
+        } while (!flag);
 
         return userDaoImpl.getUser(name, surname);
+    }
+
+    public boolean isCorrectInput(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        char[] strArr = str.toCharArray();
+        for (int i = 0; i < strArr.length; i++) {
+            if (!Character.isLetter(strArr[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }

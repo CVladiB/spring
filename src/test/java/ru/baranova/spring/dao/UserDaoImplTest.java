@@ -16,34 +16,34 @@ public class UserDaoImplTest {
     private UserDaoImpl userDaoImpl;
     // todo
     @Test
-    @DisplayName("Test class UserDaoImpl, method getUser, return correct name")
+    @DisplayName("Test class UserDaoImpl, method getUser, return null")
     void shouldHaveCorrectNameObject () {
         Exception thrown = Assertions.assertThrows(NullPointerException.class, () -> userDaoImpl.getUser(null,null));
-        Assertions.assertEquals("NullPointerException", thrown.getMessage());
+        Assertions.assertEquals("Cannot invoke \"ru.baranova.spring.dao.UserDaoImpl.getUser(String, String)\" because \"this.userDaoImpl\" is null", thrown.getMessage());
         //Assertions.assertTrue(thrown.getMessage().contains("NullPointerException"));
-    }
-
-    @Test
-    @DisplayName("Test class UserDaoImpl, method getUser, return correct surname")
-    void shouldHaveCorrectSurnameObject () {
-        UserDaoImpl userDaoImpl = new UserDaoImpl();
-        User user = userDaoImpl.getUser("Ekaterina", "Baranova");
-        assertEquals("Ekaterina", user.getName());
-        assertEquals("Baranova", user.getSurname());
     }
 
     @Test
     @DisplayName("Test class UserDaoImpl, method getUser, return correct object")
     void shouldHaveCorrectObject () {
-        String name = "Ekaterina";
-        String surname = "Baranova";
-
         UserDaoImpl userDaoImpl = new UserDaoImpl();
-        User user = userDaoImpl.getUser(name, surname);
+        User user = userDaoImpl.getUser("Ekaterina", "Baranova");
+        assertEquals(new User("Ekaterina", "Baranova"), user);
 
-        assertAll("user",
-                () -> assertEquals(name, user.getName()),
-                () -> assertEquals(surname, user.getSurname())
+    }
+
+    @Test
+    @DisplayName("Test class UserDaoImpl, method getUser, return correct name/surname")
+    void shouldHaveCorrectNameAndSurnameObject () {
+            String name = "Ekaterina";
+            String surname = "Baranova";
+
+            UserDaoImpl userDaoImpl = new UserDaoImpl();
+            User user = userDaoImpl.getUser(name, surname);
+
+            assertAll("user",
+                    () -> assertEquals(name, user.getName()),
+                    () -> assertEquals(surname, user.getSurname())
         );
     }
 }

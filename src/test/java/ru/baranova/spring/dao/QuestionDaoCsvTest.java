@@ -33,22 +33,6 @@ public class QuestionDaoCsvTest {
     private String rightAnswer;
     private String optionOne;
     private String optionTwo;
-/*    @Value("${test.bean.questionDaoCsv.path}")
-    private String path;
-    @Value("${test.bean.questionDaoCsv.initialStringUnansweredQuestion}")
-    private String initialStringUnansweredQuestion;
-    @Value("${test.bean.questionDaoCsv.initialStringOpenEndedQuestion}")
-    private String initialStringOpenEndedQuestion;
-    @Value("${test.bean.questionDaoCsv.initialString}")
-    private String initialString;
-    @Value("${test.bean.questionDaoCsv.question}")
-    private String question;
-    @Value("${test.bean.questionDaoCsv.rightAnswer}")
-    private String rightAnswer;
-    @Value("${test.bean.questionDaoCsv.optionOne}")
-    private String optionOne;
-    @Value("${test.bean.questionDaoCsv.optionTwo}")
-    private String optionTwo;*/
 
     @BeforeEach
     void setUp() {
@@ -69,13 +53,29 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct List Question")
     void shouldHaveCorrectLoadQuestion() {
-        Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath())).thenReturn(new ByteArrayInputStream(initialString.getBytes(StandardCharsets.UTF_8)));
-
-        List<Question> expected = questionDaoCsv.loadQuestion();
+        Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
+                .thenReturn(new ByteArrayInputStream(initialString.getBytes(StandardCharsets.UTF_8)));
+                List<Question> expected = questionDaoCsv.loadQuestion();
         List<Question> actual = new ArrayList<>();
         actual.add(new Question(question, new Answer(rightAnswer), Arrays.asList(new Option(optionOne), new Option(optionTwo))));
 
         Assertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct empty List Question")
+    void shouldHaveEmptyList_Null() {
+        Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
+                .thenReturn(null);
+        Assertions.assertEquals(questionDaoCsv.loadQuestion(), new ArrayList<>());
+    }
+    @Test
+    @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct empty List Question")
+    void shouldHaveEmptyList_UncorrectPath() {
+        questionDaoCsv.setPath("");
+        Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
+                .thenReturn(null);
+        Assertions.assertEquals(questionDaoCsv.loadQuestion(), new ArrayList<>());
     }
 
     @Test
