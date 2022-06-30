@@ -1,28 +1,39 @@
 package ru.baranova.spring.domain;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.test.context.ActiveProfiles;
+
 
 @DisplayName("Test class QuestionOneAnswer")
-@TestPropertySource("classpath:questionOneAnswerTest.properties")
-@ContextConfiguration(classes = {QuestionOneAnswer.class})
+@ActiveProfiles("questiononeanswertest")
+@SpringBootTest(classes = {QuestionOneAnswerTestConfig.class})
 class QuestionOneAnswerTest {
     @Autowired
-    QuestionOneAnswer questionOneAnswer;
-    @Value("${test.bean.questionOneAnswer.question}")
-    private String question;
-    @Value("${test.bean.questionOneAnswer.rightAnswer}")
-    private String rightAnswer;
+    private QuestionOneAnswer questionOneAnswer;
+    @Autowired
+    private QuestionOneAnswerTestConfig config;
 
     @Test
     void shouldGetNullOptionAnswers() {
-        Question questionOneAnswer = new QuestionOneAnswer(question, new Answer(rightAnswer));
-        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
+        Question excepted = new QuestionOneAnswer(config.getQuestion(), new Answer(config.getRightAnswer()));
+        Assertions.assertEquals(excepted.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
     }
 
+}
+
+@Getter
+@Setter
+@TestConfiguration
+@ConfigurationProperties(prefix = "question-one-answer")
+class QuestionOneAnswerTestConfig {
+    private String question;
+    private String rightAnswer;
 }

@@ -1,12 +1,16 @@
 package ru.baranova.spring.dao;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import ru.baranova.spring.dao.reader.ReaderDao;
@@ -138,3 +142,17 @@ public class QuestionDaoCsvTest {
 
 }
 
+@Getter
+@Setter
+@TestConfiguration
+@ConfigurationProperties(prefix = "question-dao-csv")
+class QuestionDaoCsvActualConfig {
+
+    private String initialStringQuestionWithOptionAnswers;
+    private String initialStringQuestionOneAnswer;
+    private String initialStringQuestionWithoutAnswer;
+    private String question;
+    private String rightAnswer;
+    private String optionOne;
+    private String optionTwo;
+}

@@ -46,7 +46,6 @@ public class QuestionServiceImpl implements QuestionService {
             int size = question.getOptionAnswers().size();
 
             do {
-                log.info("{}", question.getQuestion());
                 outputDaoConsole.outputFormatLine(inputNumberAnswer);
                 answer = inputDaoReader.inputLine();
 

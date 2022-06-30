@@ -8,16 +8,13 @@ app:
   services:
     test-service-impl:
       part-right-answers: 70
-      start: Hi
-      finish: "Bye, %s %s!\n"
-      win: "You win,  %d / %d\n!"
-      fail: "You fail,  %d / %d\n!"
+      start: "Welcome to the test!"
+      finish: "\n%s %s, we hope you don't worry about it:)"
+      win: "You are extra smart, you answered %d / %d"
+      fail: "You are extra stupid, you answered %d / %d"
     question-service-impl:
-      input-answer: "Input number of your answer "
-      input-number-answer: "Input the number of the answer "
+      input-answer: "Input the answer: "
+      input-number-answer: "Input the number of the answer: "
     user-service-impl:
-      input-name: "Input your name "
-      input-surname: "Input your surname "
-spring:
-  profiles:
-    active: dev
+      input-name: "Input your name: "
+      input-surname: "Input your surname: "

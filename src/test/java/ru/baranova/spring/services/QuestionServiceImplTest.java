@@ -1,18 +1,18 @@
 package ru.baranova.spring.services;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ActiveProfiles;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Answer;
@@ -25,33 +25,29 @@ import ru.baranova.spring.domain.QuestionWithoutAnswer;
 import java.util.List;
 
 @DisplayName("Test class QuestionServiceImpl")
-@ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@TestPropertySource("classpath:questionServiceImplTest.properties")
-@ContextConfiguration(classes = {QuestionServiceImpl.class})
+@ActiveProfiles("questionserviceimpl")
+@SpringBootTest(classes = {QuestionServiceImplTestConfig.class})
 class QuestionServiceImplTest {
+    @Autowired
+    QuestionServiceImplTestConfig config;
     @Autowired
     private QuestionService questionServiceImpl;
     @MockBean
     private InputDao inputDaoReader;
     @MockBean
     private OutputDao outputDaoConsole;
-    @Value("${test.bean.questionServiceImplTest.question}")
-    private String question;
-    @Value("${test.bean.questionServiceImplTest.rightAnswer}")
-    private String rightAnswer;
-    @Value("${test.bean.questionServiceImplTest.optionOne}")
-    private String optionOne;
-    @Value("${test.bean.questionServiceImplTest.optionTwo}")
-    private String optionTwo;
     private Question questionWithOptionAnswers;
     private Question questionOneAnswer;
     private Question questionWithoutAnswer;
 
     @BeforeEach
     void setUp() {
-        questionWithOptionAnswers = new QuestionWithOptionAnswers(question, new Answer(rightAnswer), List.of(new Option(optionOne), new Option(optionTwo)));
-        questionOneAnswer = new QuestionOneAnswer(question, new Answer(rightAnswer));
-        questionWithoutAnswer = new QuestionWithoutAnswer(question);
+        questionWithOptionAnswers = new QuestionWithOptionAnswers(
+                config.getQuestion(),
+                new Answer(config.getRightAnswer()),
+                List.of(new Option(config.getOptionOne()), new Option(config.getOptionTwo())));
+        questionOneAnswer = new QuestionOneAnswer(config.getQuestion(), new Answer(config.getRightAnswer()));
+        questionWithoutAnswer = new QuestionWithoutAnswer(config.getQuestion());
     }
 
     @Test
@@ -63,7 +59,7 @@ class QuestionServiceImplTest {
     @Test
     @DisplayName("Test class QuestionServiceImpl, method checkCorrect, check right answer by questionOneAnswer")
     void shouldHaveTrueAnswer_QuestionOneAnswer() {
-        Assertions.assertTrue(questionServiceImpl.checkCorrectAnswer(questionOneAnswer, rightAnswer));
+        Assertions.assertTrue(questionServiceImpl.checkCorrectAnswer(questionOneAnswer, config.getRightAnswer()));
     }
 
     @Test
@@ -81,7 +77,7 @@ class QuestionServiceImplTest {
     @Test
     @DisplayName("Test class QuestionServiceImpl, method checkCorrect, check wrong answer by questionOneAnswer")
     void shouldHaveFalseAnswer_QuestionOneAnswer() {
-        Assertions.assertFalse(questionServiceImpl.checkCorrectAnswer(questionOneAnswer, rightAnswer + " "));
+        Assertions.assertFalse(questionServiceImpl.checkCorrectAnswer(questionOneAnswer, config.getRightAnswer() + " "));
     }
 
     @Test
@@ -171,4 +167,15 @@ class QuestionServiceImplTest {
         String actual = questionServiceImpl.getAnswer(questionWithoutAnswer);
         Assertions.assertEquals(expected, actual);
     }
+}
+
+@Getter
+@Setter
+@TestConfiguration
+@ConfigurationProperties(prefix = "question-service-impl")
+class QuestionServiceImplTestConfig {
+    private String question;
+    private String rightAnswer;
+    private String optionOne;
+    private String optionTwo;
 }

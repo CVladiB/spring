@@ -1,0 +1,80 @@
+# debug: false
+
+---
+# QuestionDaoCsvTest.java
+spring:
+  profiles: questiondaocsv
+# actual value
+question-dao-csv:
+  question: Question First
+  optionOne: Answer First
+  initial-string-question-with-option-answers: Question First#Answer Second#Answer First#Answer Second
+  initial-string-question-one-answer: Question First#Answer Second
+  initial-string-question-without-answer: Question First
+  rightAnswer: Answer Second
+  optionTwo: Answer Second
+#for bean questionDaoCsv
+app:
+  dao:
+    question-dao-csv:
+      #      path: "classpath:questionnaire.csv"
+      delimiter: "#"
+      question-position: 0
+      right-answer-position: 1
+
+---
+# QuestionOneAnswerTest.java
+spring:
+  profiles: questiononeanswer
+test:
+  question-one-answer:
+    right-answer: Answer Second
+    question: Question First
+
+---
+# QuestionWithoutAnswerTest.java
+spring:
+  profiles: questionwithoutanswer
+question-without-answer:
+  question: Question First
+
+---
+# QuestionServiceImplTest.java
+spring:
+  profiles: questionserviceimpl
+#for actual
+question-service-impl:
+  option-one: Answer First
+  right-answer: Answer Second
+  optionTwo: Answer Second
+  question: Question First
+#for bean questionServiceImplTest
+app:
+  services:
+    question-service-impl:
+      input-number-answer: 'Input the number of the answer: '
+      input-answer: 'Input the answer: '
+---
+# TestServiceImplTest
+spring:
+  profiles: testserviceimpl
+app:
+  services:
+    test-service-impl:
+      input-number-answer: 'Input the number of the answer: '
+      win: "You are extra smart, you answered %d / %d"
+      input-answer: 'Input the answer: '
+      finish: '%s %s, we hope you don''t worry about it:)'
+      start: "Welcome to the test!"
+      fail: "You are extra stupid, you answered %d / %d"
+      part-right-answers: '70'
+---
+# UserServiceImplTest
+spring:
+  profiles: userserviceimpl
+#for bean userServiceImpl
+app:
+  services:
+    user-service-impl:
+      surname: 'Input your surname: '
+      name: 'Input your name: '
