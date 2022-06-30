@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.QuestionDao;
-import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;
@@ -15,22 +14,19 @@ import ru.baranova.spring.domain.User;
 import java.util.List;
 
 @Slf4j
+@Setter
 @RequiredArgsConstructor
 @Service
-@Getter
-@Setter
 public class TestServiceImpl implements TestService {
-    private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
     private final QuestionDao questionDaoCsv;
     private final UserService userServiceImpl;
     private final QuestionService questionServiceImpl;
+    @Getter
     @Value("${app.bean.testServiceImpl.partRightAnswers}")
     private int partRightAnswers;
     @Value("${app.bean.testServiceImpl.start:Hi}")
     private String start;
-    @Value("${app.bean.testServiceImpl.inputAnswer}")
-    private String inputAnswer;
     @Value("${app.bean.testServiceImpl.finish}")
     private String finish;
     @Value("${app.bean.testServiceImpl.win}")
@@ -48,15 +44,15 @@ public class TestServiceImpl implements TestService {
 
             for (Question question : questions) {
                 questionServiceImpl.printQuestion(question);
-                int numberAnswer = questionServiceImpl.getAnswer(question);
-                if (questionServiceImpl.checkCorrect(question, numberAnswer)) {
+                String numberAnswer = questionServiceImpl.getAnswer(question);
+                if (questionServiceImpl.checkCorrectAnswer(question, numberAnswer)) {
                     ++countCorrectAnswer;
                 }
             }
 
             int numberOfQuestions = questions.size();
-
-            outputDaoConsole.outputFormatLine(passTest(countCorrectAnswer, numberOfQuestions) ? win : fail, countCorrectAnswer, numberOfQuestions);
+            String testResult = passTest(countCorrectAnswer, numberOfQuestions) ? win : fail;
+            outputDaoConsole.outputFormatLine(testResult, countCorrectAnswer, numberOfQuestions);
 
         } else {
             outputDaoConsole.outputLine("Упс! Чип И Дейл спешат на помощь");
@@ -64,6 +60,7 @@ public class TestServiceImpl implements TestService {
         outputDaoConsole.outputFormatLine(finish, user.getName(), user.getSurname());
     }
 
+    @Override
     public boolean passTest(double countCorrectAnswer, int numberOfQuestions) {
         int result = (int) Math.round(countCorrectAnswer / numberOfQuestions * 100);
         return result >= partRightAnswers;
