@@ -3,17 +3,14 @@ package ru.baranova.spring.dao;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.domain.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Test class UserDaoImpl")
-@ExtendWith(value = {SpringExtension.class})
-@ContextConfiguration(classes = {UserDaoImpl.class})
+@SpringBootTest
 public class UserDaoImplTest {
     // Проверка на null требуется не в DAO, а в сервисе.
     @Autowired

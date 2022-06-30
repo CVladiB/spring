@@ -1,35 +1,34 @@
 package ru.baranova.spring.dao.io;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
+@Slf4j
 @DisplayName("Test class OutputDaoReader")
+@SpringBootTest
 class OutputDaoConsoleTest {
+    private final Path testFile = Paths.get("output_test_file.txt");
 
-    // Тестирование через ArgumentCaptor невозможнор ,т.к осуществляется проверка переданного аргумента.
-    // Тест будет подготовлен на SpringBoot
-
-    /*
-    @Captor
-    ArgumentCaptor<String> captor;
-
-    @Disabled
     @Test
     @DisplayName("Test class OutputDaoReader, method outputLine")
-    void outputLine() {
-        String expected = "This is the source of my input stream";
+    void outputLine() throws IOException {
+        String expected = "This is the source of my output stream";
+        OutputDao outputDaoConsole = new OutputDaoConsole(Files.newOutputStream(testFile));
         outputDaoConsole.outputLine(expected);
-        Mockito.verify(outputDaoConsole).outputLine(captor.capture());
-        assertEquals(expected, captor.getValue());
+        Assertions.assertIterableEquals(List.of(expected),Files.readAllLines(testFile));
     }
-
-    @Disabled
-    @Test
-    @DisplayName("Test class OutputDaoReader, method outputFormatLine")
-    void outputFormatLine() {
-        String expected = "This is the source of my %s input stream";
-        outputDaoConsole.outputFormatLine(expected, "second");
-        Mockito.verify(outputDaoConsole).outputFormatLine(captor.capture());
-        assertEquals("This is the source of my second input stream", captor.getValue());
+    @AfterEach
+    void tearDown() throws IOException {
+        Files.delete(testFile);
+        log.error("Ошибка удаления файла");
     }
-    */
 }

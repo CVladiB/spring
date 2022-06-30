@@ -3,32 +3,25 @@ package ru.baranova.spring.services;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.baranova.spring.dao.UserDao;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.User;
 
 @DisplayName("Test class UserServiceImpl")
-@ExtendWith(value = {MockitoExtension.class, SpringExtension.class})
-@TestPropertySource("classpath:userServiceImplTest.properties")
-@ContextConfiguration(classes = {UserServiceImpl.class, UserServiceImplTestConfig.class})
+@SpringBootTest
 class UserServiceImplTest {
     @Autowired
     private UserService userServiceImpl;
-    @Autowired
+    @MockBean
     private InputDao inputDaoReader;
-    @Autowired
+    @MockBean
     private OutputDao outputDaoConsole;
-    @Autowired
+    @MockBean
     private UserDao userDaoImpl;
 
     @Test
@@ -81,23 +74,5 @@ class UserServiceImplTest {
     void shouldHaveTrueInput_WrongSymbol() {
         boolean expected = userServiceImpl.isCorrectInput("a-fzA-FZа-фяА-ФЯёЁ");
         Assertions.assertTrue(expected);
-    }
-}
-
-@TestConfiguration
-class UserServiceImplTestConfig {
-    @Bean
-    public InputDao getInputDaoReader() {
-        return Mockito.mock(InputDao.class);
-    }
-
-    @Bean
-    public OutputDao getOutputDaoConsole() {
-        return Mockito.mock(OutputDao.class);
-    }
-
-    @Bean
-    public UserDao getUserDaoImpl() {
-        return Mockito.mock(UserDao.class);
     }
 }

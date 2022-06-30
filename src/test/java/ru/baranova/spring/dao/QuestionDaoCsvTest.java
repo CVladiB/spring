@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import ru.baranova.spring.dao.config.QuestionDaoCsvActualConfig;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
@@ -24,7 +25,7 @@ import java.util.List;
 
 
 @DisplayName("Test class QuestionDaoCsv")
-@ActiveProfiles("questiondaocsv")
+@ActiveProfiles("question-dao-csv")
 @SpringBootTest(classes = {QuestionDaoCsvActualConfig.class})
 public class QuestionDaoCsvTest {
     @Autowired
@@ -137,4 +138,5 @@ public class QuestionDaoCsvTest {
     }
 
 }
+
 

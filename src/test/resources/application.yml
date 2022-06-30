@@ -1,0 +1,101 @@
+# debug: false
+
+---
+# QuestionDaoCsvTest.java
+spring:
+  config:
+    activate:
+      on-profile: question-dao-csv
+# actual value
+question-dao-csv:
+  question: Question First
+  optionOne: Answer First
+  initial-string-question-with-option-answers: Question First#Answer Second#Answer First#Answer Second
+  initial-string-question-one-answer: Question First#Answer Second
+  initial-string-question-without-answer: Question First
+  rightAnswer: Answer Second
+  optionTwo: Answer Second
+#for bean questionDaoCsv
+app:
+  dao:
+    question-dao-csv:
+      #      path: "classpath:questionnaire.csv"
+      delimiter: "#"
+      question-position: 0
+      right-answer-position: 1
+
+---
+# QuestionOneAnswerTest.java
+spring:
+  config:
+    activate:
+      on-profile: question-one-answer
+test:
+  question-one-answer:
+    right-answer: Answer Second
+    question: Question First
+
+---
+# QuestionWithoutAnswerTest.java
+spring:
+  config:
+    activate:
+      on-profile: question-without-answer
+question-without-answer:
+  question: Question First
+
+---
+# QuestionServiceImplTest.java
+spring:
+  config:
+    activate:
+      on-profile: question-service-impl
+#for actual
+question-service-impl:
+  option-one: Answer First
+  right-answer: Answer Second
+  optionTwo: Answer Second
+  question: Question First
+#for bean questionServiceImplTest
+app:
+  services:
+    question-service-impl:
+      input-number-answer: 'Input the number of the answer: '
+      input-answer: 'Input the answer: '
+---
+# TestServiceImplTest
+spring:
+  config:
+    activate:
+      on-profile: test-service-impl
+app:
+  services:
+    test-service-impl:
+      input-number-answer: 'Input the number of the answer: '
+      win: "You are extra smart, you answered %d / %d"
+      input-answer: 'Input the answer: '
+      finish: '%s %s, we hope you don''t worry about it:)'
+      start: "Welcome to the test!"
+      fail: "You are extra stupid, you answered %d / %d"
+      part-right-answers: '70'
+---
+# UserServiceImplTest
+spring:
+  config:
+    activate:
+      on-profile: user-service-impl
+#for bean userServiceImpl
+app:
+  services:
+    user-service-impl:
+      surname: 'Input your surname: '
+      name: 'Input your name: '
+---
+spring:
+  config:
+    activate:
+      on-profile: input-dao-reader
+app:
+  dao:
+    input-dao-reader:
+      value: "This is the source of my input stream"

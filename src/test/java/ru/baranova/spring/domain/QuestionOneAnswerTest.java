@@ -4,25 +4,22 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import ru.baranova.spring.domain.config.QuestionOneAnswerTestConfig;
+
 
 @DisplayName("Test class QuestionOneAnswer")
-@TestPropertySource("classpath:questionOneAnswerTest.properties")
-@ContextConfiguration(classes = {QuestionOneAnswer.class})
+@ActiveProfiles("questiononeanswertest")
+@SpringBootTest(classes = {QuestionOneAnswerTestConfig.class})
 class QuestionOneAnswerTest {
     @Autowired
-    QuestionOneAnswer questionOneAnswer;
-    @Value("${test.bean.questionOneAnswer.question}")
-    private String question;
-    @Value("${test.bean.questionOneAnswer.rightAnswer}")
-    private String rightAnswer;
+    private QuestionOneAnswerTestConfig config;
 
     @Test
     void shouldGetNullOptionAnswers() {
-        Question questionOneAnswer = new QuestionOneAnswer(question, new Answer(rightAnswer));
-        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
+        Question actual = new QuestionOneAnswer(config.getQuestion(), new Answer(config.getRightAnswer()));
+        Assertions.assertNull(actual.getOptionAnswers());
     }
 
 }

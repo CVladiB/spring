@@ -4,29 +4,29 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import ru.baranova.spring.domain.config.QuestionWithoutAnswerTestConfig;
 
 @DisplayName("Test class QuestionOneAnswer")
-@TestPropertySource("classpath:questionWithoutAnswerTest.properties")
-@ContextConfiguration(classes = {QuestionWithoutAnswer.class})
+@ActiveProfiles("questionwithoutanswertest")
+@SpringBootTest(classes = {QuestionWithoutAnswerTestConfig.class})
 class QuestionWithoutAnswerTest {
     @Autowired
-    QuestionWithoutAnswer questionWithoutAnswer;
-    @Value("${test.bean.questionWithoutAnswer.question}")
-    private String question;
+    private QuestionWithoutAnswerTestConfig config;
+
 
     @Test
     void shouldGetNullOptionAnswers() {
-        Question questionOneAnswer = new QuestionWithoutAnswer(question);
-        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
+        Question actual = new QuestionWithoutAnswer(config.getQuestion());
+        Assertions.assertNull(actual.getOptionAnswers());
     }
 
     @Test
     void shouldGetNullRightAnswer() {
-        Question questionOneAnswer = new QuestionWithoutAnswer(question);
-        Assertions.assertEquals(questionOneAnswer.getRightAnswer(), questionOneAnswer.getRightAnswer());
+        Question actual = new QuestionWithoutAnswer(config.getQuestion());
+        Assertions.assertNull(actual.getRightAnswer());
     }
 
 }
+

@@ -23,7 +23,6 @@ public class OutputDaoConsole implements OutputDao {
 
     @Override
     public void outputFormatLine(String formatLine, Object... args) {
-        log.info("{}, {}", formatLine, args);
         writer.printf(formatLine, args);
     }
 }
