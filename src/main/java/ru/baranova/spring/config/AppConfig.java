@@ -10,12 +10,12 @@ import java.io.OutputStream;
 public class AppConfig {
 
     @Bean
-    public InputStream systemInputStream(){
+    public InputStream systemInputStream() {
         return System.in;
     }
 
     @Bean
-    public OutputStream systemOutputStream(){
+    public OutputStream systemOutputStream() {
         return System.out;
     }
 }

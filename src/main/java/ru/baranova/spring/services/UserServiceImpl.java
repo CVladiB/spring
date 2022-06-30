@@ -1,7 +1,6 @@
 package ru.baranova.spring.services;
 
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,6 +8,9 @@ import ru.baranova.spring.dao.UserDao;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.User;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
@@ -22,34 +24,36 @@ public class UserServiceImpl implements UserService {
     @Value("${app.bean.userServiceImpl.surname}")
     private String inputSurname;
 
+    @Override
     public User createUser() {
         String name;
         String surname;
-        boolean flag = true;
+
         do {
-            outputDaoConsole.outputLine(inputName);
+            outputDaoConsole.outputFormatLine(inputName);
             name = inputDaoReader.inputLine();
-            flag = isCorrectInput(name);
-        } while (!flag);
+        } while (!isCorrectInput(name));
         do {
-            outputDaoConsole.outputLine(inputSurname);
+            outputDaoConsole.outputFormatLine(inputSurname);
             surname = inputDaoReader.inputLine();
-            flag = isCorrectInput(surname);
-        } while (!flag);
+        } while (!isCorrectInput(surname));
 
         return userDaoImpl.getUser(name, surname);
     }
 
+    @Override
     public boolean isCorrectInput(String str) {
         if (str == null || str.isEmpty()) {
+            log.info("Упс! Ничего не введено");
             return false;
         }
-        char[] strArr = str.toCharArray();
-        for (int i = 0; i < strArr.length; i++) {
-            if (!Character.isLetter(strArr[i])) {
-                return false;
-            }
+        if (str.length() < 3) {
+            log.info("Упс! Слишком короткий ввод");
+            return false;
         }
-        return true;
+
+        Pattern pattern = Pattern.compile("[a-zA-Zа-яА-ЯёЁ\\-]+");
+        Matcher matcher = pattern.matcher(str);
+        return matcher.matches();
     }
 }
