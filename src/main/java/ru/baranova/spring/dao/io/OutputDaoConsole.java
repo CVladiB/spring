@@ -24,5 +24,4 @@ public class OutputDaoConsole implements OutputDao {
     public void outputFormatLine(String formatLine, Object... args) {
         writer.printf(formatLine, args);
     }
-
 }

@@ -10,16 +10,23 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
+import ru.baranova.spring.domain.QuestionWithOptionAnswers;
+
 import java.util.Arrays;
+import java.util.List;
+
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @DisplayName("Test class QuestionServiceImpl")
+@TestPropertySource("classpath:testApplication.properties")
 @ContextConfiguration(classes = {QuestionServiceImpl.class, QuestionServiceImplTestConfig.class})
 class QuestionServiceImplTest {
     @Autowired
@@ -37,7 +44,7 @@ class QuestionServiceImplTest {
     private String optionOne;
     private String optionTwo;
     private Question questionBean;
-    private int inputAnswer = 2;
+    private String inputAnswer = "2";
 
     @BeforeEach
     void setUp() {
@@ -45,7 +52,57 @@ class QuestionServiceImplTest {
         rightAnswer = "Answer Second";
         optionOne = "Answer First";
         optionTwo = "Answer Second";
-        questionBean = new Question(question, new Answer(rightAnswer), Arrays.asList(new Option(optionOne), new Option(optionTwo)));
+        questionBean = new QuestionWithOptionAnswers(question, new Answer(rightAnswer), List.of(new Option(optionOne), new Option(optionTwo)));
+        questionServiceImpl = new QuestionServiceImpl(inputDaoReader, outputDaoConsole);
+    }
+
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method checkCorrectAnswer, check right answer")
+       public void shouldHaveTrueAnswer() {
+        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
+        boolean expected = questionServiceImpl.checkCorrectAnswer(questionBean, inputAnswer);
+        boolean actual = questionBean.getOptionAnswers().get(inputAnswer - 1).getOption()
+                            .equals(questionBean.getRightAnswer().getAnswer());
+        Assertions.assertEquals(expected, actual);
+    }
+
+    // todo
+    @Disabled
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method checkCorrectAnswer, check answer with big number")
+    public void shouldHaveFalseAnswer_NonexistentNumber() {
+        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer + 5))
+                .thenReturn(String.valueOf(inputAnswer))
+        ;
+        Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            questionServiceImpl.checkCorrectAnswer(questionBean, inputAnswer + 5);
+            Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
+        });
+        Assertions.assertTrue(exception.getMessage().contains("Введен несуществующий номер, попробуйте снова"));
+    }
+    // todo
+    @Disabled
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method checkCorrectAnswer, check answer with big number")
+    public void shouldHaveFalseAnswer_NonexistentNumber2 () {
+        Mockito.when(inputDaoReader.inputLine())
+                .thenReturn(String.valueOf(5))
+                .thenThrow(IndexOutOfBoundsException.class)
+                .thenReturn(String.valueOf(2));
+        Throwable exception = assertThrows(IndexOutOfBoundsException.class, () -> {
+            questionServiceImpl.checkCorrectAnswer(questionBean, 5);
+        });
+        Assertions.assertEquals("Введен несуществующий номер, попробуйте снова", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method checkCorrectAnswer, check wrong answer")
+    public void shouldHaveFalseAnswer_WrongNumber() {
+        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(1));
+        boolean expected = questionServiceImpl.checkCorrectAnswer(questionBean, 1);
+        boolean actual = questionBean.getOptionAnswers().get(0).getOption()
+                .equals(questionBean.getRightAnswer().getAnswer());
+        Assertions.assertEquals(expected, actual);
     }
 
     // todo
@@ -54,77 +111,19 @@ class QuestionServiceImplTest {
     @DisplayName("Test class QuestionServiceImpl, method printQuestion, check print")
     public void printQuestion() {
         questionServiceImpl.printQuestion(questionBean);
-        Mockito.verify(outputDaoConsole, Mockito.times(3)).outputLine(consoleArgumentCaptor.capture());
+        Mockito.verify(outputDaoConsole).outputLine(consoleArgumentCaptor.capture());
+       /* Mockito.when(outputDaoConsole.outputLine(1 + ") " +  questionBean.getOptionAnswers().get(0).getOption()))
+                .thenCallRealMethod(System.out.println("Answer First"));
+        Mockito.when(outputDaoConsole.outputLine(1 + ") " +  questionBean.getOptionAnswers().get(0).getOption()))
+                .thenCallRealMethod(System.out.println("Answer Second"));*/
+        //assertEquals("Answer Second", consoleArgumentCaptor.getValue());
+        System.out.println();
+
         assertAll("",
                 () -> assertEquals("Question First", consoleArgumentCaptor.getValue()),
-                () -> assertEquals("1) Answer First", consoleArgumentCaptor.getValue()),
-                () -> assertEquals("2) Answer Second", consoleArgumentCaptor.getValue())
+                () -> assertEquals("Answer First", consoleArgumentCaptor.getValue()),
+                () -> assertEquals("Answer Second", consoleArgumentCaptor.getValue())
         );
-    }
-
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method checkCorrect, check right answer")
-       public void shouldHaveTrueAnswer() {
-        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
-        boolean expected = questionServiceImpl.checkCorrect(questionBean, inputAnswer);
-        Assertions.assertTrue(expected);
-    }
-
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method checkCorrect, check wrong answer")
-    public void shouldHaveFalseAnswer_WrongNumber() {
-        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(1));
-        boolean expected = questionServiceImpl.checkCorrect(questionBean, 1);
-        Assertions.assertFalse(expected);
-    }
-
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method getAnswer, input right answer")
-    public void shouldHaveRightAnswer() {
-        int inputAnswer = 2;
-        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
-        int actual = questionServiceImpl.getAnswer(questionBean);
-        int expected = inputAnswer;
-        for (int i = 0; i < questionBean.getOptionAnswers().size(); i++) {
-            if (questionBean.getRightAnswer().getAnswer().equals(questionBean.getOptionAnswers().get(i).getOption())) {
-                actual = i + 1;
-            }
-        }
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method getAnswer, input wrong answer")
-    public void shouldHaveWrongAnswer() {
-        int inputAnswer = 1;
-        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
-        int actual = questionServiceImpl.getAnswer(questionBean);
-        Assertions.assertEquals(inputAnswer, actual);
-    }
-
-    @Disabled
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method getAnswer, input answer with big number")
-    public void shouldHaveFalseAnswer_NonexistentNumber() {
-        int inputAnswer = 17;
-        Mockito.lenient().when(inputDaoReader.inputLine())
-                .thenReturn(String.valueOf(inputAnswer))
-                .thenReturn(String.valueOf(2));
-        // Проверка повторного вывода сообщения о вводе номера ответа
-    }
-
-    @Disabled
-    @Test
-    @DisplayName("Test class QuestionServiceImpl, method getAnswer, input answer with big number")
-    public void shouldHaveFalseAnswer_Symbol () {
-        int inputAnswer = 2;
-        Mockito.when(inputDaoReader.inputLine()).thenReturn("Second").thenReturn(String.valueOf(2));
-        Throwable exception = assertThrows(NumberFormatException.class, () -> {
-            questionServiceImpl.getAnswer(questionBean);
-            Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(String.valueOf(inputAnswer));
-        });
-        Assertions.assertTrue(exception.getMessage().contains("Введите номер ответа без лишних символов"));
-        // Проверка лога о необходимости ввести цифру
     }
 }
 

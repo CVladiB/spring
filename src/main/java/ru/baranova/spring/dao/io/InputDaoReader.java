@@ -14,7 +14,7 @@ public class InputDaoReader implements InputDao {
 
     private final BufferedReader reader;
 
-    public InputDaoReader (InputStream systemInputStream) {
+    public InputDaoReader(InputStream systemInputStream) {
         this.reader = new BufferedReader(new InputStreamReader(systemInputStream));
     }
 

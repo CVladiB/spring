@@ -1,11 +1,12 @@
 package ru.baranova.spring.services;
 
+import org.springframework.lang.NonNull;
 import ru.baranova.spring.domain.Question;
 
 public interface QuestionService {
-    void printQuestion(Question question);
+    void printQuestion(@NonNull Question question);
 
-    boolean checkCorrect(Question question, int inputAnswer);
+    String getAnswer(@NonNull Question question);
 
-    int getAnswer(Question question);
+    boolean checkCorrectAnswer(@NonNull Question question, @NonNull String inputAnswer);
 }

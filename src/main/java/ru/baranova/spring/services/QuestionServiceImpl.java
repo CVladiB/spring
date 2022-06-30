@@ -3,12 +3,16 @@ package ru.baranova.spring.services;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
+import ru.baranova.spring.domain.QuestionOneAnswer;
+import ru.baranova.spring.domain.QuestionWithOptionAnswers;
+import ru.baranova.spring.domain.QuestionWithoutAnswer;
 
 @Slf4j
 @Setter
@@ -18,37 +22,78 @@ import ru.baranova.spring.domain.Question;
 public class QuestionServiceImpl implements QuestionService {
     private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
+
     private String inputAnswer;
+    private String inputNumberAnswer;
 
     @Override
-    public void printQuestion(Question question) {
+    public void printQuestion(@NonNull Question question) {
         outputDaoConsole.outputLine(question.getQuestion());
-        int count = 1;
-        for (Option temp : question.getOptionAnswers()) {
-            outputDaoConsole.outputLine(count++ + ") " + temp.getOption());
+        if (question instanceof QuestionWithOptionAnswers) {
+            int count = 0;
+            for (Option option : question.getOptionAnswers()) {
+                outputDaoConsole.outputFormatLine("%s) %s\n", ++count, option.getOption());
+            }
         }
     }
 
     @Override
-    public boolean checkCorrect(Question question, int inputAnswer) {
-        String textInputAnswer = question.getOptionAnswers().get(inputAnswer - 1).getOption();
-        return textInputAnswer.equals(question.getRightAnswer().getAnswer());
+    public String getAnswer(@NonNull Question question) {
+        String answer = null;
+
+        if (question instanceof QuestionWithOptionAnswers) {
+            int indexInputAnswer;
+            int size = question.getOptionAnswers().size();
+
+            do {
+                outputDaoConsole.outputFormatLine(inputNumberAnswer);
+                answer = inputDaoReader.inputLine();
+
+                try {
+                    indexInputAnswer = Integer.parseInt(answer);
+                    if (indexInputAnswer > size) {
+                        log.info("Указанный номер ответа превышает доступные варианты");
+                    }
+                    if (indexInputAnswer < 1) {
+                        log.info("Требуется ввести номер ответа среди указанных");
+                    }
+                } catch (NumberFormatException e) {
+                    log.info("Требуется ввести номер ответа");
+                    indexInputAnswer = size + 1;
+                }
+
+            } while (indexInputAnswer > size || indexInputAnswer < 1);
+        } else if (question instanceof QuestionOneAnswer || question instanceof QuestionWithoutAnswer) {
+            do {
+                outputDaoConsole.outputFormatLine(inputAnswer);
+                answer = inputDaoReader.inputLine();
+            } while (answer.length() < 1);
+        }
+
+        return answer;
     }
 
     @Override
-    public int getAnswer(Question question) {
-        int numberAnswer;
-        do {
-            outputDaoConsole.outputLine(inputAnswer);
+    public boolean checkCorrectAnswer(@NonNull Question question, @NonNull String inputAnswer) {
+        boolean result = false;
+        if (question instanceof QuestionWithOptionAnswers) {
+            int indexInputAnswer = -1;
+            Option inputAnswerInOption = null;
+
             try {
-                numberAnswer = Integer.parseInt(inputDaoReader.inputLine());
+                indexInputAnswer = Integer.parseInt(inputAnswer);
+                inputAnswerInOption = question.getOptionAnswers().get(indexInputAnswer - 1);
+                result = inputAnswerInOption.getOption().equals(question.getRightAnswer().getAnswer());
             } catch (NumberFormatException e) {
-                log.error("Введите номер ответа без лишних символов");
-                outputDaoConsole.outputLine(inputAnswer);
-                numberAnswer = Integer.parseInt(inputDaoReader.inputLine());
+                log.info("Требуется передать номер ответа");
+            } catch (IndexOutOfBoundsException e) {
+                log.info("Переданный номер ответа превышает доступные варианты");
             }
-        } while (question.getOptionAnswers().size() < numberAnswer);
-        return numberAnswer;
+        } else if (question instanceof QuestionOneAnswer) {
+            result = inputAnswer.equalsIgnoreCase(question.getRightAnswer().getAnswer());
+        } else if (question instanceof QuestionWithoutAnswer) {
+            result = true;
+        }
+        return result;
     }
 }
-

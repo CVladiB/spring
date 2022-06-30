@@ -1,12 +1,12 @@
 package ru.baranova.spring.domain;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @EqualsAndHashCode
-@ToString(includeFieldNames = false)
 public class User {
     private String name;
     private String surname;

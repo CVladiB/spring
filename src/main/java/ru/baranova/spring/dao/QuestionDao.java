@@ -8,5 +8,6 @@ import java.util.List;
 public interface QuestionDao {
 
     List<Question> loadQuestion();
+
     List<Question> parseStrings(@NonNull List<String> lines);
 }

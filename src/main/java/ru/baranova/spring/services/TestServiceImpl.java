@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.QuestionDao;
+import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;
@@ -27,7 +28,6 @@ public class TestServiceImpl implements TestService {
     private int partRightAnswers;
     private String start;
     private String finish;
-
     private String win;
     private String fail;
 
@@ -41,15 +41,15 @@ public class TestServiceImpl implements TestService {
 
             for (Question question : questions) {
                 questionServiceImpl.printQuestion(question);
-                int numberAnswer = questionServiceImpl.getAnswer(question);
-                if (questionServiceImpl.checkCorrect(question, numberAnswer)) {
+                String numberAnswer = questionServiceImpl.getAnswer(question);
+                if (questionServiceImpl.checkCorrectAnswer(question, numberAnswer)) {
                     ++countCorrectAnswer;
                 }
             }
 
             int numberOfQuestions = questions.size();
-
-            outputDaoConsole.outputFormatLine(passTest(countCorrectAnswer, numberOfQuestions) ? win : fail, countCorrectAnswer, numberOfQuestions);
+            String testResult = passTest(countCorrectAnswer, numberOfQuestions) ? win : fail;
+            outputDaoConsole.outputFormatLine(testResult, countCorrectAnswer, numberOfQuestions);
 
         } else {
             outputDaoConsole.outputLine("Упс! Чип И Дейл спешат на помощь");
