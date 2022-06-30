@@ -1,22 +1,23 @@
-server:
-  port: 8801
 app:
   dao:
     question-dao-csv:
       path: "classpath:questionnaire.csv"
       delimiter: ";"
-      question-position: 1
-      right-answer-position: 2
+      question-position: 0
+      right-answer-position: 1
   services:
     test-service-impl:
       part-right-answers: 70
       start: Hi
-      input-answer: Input number of your answer
       finish: "Bye, %s %s!\n"
       win: "You win,  %d / %d\n!"
       fail: "You fail,  %d / %d\n!"
     question-service-impl:
-      input-answer: Input number of your answer
+      input-answer: "Input number of your answer "
+      input-number-answer: "Input the number of the answer "
     user-service-impl:
-      input-name: Input your name
-      input-surname: Input your surname
+      input-name: "Input your name "
+      input-surname: "Input your surname "
+spring:
+  profiles:
+    active: dev

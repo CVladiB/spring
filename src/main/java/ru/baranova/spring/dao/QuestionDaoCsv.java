@@ -1,11 +1,10 @@
 package ru.baranova.spring.dao;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.dao.reader.ReaderDao;
@@ -27,8 +26,6 @@ import java.util.stream.Collectors;
 @Setter
 @Component
 @RequiredArgsConstructor
-@EqualsAndHashCode
-@Component
 @ConfigurationProperties(prefix = "app.dao.question-dao-csv")
 public class QuestionDaoCsv implements QuestionDao {
     private final ReaderDao readerDaoFile;

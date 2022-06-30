@@ -7,7 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.QuestionDao;
-import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;

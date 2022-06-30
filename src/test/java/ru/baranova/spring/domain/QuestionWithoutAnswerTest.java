@@ -18,15 +18,15 @@ class QuestionWithoutAnswerTest {
     private String question;
 
     @Test
-    void shouldGetNullOptionAnswers () {
+    void shouldGetNullOptionAnswers() {
         Question questionOneAnswer = new QuestionWithoutAnswer(question);
-        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(),questionOneAnswer.getOptionAnswers());
+        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
     }
 
     @Test
-    void shouldGetNullRightAnswer () {
+    void shouldGetNullRightAnswer() {
         Question questionOneAnswer = new QuestionWithoutAnswer(question);
-        Assertions.assertEquals(questionOneAnswer.getRightAnswer(),questionOneAnswer.getRightAnswer());
+        Assertions.assertEquals(questionOneAnswer.getRightAnswer(), questionOneAnswer.getRightAnswer());
     }
 
 }

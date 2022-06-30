@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import ru.baranova.spring.services.QuestionServiceImpl;
 
 @DisplayName("Test class QuestionOneAnswer")
 @TestPropertySource("classpath:questionOneAnswerTest.properties")
@@ -21,9 +20,9 @@ class QuestionOneAnswerTest {
     private String rightAnswer;
 
     @Test
-    void shouldGetNullOptionAnswers () {
+    void shouldGetNullOptionAnswers() {
         Question questionOneAnswer = new QuestionOneAnswer(question, new Answer(rightAnswer));
-        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(),questionOneAnswer.getOptionAnswers());
+        Assertions.assertEquals(questionOneAnswer.getOptionAnswers(), questionOneAnswer.getOptionAnswers());
     }
 
 }

@@ -1,5 +1,6 @@
 package ru.baranova.spring.dao;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.domain.User;
 
@@ -7,7 +8,7 @@ import ru.baranova.spring.domain.User;
 public class UserDaoImpl implements UserDao {
 
     @Override
-    public User getUser(String name, String surname) {
+    public User getUser(@NonNull String name, @NonNull String surname) {
         return new User(name, surname);
     }
 }

@@ -3,8 +3,8 @@ package ru.baranova.spring.services;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
@@ -46,6 +46,7 @@ public class QuestionServiceImpl implements QuestionService {
             int size = question.getOptionAnswers().size();
 
             do {
+                log.info("{}", question.getQuestion());
                 outputDaoConsole.outputFormatLine(inputNumberAnswer);
                 answer = inputDaoReader.inputLine();
 
