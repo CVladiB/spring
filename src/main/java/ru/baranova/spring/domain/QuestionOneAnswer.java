@@ -12,6 +12,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Component
 public class QuestionOneAnswer implements Question {
 
     private String question;

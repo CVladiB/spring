@@ -11,6 +11,8 @@ import java.util.List;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
+@RequiredArgsConstructor
+@Component
 public class QuestionWithoutAnswer implements Question {
 
     private String question;
