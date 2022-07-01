@@ -22,7 +22,7 @@ public class ReaderDaoFile implements ReaderDao {
             log.info(path);
             return ctx.getResource(path).getInputStream();
         } catch (Exception e) {
-            log.error(String.valueOf(e));
+            log.error("{}", e.getMessage());
             return null;
         }
     }

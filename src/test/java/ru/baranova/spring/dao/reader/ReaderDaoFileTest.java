@@ -21,13 +21,12 @@ import java.nio.file.Paths;
 @DisplayName("class ReaderDaoFile")
 @SpringBootTest
 class ReaderDaoFileTest {
+    private final String expected = "This is the source of my output stream";
     @Autowired
     private ReaderDao readerDaoFile;
     @Autowired
     private ApplicationContext ctx;
     private Path testFile;
-    private final String expected = "This is the source of my output stream";
-
 
     @BeforeEach
     void createNewFileForTest() throws IOException {
@@ -46,7 +45,8 @@ class ReaderDaoFileTest {
     }
 
     @Test
-    void shouldHaveCorrect() {
+    @DisplayName("class ReaderDaoFile method getResource, return right string from file")
+    void shouldHaveCorrectReadFile() {
         String actual;
         try (InputStream stream = readerDaoFile.getResource("file:" + testFile.toAbsolutePath())) {
             actual = new String(stream.readAllBytes());
@@ -55,6 +55,13 @@ class ReaderDaoFileTest {
             actual = null;
         }
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("class ReaderDaoFile method getResource, return null if wrong path")
+    void shouldHaveNull() {
+        InputStream actual = readerDaoFile.getResource(null);
+        Assertions.assertNull(actual);
     }
 
     @AfterEach

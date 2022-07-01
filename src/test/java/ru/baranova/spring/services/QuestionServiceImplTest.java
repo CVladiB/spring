@@ -48,6 +48,25 @@ class QuestionServiceImplTest {
     }
 
     @Test
+    @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionWithOptionAnswers")
+    void shouldHave_QuestionWithOptionAnswers() {
+        questionServiceImpl.printQuestion(questionWithOptionAnswers);
+
+    }
+
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionOneAnswer")
+    void shouldHave_QuestionOneAnswer() {
+        questionServiceImpl.printQuestion(questionOneAnswer);
+    }
+
+    @Test
+    @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionWithoutAnswer")
+    void shouldHave_QuestionWithoutAnswer() {
+
+    }
+
+    @Test
     @DisplayName("Test class QuestionServiceImpl, method checkCorrect, check right answer by questionWithOptionAnswers")
     void shouldHaveTrueAnswer_QuestionWithOptionAnswers() {
         Assertions.assertTrue(questionServiceImpl.checkCorrectAnswer(questionWithOptionAnswers, "2"));
