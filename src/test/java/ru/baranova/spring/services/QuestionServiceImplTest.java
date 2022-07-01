@@ -1,5 +1,7 @@
 package ru.baranova.spring.services;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import ru.baranova.spring.dao.io.InputDao;
-import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
@@ -21,18 +22,19 @@ import ru.baranova.spring.services.config.QuestionServiceImplTestConfig;
 
 import java.util.List;
 
+@Slf4j
 @DisplayName("Test class QuestionServiceImpl")
 @ActiveProfiles("question-service-impl")
 @SpringBootTest(classes = {QuestionServiceImplTestConfig.class})
 class QuestionServiceImplTest {
     @Autowired
-    QuestionServiceImplTestConfig config;
+    private QuestionServiceImplTestConfig config;
     @Autowired
     private QuestionService questionServiceImpl;
+    @Autowired
+    private QuestionService questionServiceImplPrint;
     @MockBean
     private InputDao inputDaoReader;
-    @MockBean
-    private OutputDao outputDaoConsole;
     private Question questionWithOptionAnswers;
     private Question questionOneAnswer;
     private Question questionWithoutAnswer;
@@ -47,23 +49,38 @@ class QuestionServiceImplTest {
         questionWithoutAnswer = new QuestionWithoutAnswer(config.getQuestion());
     }
 
+    @AfterEach
+    void tearDown() {
+        config.getOutputStream().reset();
+    }
+
     @Test
     @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionWithOptionAnswers")
     void shouldHave_QuestionWithOptionAnswers() {
-        questionServiceImpl.printQuestion(questionWithOptionAnswers);
-
+        questionServiceImplPrint.printQuestion(questionWithOptionAnswers);
+        String actual = config.getOutputStream().toString();
+        String expected = "Question First\r\n" +
+                "1) Answer First\n" +
+                "2) Answer Second\n";
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionOneAnswer")
     void shouldHave_QuestionOneAnswer() {
-        questionServiceImpl.printQuestion(questionOneAnswer);
+        questionServiceImplPrint.printQuestion(questionOneAnswer);
+        String actual = config.getOutputStream().toString();
+        String expected = "Question First\r\n";
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     @DisplayName("Test class QuestionServiceImpl, method printQuestion, questionWithoutAnswer")
     void shouldHave_QuestionWithoutAnswer() {
-
+        questionServiceImplPrint.printQuestion(questionWithoutAnswer);
+        String actual = config.getOutputStream().toString();
+        String expected = "Question First\r\n";
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
