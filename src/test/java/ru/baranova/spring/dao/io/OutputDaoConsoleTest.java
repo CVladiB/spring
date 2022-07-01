@@ -20,12 +20,21 @@ class OutputDaoConsoleTest {
 
     @Test
     @DisplayName("Test class OutputDaoReader, method outputLine")
-    void outputLine() throws IOException {
+    void shouldHaveCorrectListLine() throws IOException {
         String expected = "This is the source of my output stream";
         OutputDao outputDaoConsole = new OutputDaoConsole(Files.newOutputStream(testFile));
         outputDaoConsole.outputLine(expected);
         Assertions.assertIterableEquals(List.of(expected),Files.readAllLines(testFile));
     }
+    @Test
+    @DisplayName("Test class OutputDaoReader, method outputFormatLine")
+    void shouldHaveCorrectListFormatLine() throws IOException {
+        String expected = "This is the source of my output stream1";
+        OutputDao outputDaoConsole = new OutputDaoConsole(Files.newOutputStream(testFile));
+        outputDaoConsole.outputFormatLine(expected, 1);
+        Assertions.assertIterableEquals(List.of(expected),Files.readAllLines(testFile));
+    }
+
     @AfterEach
     void tearDown() throws IOException {
         Files.delete(testFile);
