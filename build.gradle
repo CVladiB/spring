@@ -14,10 +14,12 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework:spring-aop'
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     implementation "ch.qos.logback:logback-classic:1.2.11"
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
-//    implementation 'org.springframework.boot:spring-boot-starter-parent:2.7.1'
+    implementation 'org.aspectj:aspectjrt:1.9.1'
+    implementation 'org.aspectj:aspectjweaver:1.9.1'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
