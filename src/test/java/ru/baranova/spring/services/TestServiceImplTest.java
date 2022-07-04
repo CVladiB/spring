@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import ru.baranova.spring.dao.QuestionDao;
-import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
@@ -21,6 +20,7 @@ import ru.baranova.spring.domain.QuestionWithoutAnswer;
 import ru.baranova.spring.domain.User;
 import ru.baranova.spring.services.config.TestServiceImplTestConfig;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +36,6 @@ class TestServiceImplTest {
     private UserService userServiceImpl;
     @MockBean
     private QuestionService questionServiceImpl;
-    @Autowired
-    private OutputDao outputDaoConsoleString;
     @Autowired
     private TestServiceImplTestConfig config;
     @Autowired
@@ -84,41 +82,124 @@ class TestServiceImplTest {
         Assertions.assertFalse(expected);
     }
 
-    // todo переопределить печать вопросов, исправить проблему перредачи корректного ответа, продублировать остальные классы вопросов
     @Test
-    void shouldHaveStringTestFromConsole_FalseAnswer_QuestionWithOptionAnswers() {
+    void shouldHaveStringTestFromConsole_FalseAnswer_QuestionWithOptionAnswers() throws IOException {
         Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
         Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionWithOptionAnswersList);
 
-        // Не удается сделать так, чтобы работало
-//        Mockito.doCallRealMethod().when(questionServiceImpl).printQuestion(null);
-//        outputDaoConsoleString.outputFormatLine("Question First\r\n"
-//                        + "1) Answer First\n"
-//                        + "2) Answer Second\n".getBytes());
-//        Mockito.when(questionServiceImpl.getAnswer(null)).thenReturn("1");
-//        Mockito.when(testServiceImplString.passTest(0.0,0)).thenReturn(true);
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Question First\n"
+                    + "1) Answer First\n"
+                    + "2) Answer Second");
+            return null;
+        }).when(questionServiceImpl).printQuestion(questionWithOptionAnswers);
+        Mockito.doReturn("1").when(questionServiceImpl).getAnswer(questionWithOptionAnswers);
+        Mockito.doReturn(false).when(questionServiceImpl).checkCorrectAnswer(questionWithOptionAnswers, "1");
 
         testServiceImplString.test();
 
         String actual = config.getOut().toString();
         String expected = "Welcome to the test!\r\n" +
-                "You are extra stupid, you answered 0 / 1" +
+                "Question First\n"
+                + "1) Answer First\n"
+                + "2) Answer Second\r\n" +
+                "You are extra stupid, you answered 0 / 1\n" +
                 "name surname, we hope you don't worry about it:)";
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void shouldHaveStringTestFromConsole_TrueAnswer_QuestionWithOptionAnswers() {
+        Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
+        Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionWithOptionAnswersList);
+
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Question First\n"
+                    + "1) Answer First\n"
+                    + "2) Answer Second");
+            return null;
+        }).when(questionServiceImpl).printQuestion(questionWithOptionAnswers);
+        Mockito.doReturn("2").when(questionServiceImpl).getAnswer(questionWithOptionAnswers);
+        Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionWithOptionAnswers, "2");
+
+        testServiceImplString.test();
+
+        String actual = config.getOut().toString();
+        String expected = "Welcome to the test!\r\n" +
+                "Question First\n"
+                + "1) Answer First\n"
+                + "2) Answer Second\r\n" +
+                "You are extra smart, you answered 1 / 1\n" +
+                "name surname, we hope you don't worry about it:)";
+        Assertions.assertEquals(expected, actual);
     }
+
     @Test
     void shouldHaveStringTestFromConsole_FalseAnswer_QuestionWithOneAnswer() {
+        Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
+        Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionOneAnswerList);
+
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Question First");
+            return null;
+        }).when(questionServiceImpl).printQuestion(questionOneAnswer);
+        Mockito.doReturn("Answer First").when(questionServiceImpl).getAnswer(questionOneAnswer);
+        Mockito.doReturn(false).when(questionServiceImpl).checkCorrectAnswer(questionOneAnswer, "Answer First");
+
+        testServiceImplString.test();
+
+        String actual = config.getOut().toString();
+        String expected = "Welcome to the test!\r\n" +
+                "Question First\r\n" +
+                "You are extra stupid, you answered 0 / 1\n" +
+                "name surname, we hope you don't worry about it:)";
+        Assertions.assertEquals(expected, actual);
     }
+
     @Test
     void shouldHaveStringTestFromConsole_TrueAnswer_QuestionWithOneAnswer() {
+        Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
+        Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionOneAnswerList);
+
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Question First");
+            return null;
+        }).when(questionServiceImpl).printQuestion(questionOneAnswer);
+        Mockito.doReturn("Answer Second").when(questionServiceImpl).getAnswer(questionOneAnswer);
+        Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionOneAnswer, "Answer Second");
+
+        testServiceImplString.test();
+
+        String actual = config.getOut().toString();
+        String expected = "Welcome to the test!\r\n" +
+                "Question First\r\n" +
+                "You are extra smart, you answered 1 / 1\n" +
+                "name surname, we hope you don't worry about it:)";
+        Assertions.assertEquals(expected, actual);
     }
+
     @Test
     void shouldHaveStringTestFromConsole_TrueAnswer_QuestionWithoutAnswer() {
+        Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
+        Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionWithoutAnswerList);
+
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Question First");
+            return null;
+        }).when(questionServiceImpl).printQuestion(questionWithoutAnswer);
+        Mockito.doReturn("Answer").when(questionServiceImpl).getAnswer(questionWithoutAnswer);
+        Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionWithoutAnswer, "Answer");
+
+        testServiceImplString.test();
+
+        String actual = config.getOut().toString();
+        String expected = "Welcome to the test!\r\n" +
+                "Question First\r\n" +
+                "You are extra smart, you answered 1 / 1\n" +
+                "name surname, we hope you don't worry about it:)";
+        Assertions.assertEquals(expected, actual);
     }
+
     @Test
     void shouldHaveStringTestFromConsole_EmptyQuestion() {
         Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));

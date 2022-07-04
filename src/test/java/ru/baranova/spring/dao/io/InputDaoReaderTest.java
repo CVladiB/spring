@@ -16,6 +16,8 @@ class InputDaoReaderTest {
 
     @Autowired
     private InputDaoReader testInputDaoReader;
+    @Autowired
+    private InputDaoReader testInputDaoReaderNull;
 
     @Test
     @DisplayName("Test class InputDaoReader, method inputLine")
@@ -29,8 +31,7 @@ class InputDaoReaderTest {
     @Test
     @DisplayName("Test class InputDaoReader, method inputLine")
     void shouldHaveNull() {
-        String actual = testInputDaoReader.inputLine();
+        String actual = testInputDaoReaderNull.inputLine();
         Assertions.assertNull(actual);
     }
-
 }

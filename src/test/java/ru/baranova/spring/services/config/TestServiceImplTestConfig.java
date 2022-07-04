@@ -14,16 +14,21 @@ import ru.baranova.spring.services.TestServiceImpl;
 import ru.baranova.spring.services.UserService;
 
 import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
+
 @Setter
 @TestConfiguration
 @ConfigurationProperties(prefix = "app.services.test-service-impl")
 public class TestServiceImplTestConfig {
     @Getter
     private ByteArrayOutputStream out;
+    @Getter
+    private PrintWriter writer;
 
     @Bean
-    public OutputDao outputDaoConsoleString () {
+    public OutputDao outputDaoConsoleString() {
         out = new ByteArrayOutputStream();
+        writer = new PrintWriter(out, true);
         return new OutputDaoConsole(out);
     }
 
@@ -34,5 +39,12 @@ public class TestServiceImplTestConfig {
             , QuestionService questionServiceImpl) {
         return new TestServiceImpl(outputDaoConsoleString, questionDaoCsv, userServiceImpl, questionServiceImpl);
     }
+
+
+//    @Bean
+//    public QuestionService questionServiceImplString(InputDao inputDaoReader
+//            , OutputDao outputDaoConsoleString){
+//        return new QuestionServiceImpl(inputDaoReader,outputDaoConsoleString);
+//    }
 
 }

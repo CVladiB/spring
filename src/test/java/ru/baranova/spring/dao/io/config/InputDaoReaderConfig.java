@@ -11,6 +11,7 @@ import ru.baranova.spring.dao.io.InputDaoReader;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 @Getter
 @Setter
@@ -25,9 +26,19 @@ public class InputDaoReaderConfig {
         return new InputDaoReader(byteArrayInputStream);
     }
 
+    @Bean
+    public InputDao testInputDaoReaderNull(InputStream byteArrayInputStreamNull) {
+        return new InputDaoReader(byteArrayInputStreamNull);
+    }
+
 
     @Bean
     public InputStream byteArrayInputStream() {
         return new ByteArrayInputStream(value.getBytes());
+    }
+
+    @Bean
+    public InputStream byteArrayInputStreamNull() {
+        return new ByteArrayInputStream("".getBytes());
     }
 }

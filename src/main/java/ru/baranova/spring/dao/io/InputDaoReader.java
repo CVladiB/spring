@@ -1,6 +1,5 @@
 package ru.baranova.spring.dao.io;
 
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;

@@ -72,11 +72,11 @@ app:
   services:
     test-service-impl:
       input-number-answer: 'Input the number of the answer: '
-      win: "You are extra smart, you answered %d / %d"
+      win: "You are extra smart, you answered %d / %d\n"
       input-answer: 'Input the answer: '
       finish: '%s %s, we hope you don''t worry about it:)'
       start: "Welcome to the test!"
-      fail: "You are extra stupid, you answered %d / %d"
+      fail: "You are extra stupid, you answered %d / %d\n"
       part-right-answers: '70'
 ---
 # UserServiceImplTest

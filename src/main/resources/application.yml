@@ -8,13 +8,13 @@ app:
   services:
     test-service-impl:
       part-right-answers: 70
-      start: "Welcome to the test!"
-      finish: "\n%s %s, we hope you don't worry about it:)"
-      win: "You are extra smart, you answered %d / %d"
-      fail: "You are extra stupid, you answered %d / %d"
+      start: "Добро пожаловать на тестирвоание интеллекта!"
+      finish: "\n%s %s, надеюсь, ты не обижаешься на нас:)"
+      win: "Ты очень умен, ты ответил на %d вопросов из %d"
+      fail: "Ты очень глуп, ты ответил только на %d вопросов из %d"
     question-service-impl:
-      input-answer: "Input the answer: "
-      input-number-answer: "Input the number of the answer: "
+      input-answer: "Введи ответ: "
+      input-number-answer: "Введи номер ответа: "
     user-service-impl:
-      input-name: "Input your name: "
-      input-surname: "Input your surname: "
+      input-name: "Укажи свое имя: "
+      input-surname: "Укажи свою фамилию: "
