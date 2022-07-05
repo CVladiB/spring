@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 @Slf4j
 @Component
 public class InputDaoReader implements InputDao {
-
     private final BufferedReader reader;
 
     public InputDaoReader(InputStream systemInputStream) {
@@ -23,11 +22,7 @@ public class InputDaoReader implements InputDao {
     @Override
     public String inputLine() {
         try {
-            String value = null;
-            while (value == null) {
-                value = reader.readLine();
-            }
-            return value;
+            return reader.readLine();
         } catch (IOException e) {
             log.error("Не удалось прочесть");
             return null;

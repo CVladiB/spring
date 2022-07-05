@@ -17,11 +17,6 @@ public class OutputDaoConsole implements OutputDao {
     }
 
     @Override
-    public void someMethod(String a, String b, String c, String d) {
-        log.info("{} {} {} {}", a, b, c, d);
-    }
-
-    @Override
     public void outputLine(String line) {
         writer.println(line);
     }

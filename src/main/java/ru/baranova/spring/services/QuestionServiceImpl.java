@@ -10,9 +10,6 @@ import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
-import ru.baranova.spring.domain.QuestionOneAnswer;
-import ru.baranova.spring.domain.QuestionWithOptionAnswers;
-import ru.baranova.spring.domain.QuestionWithoutAnswer;
 
 @Slf4j
 @Setter
@@ -29,7 +26,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public void printQuestion(@NonNull Question question) {
         outputDaoConsole.outputLine(question.getQuestion());
-        if (question instanceof QuestionWithOptionAnswers) {
+        if (question.getOptionAnswers() != null) {
             int count = 0;
             for (Option option : question.getOptionAnswers()) {
                 outputDaoConsole.outputFormatLine("%s) %s\n", ++count, option.getOption());
@@ -40,8 +37,7 @@ public class QuestionServiceImpl implements QuestionService {
     @Override
     public String getAnswer(@NonNull Question question) {
         String answer = null;
-
-        if (question instanceof QuestionWithOptionAnswers) {
+        if (question.getOptionAnswers() != null) {
             int indexInputAnswer;
             int size = question.getOptionAnswers().size();
 
@@ -63,20 +59,19 @@ public class QuestionServiceImpl implements QuestionService {
                 }
 
             } while (indexInputAnswer > size || indexInputAnswer < 1);
-        } else if (question instanceof QuestionOneAnswer || question instanceof QuestionWithoutAnswer) {
+        } else {
             do {
                 outputDaoConsole.outputFormatLine(inputAnswer);
                 answer = inputDaoReader.inputLine();
             } while (answer.length() < 1);
         }
-
         return answer;
     }
 
     @Override
     public boolean checkCorrectAnswer(@NonNull Question question, @NonNull String inputAnswer) {
         boolean result = false;
-        if (question instanceof QuestionWithOptionAnswers) {
+        if (question.getOptionAnswers() != null) {
             int indexInputAnswer = -1;
             Option inputAnswerInOption = null;
 
@@ -89,9 +84,9 @@ public class QuestionServiceImpl implements QuestionService {
             } catch (IndexOutOfBoundsException e) {
                 log.info("Переданный номер ответа превышает доступные варианты");
             }
-        } else if (question instanceof QuestionOneAnswer) {
+        } else if (question.getOptionAnswers() == null && question.getRightAnswer() != null) {
             result = inputAnswer.equalsIgnoreCase(question.getRightAnswer().getAnswer());
-        } else if (question instanceof QuestionWithoutAnswer) {
+        } else if (question.getRightAnswer() == null) {
             result = true;
         }
         return result;
