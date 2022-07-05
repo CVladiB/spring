@@ -1,0 +1,5 @@
+2022-07-05 11:07:07 [main] INFO  ru.baranova.spring.Application - Starting Application using Java 17.0.3 on sigma-10460 with PID 17532 (C:\Users\ebaranova\IdeaProjects\pet\spring\build\classes\java\main started by ebaranova in C:\Users\ebaranova\IdeaProjects\pet\spring)
+2022-07-05 11:07:07 [main] INFO  ru.baranova.spring.Application - No active profile set, falling back to 1 default profile: "default"
+2022-07-05 11:07:07 [main] INFO  ru.baranova.spring.Application - Started Application in 0.811 seconds (JVM running for 1.19)
+2022-07-05 11:07:07 [main] INFO  r.b.s.aspect.MethodArgumentLogAspect - ru.baranova.spring.services.TestServiceImpl.test, No args.
+2022-07-05 11:07:07 [main] INFO  r.b.s.aspect.MethodArgumentLogAspect - ru.baranova.spring.services.UserServiceImpl.createUser, No args.

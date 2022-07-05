@@ -1,6 +1,5 @@
 package ru.baranova.spring;
 
-import ch.qos.logback.classic.util.ContextInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import ru.baranova.spring.services.TestServiceImpl;
