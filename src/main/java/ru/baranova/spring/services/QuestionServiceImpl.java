@@ -3,7 +3,6 @@ package ru.baranova.spring.services;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.io.InputDao;
@@ -15,13 +14,10 @@ import ru.baranova.spring.domain.Question;
 @Setter
 @RequiredArgsConstructor
 @Service
-@ConfigurationProperties(prefix = "app.services.question-service-impl")
 public class QuestionServiceImpl implements QuestionService {
     private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
-
-    private String inputAnswer;
-    private String inputNumberAnswer;
+    private final LocaleService localeServiceImpl;
 
     @Override
     public void printQuestion(@NonNull Question question) {
@@ -42,26 +38,26 @@ public class QuestionServiceImpl implements QuestionService {
             int size = question.getOptionAnswers().size();
 
             do {
-                outputDaoConsole.outputFormatLine(inputNumberAnswer);
+                outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage("message.question-service-message.input-number-answer"));
                 answer = inputDaoReader.inputLine();
 
                 try {
                     indexInputAnswer = Integer.parseInt(answer);
                     if (indexInputAnswer > size) {
-                        log.info("Указанный номер ответа превышает доступные варианты");
+                        log.info(localeServiceImpl.getMessage("log.long-input"));
                     }
                     if (indexInputAnswer < 1) {
-                        log.info("Требуется ввести номер ответа среди указанных");
+                        log.info(localeServiceImpl.getMessage("log.short-input"));
                     }
                 } catch (NumberFormatException e) {
-                    log.info("Требуется ввести номер ответа");
+                    log.info(localeServiceImpl.getMessage("log.should-number-input"));
                     indexInputAnswer = size + 1;
                 }
 
             } while (indexInputAnswer > size || indexInputAnswer < 1);
         } else {
             do {
-                outputDaoConsole.outputFormatLine(inputAnswer);
+                outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage("message.question-service-message.input-answer"));
                 answer = inputDaoReader.inputLine();
             } while (answer.length() < 1);
         }
@@ -80,9 +76,9 @@ public class QuestionServiceImpl implements QuestionService {
                 inputAnswerInOption = question.getOptionAnswers().get(indexInputAnswer - 1);
                 result = inputAnswerInOption.getOption().equals(question.getRightAnswer().getAnswer());
             } catch (NumberFormatException e) {
-                log.info("Требуется передать номер ответа");
+                log.info(localeServiceImpl.getMessage("log.should-number-input"));
             } catch (IndexOutOfBoundsException e) {
-                log.info("Переданный номер ответа превышает доступные варианты");
+                log.info(localeServiceImpl.getMessage("log.short-input"));
             }
         } else if (question.getOptionAnswers() == null && question.getRightAnswer() != null) {
             result = inputAnswer.equalsIgnoreCase(question.getRightAnswer().getAnswer());

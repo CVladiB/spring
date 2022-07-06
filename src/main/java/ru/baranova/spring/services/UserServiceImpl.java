@@ -3,7 +3,6 @@ package ru.baranova.spring.services;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.UserDao;
 import ru.baranova.spring.dao.io.InputDao;
@@ -17,15 +16,11 @@ import java.util.regex.Pattern;
 @Setter
 @RequiredArgsConstructor
 @Service
-@ConfigurationProperties(prefix = "app.services.user-service-impl")
 public class UserServiceImpl implements UserService {
     private final InputDao inputDaoReader;
     private final OutputDao outputDaoConsole;
     private final UserDao userDaoImpl;
-
-    private String inputName;
-
-    private String inputSurname;
+    private final LocaleService localeServiceImpl;
 
     @Override
     public User createUser() {
@@ -33,11 +28,11 @@ public class UserServiceImpl implements UserService {
         String surname;
 
         do {
-            outputDaoConsole.outputFormatLine(inputName);
+            outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage("message.user-service-message.input-name"));
             name = inputDaoReader.inputLine();
         } while (!isCorrectInput(name));
         do {
-            outputDaoConsole.outputFormatLine(inputSurname);
+            outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage("message.user-service-message.input-surname"));
             surname = inputDaoReader.inputLine();
         } while (!isCorrectInput(surname));
 
@@ -47,11 +42,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isCorrectInput(String str) {
         if (str == null || str.isEmpty()) {
-            log.info("Упс! Ничего не введено");
+            log.info(localeServiceImpl.getMessage("log.nothing-input"));
             return false;
         }
         if (str.length() < 3) {
-            log.info("Упс! Слишком короткий ввод");
+            log.info(localeServiceImpl.getMessage("log.short-input"));
             return false;
         }
 

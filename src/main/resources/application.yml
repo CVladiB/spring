@@ -1,20 +1,26 @@
 app:
   dao:
     question-dao-csv:
-      path: "classpath:questionnaire.csv"
       delimiter: ";"
       question-position: 0
       right-answer-position: 1
+    locale-provider:
+      languages:
+        -
+          language: ${app.dao.locale-provider.language-description.languages}
+          shortDescription: ${app.dao.locale-provider.language-description.shortDescription}
+          description: ${app.dao.locale-provider.language-description.description}
+          path: ${app.dao.locale-provider.language-description.path}
+        -
+          language: "en-EN"
+          shortDescription: "En"
+          description: "English"
+          path: "classpath:questionnaire_en.csv"
+      language-description:
+        language: "ru-RU"
+        shortDescription: "Ру"
+        description: "Русский"
+        path: "classpath:questionnaire_ru.csv"
   services:
     test-service-impl:
       part-right-answers: 70
-      start: "Добро пожаловать на тестирвоание интеллекта!"
-      finish: "\n%s %s, надеюсь, ты не обижаешься на нас:)"
-      win: "Ты очень умен, ты ответил на %d вопросов из %d"
-      fail: "Ты очень глуп, ты ответил только на %d вопросов из %d"
-    question-service-impl:
-      input-answer: "Введи ответ: "
-      input-number-answer: "Введи номер ответа: "
-    user-service-impl:
-      input-name: "Укажи свое имя: "
-      input-surname: "Укажи свою фамилию: "

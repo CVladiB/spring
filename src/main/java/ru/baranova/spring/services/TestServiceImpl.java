@@ -14,7 +14,6 @@ import ru.baranova.spring.domain.User;
 import java.util.List;
 
 @Slf4j
-@Setter
 @RequiredArgsConstructor
 @Service
 @ConfigurationProperties(prefix = "app.services.test-service-impl")
@@ -23,16 +22,16 @@ public class TestServiceImpl implements TestService {
     private final QuestionDao questionDaoCsv;
     private final UserService userServiceImpl;
     private final QuestionService questionServiceImpl;
+    private final LocaleService localeServiceImpl;
     @Getter
+    @Setter
     private int partRightAnswers;
-    private String start;
-    private String finish;
-    private String win;
-    private String fail;
 
     @Override
     public void test() {
-        outputDaoConsole.outputLine(start);
+        localeServiceImpl.chooseLanguage();
+
+        outputDaoConsole.outputLine(localeServiceImpl.getMessage("message.test-service-message.start"));
         User user = userServiceImpl.createUser();
         List<Question> questions = questionDaoCsv.loadQuestion();
         if (!questions.isEmpty()) {
@@ -47,13 +46,14 @@ public class TestServiceImpl implements TestService {
             }
 
             int numberOfQuestions = questions.size();
-            String testResult = passTest(countCorrectAnswer, numberOfQuestions) ? win : fail;
-            outputDaoConsole.outputFormatLine(testResult, countCorrectAnswer, numberOfQuestions);
-
+            String testResult = passTest(countCorrectAnswer, numberOfQuestions) ? "message.test-service-message.win" : "message.test-service-message.fail";
+            outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage(testResult, countCorrectAnswer, numberOfQuestions));
         } else {
-            outputDaoConsole.outputLine("Упс! Чип И Дейл спешат на помощь");
+            outputDaoConsole.outputLine(localeServiceImpl.getMessage("log.smth-wrong"));
         }
-        outputDaoConsole.outputFormatLine(finish, user.getName(), user.getSurname());
+        outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage(
+                "message.test-service-message.finish",
+                user.getName(), user.getSurname()));
     }
 
     @Override

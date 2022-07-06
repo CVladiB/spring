@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import ru.baranova.spring.annotation.MethodArg;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
 import ru.baranova.spring.domain.Option;
@@ -14,6 +15,7 @@ import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
+import ru.baranova.spring.services.LocaleService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -29,32 +31,37 @@ import java.util.stream.Collectors;
 @ConfigurationProperties(prefix = "app.dao.question-dao-csv")
 public class QuestionDaoCsv implements QuestionDao {
     private final ReaderDao readerDaoFile;
+    private final LocaleProvider localeProviderImpl;
+    private final LocaleService localeServiceImpl;
     @Getter
     private String path;
     private String delimiter;
     private int questionPosition;
     private int rightAnswerPosition;
 
-
+    private String getPath() {
+        return localeProviderImpl.getLanguageDescription().getPath();
+    }
     @Override
     public List<Question> loadQuestion() {
         List<String> lines;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(readerDaoFile.getResource(path)))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(readerDaoFile.getResource(getPath())))) {
             lines = reader.lines().collect(Collectors.toList());
         } catch (IOException | NullPointerException e) {
-            log.error("Ошибка загрузки вопросов, обратитесь к администратору");
+            log.error(localeServiceImpl.getMessage("log.wrong-load-question"));
             lines = new ArrayList<>();
         }
         return parseStrings(lines);
     }
 
+    @MethodArg
     @Override
     public List<Question> parseStrings(@NonNull List<String> lines) {
         List<Question> questions = new ArrayList<>();
         for (String line : lines) {
             String[] arr = line.split(delimiter);
             switch (arr.length) {
-                case 0 -> log.error("Неудачная попытка разобрать вопросы");
+                case 0 -> log.error(localeServiceImpl.getMessage("log.wrong-parse_question"));
                 case 1 -> questions.add(new QuestionWithoutAnswer(arr[questionPosition]));
                 case 2 ->
                         questions.add(new QuestionOneAnswer(arr[questionPosition], new Answer(arr[rightAnswerPosition])));

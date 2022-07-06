@@ -19,7 +19,7 @@ question-dao-csv:
 app:
   dao:
     question-dao-csv:
-      #      path: "classpath:questionnaire.csv"
+      #      path: "classpath:questionnaire_ru.csv"
       delimiter: "#"
       question-position: 0
       right-answer-position: 1
@@ -60,8 +60,6 @@ question-service-impl:
 app:
   services:
     question-service-impl:
-      input-number-answer: 'Input the number of the answer: '
-      input-answer: 'Input the answer: '
 ---
 # TestServiceImplTest
 spring:
@@ -71,12 +69,6 @@ spring:
 app:
   services:
     test-service-impl:
-      input-number-answer: 'Input the number of the answer: '
-      win: "You are extra smart, you answered %d / %d\n"
-      input-answer: 'Input the answer: '
-      finish: '%s %s, we hope you don''t worry about it:)'
-      start: "Welcome to the test!"
-      fail: "You are extra stupid, you answered %d / %d\n"
       part-right-answers: '70'
 ---
 # UserServiceImplTest
@@ -88,8 +80,6 @@ spring:
 app:
   services:
     user-service-impl:
-      surname: 'Input your surname: '
-      name: 'Input your name: '
 ---
 spring:
   config:
@@ -98,4 +88,4 @@ spring:
 app:
   dao:
     input-dao-reader:
-      value: "This is the source of my input stream"
+#      value: "This is the source of my input stream"
