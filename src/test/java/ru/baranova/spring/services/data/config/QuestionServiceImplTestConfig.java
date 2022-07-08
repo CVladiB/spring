@@ -1,4 +1,4 @@
-package ru.baranova.spring.services.config;
+package ru.baranova.spring.services.data.config;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +9,10 @@ import org.springframework.context.annotation.Bean;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.dao.io.OutputDaoConsole;
-import ru.baranova.spring.services.QuestionService;
-import ru.baranova.spring.services.QuestionServiceImpl;
+import ru.baranova.spring.services.CheckService;
+import ru.baranova.spring.services.data.QuestionService;
+import ru.baranova.spring.services.data.QuestionServiceImpl;
+import ru.baranova.spring.services.io.OutputService;
 
 import java.io.ByteArrayOutputStream;
 
@@ -28,8 +30,11 @@ public class QuestionServiceImplTestConfig {
     private ByteArrayOutputStream outputStream;
 
     @Bean
-    public QuestionService questionServiceImplPrint(InputDao inputDaoReader, OutputDao outputDaoConsolePrint) {
-        return new QuestionServiceImpl(inputDaoReader, outputDaoConsolePrint);
+    public QuestionService questionServiceImplPrint(InputDao inputDaoReader
+            , OutputDao outputDaoConsolePrint
+            , OutputService outputServiceConsole
+            , CheckService checkServiceImpl) {
+        return new QuestionServiceImpl(inputDaoReader, outputDaoConsolePrint, outputServiceConsole, checkServiceImpl);
     }
 
     @Bean

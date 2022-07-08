@@ -1,12 +1,11 @@
 package ru.baranova.spring.dao.io;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import ru.baranova.spring.annotation.MethodArg;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-@Slf4j
 @Component
 public class OutputDaoConsole implements OutputDao {
 
@@ -21,6 +20,7 @@ public class OutputDaoConsole implements OutputDao {
         writer.println(line);
     }
 
+    @MethodArg
     @Override
     public void outputFormatLine(String formatLine, Object... args) {
         writer.printf(formatLine, args);

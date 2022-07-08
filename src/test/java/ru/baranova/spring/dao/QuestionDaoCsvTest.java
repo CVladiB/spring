@@ -12,11 +12,13 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.baranova.spring.dao.config.QuestionDaoCsvActualConfig;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
+import ru.baranova.spring.domain.LanguageDescription;
 import ru.baranova.spring.domain.Option;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
+import ru.baranova.spring.services.LocaleService;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -31,12 +33,17 @@ public class QuestionDaoCsvTest {
     private QuestionDaoCsv questionDaoCsv;
     @MockBean
     private ReaderDao readerDaoFile;
+    @MockBean
+    private LocaleProvider localeProviderImpl;
+    @MockBean
+    private LocaleService localeServiceImpl;
 
     @Autowired
     private QuestionDaoCsvActualConfig questionDaoCsvActualConfig;
     private Question questionWithOptionAnswers;
     private Question questionOneAnswer;
     private Question questionWithoutAnswer;
+    private LanguageDescription languageDescription;
 
     @BeforeEach
     void setUp() {
@@ -46,11 +53,15 @@ public class QuestionDaoCsvTest {
                 , new Option(questionDaoCsvActualConfig.getOptionTwo())));
         questionOneAnswer = new QuestionOneAnswer(questionDaoCsvActualConfig.getQuestion(), new Answer(questionDaoCsvActualConfig.getRightAnswer()));
         questionWithoutAnswer = new QuestionWithoutAnswer(questionDaoCsvActualConfig.getQuestion());
+        languageDescription = new LanguageDescription();
+        languageDescription.setPath("path");
     }
 
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct List QuestionWithOptionAnswers")
     void shouldHaveCorrectLoadQuestion_QuestionWithOptionAnswers() {
+        Mockito.when(localeProviderImpl.getLanguageDescription())
+                .thenReturn(languageDescription);
         Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
                 .thenReturn(new ByteArrayInputStream(questionDaoCsvActualConfig.getInitialStringQuestionWithOptionAnswers().getBytes(StandardCharsets.UTF_8)));
         List<Question> expected = questionDaoCsv.loadQuestion();
@@ -62,6 +73,8 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct List QuestionOneAnswer")
     void shouldHaveCorrectLoadQuestion_QuestionOneAnswer() {
+        Mockito.when(localeProviderImpl.getLanguageDescription())
+                .thenReturn(languageDescription);
         Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
                 .thenReturn(new ByteArrayInputStream(questionDaoCsvActualConfig.getInitialStringQuestionOneAnswer().getBytes()));
         List<Question> expected = questionDaoCsv.loadQuestion();
@@ -73,6 +86,8 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct List QuestionWithoutAnswer")
     void shouldHaveCorrectLoadQuestion_QuestionWithoutAnswer() {
+        Mockito.when(localeProviderImpl.getLanguageDescription())
+                .thenReturn(languageDescription);
         Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
                 .thenReturn(new ByteArrayInputStream(questionDaoCsvActualConfig.getInitialStringQuestionWithoutAnswer().getBytes()));
         List<Question> expected = questionDaoCsv.loadQuestion();
@@ -84,6 +99,8 @@ public class QuestionDaoCsvTest {
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct empty List Question")
     void shouldHaveEmptyList_NullByPath() {
+        Mockito.when(localeProviderImpl.getLanguageDescription())
+                .thenReturn(languageDescription);
         Mockito.when(readerDaoFile.getResource(questionDaoCsv.getPath()))
                 .thenReturn(null);
         Assertions.assertEquals(questionDaoCsv.loadQuestion(), new ArrayList<>());

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,13 @@ import org.springframework.util.StopWatch;
 @Aspect
 @Component
 public class ExecuteTimeAspect {
-    @Around("execution(* ru.baranova.spring.services.*.*(..))")
+
+
+    @Pointcut("execution(* ru.baranova.spring.services.*.*(..))")
+    public void anyServices() {
+    }
+
+    @Around("anyServices()")
     public Object countMethodExecuteTime(ProceedingJoinPoint pjp) throws Throwable {
         StopWatch watch = new StopWatch();
         watch.start();

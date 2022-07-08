@@ -10,13 +10,11 @@ import ru.baranova.spring.dao.io.config.InputDaoReaderConfig;
 
 @DisplayName("Test class InputDaoReader")
 @ActiveProfiles("input-dao-reader")
-@SpringBootTest(classes = InputDaoReaderConfig.class)
+@SpringBootTest(classes = {InputDaoReaderConfig.class, InputDaoReader.class})
 class InputDaoReaderTest {
 
     @Autowired
     private InputDaoReader testInputDaoReader;
-    @Autowired
-    private InputDaoReader testInputDaoReaderNull;
 
     @Test
     @DisplayName("Test class InputDaoReader, method inputLine")
@@ -29,7 +27,7 @@ class InputDaoReaderTest {
     @Test
     @DisplayName("Test class InputDaoReader, method inputLine")
     void shouldHaveNull() {
-        String actual = testInputDaoReaderNull.inputLine();
+        String actual = testInputDaoReader.inputLine();
         Assertions.assertNull(actual);
     }
 }

@@ -1,5 +1,7 @@
-# debug: false
-
+spring:
+  main:
+    lazy-initialization: true
+    allow-circular-references: true
 ---
 # QuestionDaoCsvTest.java
 spring:
@@ -23,27 +25,6 @@ app:
       delimiter: "#"
       question-position: 0
       right-answer-position: 1
-
----
-# QuestionOneAnswerTest.java
-spring:
-  config:
-    activate:
-      on-profile: question-one-answer
-test:
-  question-one-answer:
-    right-answer: Answer Second
-    question: Question First
-
----
-# QuestionWithoutAnswerTest.java
-spring:
-  config:
-    activate:
-      on-profile: question-without-answer
-question-without-answer:
-  question: Question First
-
 ---
 # QuestionServiceImplTest.java
 spring:
@@ -70,22 +51,3 @@ app:
   services:
     test-service-impl:
       part-right-answers: '70'
----
-# UserServiceImplTest
-spring:
-  config:
-    activate:
-      on-profile: user-service-impl
-#for bean userServiceImpl
-app:
-  services:
-    user-service-impl:
----
-spring:
-  config:
-    activate:
-      on-profile: input-dao-reader
-app:
-  dao:
-    input-dao-reader:
-#      value: "This is the source of my input stream"

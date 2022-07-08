@@ -1,37 +1,46 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.test;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
+import ru.baranova.spring.annotation.MethodArg;
 import ru.baranova.spring.dao.QuestionDao;
-import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.User;
+import ru.baranova.spring.services.data.QuestionService;
+import ru.baranova.spring.services.data.UserService;
+import ru.baranova.spring.services.io.OutputService;
+import ru.baranova.spring.services.lang.AppSettingService;
 
 import java.util.List;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 @ConfigurationProperties(prefix = "app.services.test-service-impl")
 public class TestServiceImpl implements TestService {
-    private final OutputDao outputDaoConsole;
+    private final OutputService outputServiceConsole;
     private final QuestionDao questionDaoCsv;
     private final UserService userServiceImpl;
     private final QuestionService questionServiceImpl;
-    private final LocaleService localeServiceImpl;
+    private final AppSettingService chooseAppSettingServiceImpl;
+
+    @Autowired
+    private TestService self;
+
     @Getter
     @Setter
     private int partRightAnswers;
 
+    @MethodArg
     @Override
     public void test() {
-        localeServiceImpl.chooseLanguage();
+        chooseAppSettingServiceImpl.printOptionsOfLanguage();
+        chooseAppSettingServiceImpl.setLanguage();
 
-        outputDaoConsole.outputLine(localeServiceImpl.getMessage("message.test-service-message.start"));
+        outputServiceConsole.getMessage("message.test-service-message.start");
         User user = userServiceImpl.createUser();
         List<Question> questions = questionDaoCsv.loadQuestion();
         if (!questions.isEmpty()) {
@@ -39,21 +48,21 @@ public class TestServiceImpl implements TestService {
 
             for (Question question : questions) {
                 questionServiceImpl.printQuestion(question);
-                String numberAnswer = questionServiceImpl.getAnswer(question);
+                String numberAnswer = questionServiceImpl.setAndGetAnswer(question);
                 if (questionServiceImpl.checkCorrectAnswer(question, numberAnswer)) {
                     ++countCorrectAnswer;
                 }
             }
 
             int numberOfQuestions = questions.size();
-            String testResult = passTest(countCorrectAnswer, numberOfQuestions) ? "message.test-service-message.win" : "message.test-service-message.fail";
-            outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage(testResult, countCorrectAnswer, numberOfQuestions));
+            String testResult = self.passTest(countCorrectAnswer, numberOfQuestions) ? "message.test-service-message.win" : "message.test-service-message.fail";
+            outputServiceConsole.getMessage(testResult, countCorrectAnswer, numberOfQuestions);
         } else {
-            outputDaoConsole.outputLine(localeServiceImpl.getMessage("log.smth-wrong"));
+            outputServiceConsole.getMessage("log.smth-wrong");
         }
-        outputDaoConsole.outputFormatLine(localeServiceImpl.getMessage(
+        outputServiceConsole.getMessage(
                 "message.test-service-message.finish",
-                user.getName(), user.getSurname()));
+                user.getName(), user.getSurname());
     }
 
     @Override

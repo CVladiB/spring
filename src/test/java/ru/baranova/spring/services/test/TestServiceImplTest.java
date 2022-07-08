@@ -1,8 +1,9 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.test;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -18,7 +19,10 @@ import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
 import ru.baranova.spring.domain.User;
-import ru.baranova.spring.services.config.TestServiceImplTestConfig;
+import ru.baranova.spring.services.data.QuestionService;
+import ru.baranova.spring.services.data.UserService;
+import ru.baranova.spring.services.lang.AppSettingService;
+import ru.baranova.spring.services.test.config.TestServiceImplTestConfig;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,6 +40,8 @@ class TestServiceImplTest {
     private UserService userServiceImpl;
     @MockBean
     private QuestionService questionServiceImpl;
+    @MockBean
+    private AppSettingService chooseAppSettingServiceImpl;
     @Autowired
     private TestServiceImplTestConfig config;
     @Autowired
@@ -83,7 +89,7 @@ class TestServiceImplTest {
     }
 
     @Test
-    void shouldHaveStringTestFromConsole_FalseAnswer_QuestionWithOptionAnswers() throws IOException {
+    void shouldHaveStringTestFromConsole_FalseAnswer_QuestionWithOptionAnswers() {
         Mockito.when(userServiceImpl.createUser()).thenReturn(new User("name", "surname"));
         Mockito.when(questionDaoCsv.loadQuestion()).thenReturn(questionWithOptionAnswersList);
 
@@ -93,7 +99,7 @@ class TestServiceImplTest {
                     + "2) Answer Second");
             return null;
         }).when(questionServiceImpl).printQuestion(questionWithOptionAnswers);
-        Mockito.doReturn("1").when(questionServiceImpl).getAnswer(questionWithOptionAnswers);
+        Mockito.doReturn("1").when(questionServiceImpl).setAndGetAnswer(questionWithOptionAnswers);
         Mockito.doReturn(false).when(questionServiceImpl).checkCorrectAnswer(questionWithOptionAnswers, "1");
 
         testServiceImplString.test();
@@ -119,7 +125,7 @@ class TestServiceImplTest {
                     + "2) Answer Second");
             return null;
         }).when(questionServiceImpl).printQuestion(questionWithOptionAnswers);
-        Mockito.doReturn("2").when(questionServiceImpl).getAnswer(questionWithOptionAnswers);
+        Mockito.doReturn("2").when(questionServiceImpl).setAndGetAnswer(questionWithOptionAnswers);
         Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionWithOptionAnswers, "2");
 
         testServiceImplString.test();
@@ -143,7 +149,7 @@ class TestServiceImplTest {
             config.getWriter().println("Question First");
             return null;
         }).when(questionServiceImpl).printQuestion(questionOneAnswer);
-        Mockito.doReturn("Answer First").when(questionServiceImpl).getAnswer(questionOneAnswer);
+        Mockito.doReturn("Answer First").when(questionServiceImpl).setAndGetAnswer(questionOneAnswer);
         Mockito.doReturn(false).when(questionServiceImpl).checkCorrectAnswer(questionOneAnswer, "Answer First");
 
         testServiceImplString.test();
@@ -165,7 +171,7 @@ class TestServiceImplTest {
             config.getWriter().println("Question First");
             return null;
         }).when(questionServiceImpl).printQuestion(questionOneAnswer);
-        Mockito.doReturn("Answer Second").when(questionServiceImpl).getAnswer(questionOneAnswer);
+        Mockito.doReturn("Answer Second").when(questionServiceImpl).setAndGetAnswer(questionOneAnswer);
         Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionOneAnswer, "Answer Second");
 
         testServiceImplString.test();
@@ -187,7 +193,7 @@ class TestServiceImplTest {
             config.getWriter().println("Question First");
             return null;
         }).when(questionServiceImpl).printQuestion(questionWithoutAnswer);
-        Mockito.doReturn("Answer").when(questionServiceImpl).getAnswer(questionWithoutAnswer);
+        Mockito.doReturn("Answer").when(questionServiceImpl).setAndGetAnswer(questionWithoutAnswer);
         Mockito.doReturn(true).when(questionServiceImpl).checkCorrectAnswer(questionWithoutAnswer, "Answer");
 
         testServiceImplString.test();

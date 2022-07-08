@@ -5,7 +5,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,8 +13,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 @Slf4j
-@DisplayName("Test class OutputDaoReader")
-@SpringBootTest
+@DisplayName("Test class OutputDaoConsole")
 class OutputDaoConsoleTest {
     private final Path testFile = Paths.get("output_test_file.txt");
     private String expected = "This is the source of my output stream";

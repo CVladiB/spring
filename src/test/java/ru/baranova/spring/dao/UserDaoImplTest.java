@@ -10,9 +10,8 @@ import ru.baranova.spring.domain.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Test class UserDaoImpl")
-@SpringBootTest
+@SpringBootTest(classes = {UserDaoImpl.class})
 public class UserDaoImplTest {
-    // Проверка на null требуется не в DAO, а в сервисе.
     @Autowired
     private UserDaoImpl userDaoImpl;
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
@@ -38,10 +39,13 @@ public class QuestionDaoCsv implements QuestionDao {
     private String delimiter;
     private int questionPosition;
     private int rightAnswerPosition;
+    @Autowired
+    private QuestionDao self;
 
-    private String getPath() {
+    public String getPath() {
         return localeProviderImpl.getLanguageDescription().getPath();
     }
+
     @Override
     public List<Question> loadQuestion() {
         List<String> lines;
@@ -51,7 +55,7 @@ public class QuestionDaoCsv implements QuestionDao {
             log.error(localeServiceImpl.getMessage("log.wrong-load-question"));
             lines = new ArrayList<>();
         }
-        return parseStrings(lines);
+        return self.parseStrings(lines);
     }
 
     @MethodArg

@@ -1,4 +1,4 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.data;
 
 import ru.baranova.spring.domain.User;
 

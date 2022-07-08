@@ -1,12 +1,14 @@
 package ru.baranova.spring.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+@Setter
+@Getter
+@ToString
 @NoArgsConstructor
-@AllArgsConstructor
 public class LanguageDescription {
     private String language;
     private String shortDescription;

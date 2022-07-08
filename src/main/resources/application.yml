@@ -6,13 +6,11 @@ app:
       right-answer-position: 1
     locale-provider:
       languages:
-        -
-          language: ${app.dao.locale-provider.language-description.languages}
+        - language: ${app.dao.locale-provider.language-description.language}
           shortDescription: ${app.dao.locale-provider.language-description.shortDescription}
           description: ${app.dao.locale-provider.language-description.description}
           path: ${app.dao.locale-provider.language-description.path}
-        -
-          language: "en-EN"
+        - language: "en-EN"
           shortDescription: "En"
           description: "English"
           path: "classpath:questionnaire_en.csv"
@@ -24,3 +22,6 @@ app:
   services:
     test-service-impl:
       part-right-answers: 70
+spring:
+  main:
+    allow-circular-references: true

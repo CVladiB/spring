@@ -1,4 +1,4 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.data;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -18,10 +18,11 @@ import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
-import ru.baranova.spring.services.config.QuestionServiceImplTestConfig;
+import ru.baranova.spring.services.data.config.QuestionServiceImplTestConfig;
 
 import java.util.List;
 
+//@Disabled
 @Slf4j
 @DisplayName("Test class QuestionServiceImpl")
 @ActiveProfiles("question-service-impl")
@@ -130,7 +131,7 @@ class QuestionServiceImplTest {
     void shouldHaveAnswer_QuestionWithOptionAnswers() {
         String expected = String.valueOf(questionWithOptionAnswers.getOptionAnswers().size());
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithOptionAnswers);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithOptionAnswers);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -141,7 +142,7 @@ class QuestionServiceImplTest {
         Mockito.lenient().when(inputDaoReader.inputLine())
                 .thenReturn(String.valueOf(questionWithOptionAnswers.getOptionAnswers().size() + 10))
                 .thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithOptionAnswers);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithOptionAnswers);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -150,7 +151,7 @@ class QuestionServiceImplTest {
     void shouldHaveAnswer_QuestionWithOptionAnswers_NonexistentNumber_Small() {
         String expected = String.valueOf(questionWithOptionAnswers.getOptionAnswers().size());
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn("0").thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithOptionAnswers);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithOptionAnswers);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -159,7 +160,7 @@ class QuestionServiceImplTest {
     void shouldHaveAnswer_QuestionWithOptionAnswers_Symbol() {
         String expected = String.valueOf(questionWithOptionAnswers.getOptionAnswers().size());
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn("rightAnswer").thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithOptionAnswers);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithOptionAnswers);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -168,7 +169,7 @@ class QuestionServiceImplTest {
     void shouldHaveAnswer_QuestionOneAnswer() {
         String expected = String.valueOf(questionOneAnswer.getRightAnswer());
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionOneAnswer);
+        String actual = questionServiceImpl.setAndGetAnswer(questionOneAnswer);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -178,7 +179,7 @@ class QuestionServiceImplTest {
         String expected = String.valueOf(questionOneAnswer.getRightAnswer());
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn("")
                 .thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionOneAnswer);
+        String actual = questionServiceImpl.setAndGetAnswer(questionOneAnswer);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -187,7 +188,7 @@ class QuestionServiceImplTest {
     void shouldHaveAnswer_QuestionWithoutAnswer() {
         String expected = "rightAnswer";
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithoutAnswer);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithoutAnswer);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -197,7 +198,7 @@ class QuestionServiceImplTest {
         String expected = "rightAnswer";
         Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn("")
                 .thenReturn(expected);
-        String actual = questionServiceImpl.getAnswer(questionWithoutAnswer);
+        String actual = questionServiceImpl.setAndGetAnswer(questionWithoutAnswer);
         Assertions.assertEquals(expected, actual);
     }
 }

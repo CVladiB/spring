@@ -1,4 +1,4 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.data;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,25 +9,32 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import ru.baranova.spring.dao.UserDao;
 import ru.baranova.spring.dao.io.InputDao;
-import ru.baranova.spring.dao.io.OutputDao;
 import ru.baranova.spring.domain.User;
+import ru.baranova.spring.services.CheckService;
+import ru.baranova.spring.services.io.OutputService;
 
+//todo везде замокать проверку
 @DisplayName("Test class UserServiceImpl")
-@SpringBootTest
+@SpringBootTest(classes = {UserServiceImpl.class})
 class UserServiceImplTest {
     @Autowired
     private UserService userServiceImpl;
     @MockBean
     private InputDao inputDaoReader;
     @MockBean
-    private OutputDao outputDaoConsole;
+    private OutputService outputServiceConsole;
     @MockBean
     private UserDao userDaoImpl;
+    @MockBean
+    private CheckService checkServiceImpl;
+
 
     @Test
     @DisplayName("Test class UserServiceImpl, method createUser, create new User")
     void shouldHaveNewUser() {
-        Mockito.when(inputDaoReader.inputLine()).thenReturn("name").thenReturn("surname");
+        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn("name").thenReturn("surname");
+        Mockito.when(checkServiceImpl.checkCorrectInputStr("name", 3)).thenReturn(true);
+        Mockito.when(checkServiceImpl.checkCorrectInputStr("surname", 3)).thenReturn(true);
         Mockito.when(userDaoImpl.getUser("name", "surname")).thenReturn(new User("name", "surname"));
         User expected = new User("name", "surname");
         User actual = userServiceImpl.createUser();
@@ -58,6 +65,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Test class UserServiceImpl, method isCorrectInput, return true after short input")
     void shouldHaveTrueInput_ShortInput() {
+        Mockito.when(checkServiceImpl.checkCorrectInputStr("nam", 3)).thenReturn(true);
         boolean expected = userServiceImpl.isCorrectInput("nam");
         Assertions.assertTrue(expected);
     }
@@ -72,7 +80,8 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Test class UserServiceImpl, method isCorrectInput, return true after correct symbol")
     void shouldHaveTrueInput_WrongSymbol() {
-        boolean expected = userServiceImpl.isCorrectInput("a-fzA-FZа-фяА-ФЯёЁ");
+        Mockito.when(checkServiceImpl.checkCorrectInputStr("ZXCVBNMASDFGHJKLQWERTYUIOP-zxcvbnmasdfghjklqwertyuiop", 3)).thenReturn(true);
+        boolean expected = userServiceImpl.isCorrectInput("ZXCVBNMASDFGHJKLQWERTYUIOP-zxcvbnmasdfghjklqwertyuiop");
         Assertions.assertTrue(expected);
     }
 }
