@@ -1,37 +1,48 @@
 package ru.baranova.spring.services.io;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.baranova.spring.dao.io.OutputDao;
-import ru.baranova.spring.services.LocaleService;
+import ru.baranova.spring.config.ComponentScanStopConfig;
+import ru.baranova.spring.services.io.config.OutputServiceConsoleTestConfig;
 
-@SpringBootTest(classes = {OutputServiceConsoleTestConfig.class, OutputServiceConsole.class})
+@DisplayName("Test class OutputServiceConsole")
+@SpringBootTest(classes = {OutputServiceConsoleTestConfig.class, ComponentScanStopConfig.class})
 class OutputServiceConsoleTest {
-    private final String expected = "This is the source of my output stream";
-    @Autowired
-    private OutputServiceConsole OutputServiceConsole;
-    @Autowired
-    private OutputDao outputDaoConsole;
-    @Autowired
-    private LocaleService localeServiceImpl;
 
     @Autowired
     private OutputServiceConsoleTestConfig config;
+    @Autowired
+    private OutputService outputServiceConsoleString;
+
+    @AfterEach
+    void tearDown() {
+        config.getOut().reset();
+    }
 
     @Test
-    void getMessage() {
-        Mockito.when(localeServiceImpl.getMessage("str")).thenReturn(expected);
+    @DisplayName("Test class OutputServiceConsole, method getMessage(String keyMessage)")
+    void shouldHaveCorrectMessage() {
+        String expected = "Тестовое сообщение";
 
-        Mockito.doAnswer(invocation -> {
-            config.getWriter().println(expected);
-            return null;
-        }).when(outputDaoConsole).outputLine(expected);
-
+        outputServiceConsoleString.getMessage("message");
         String actual = config.getOut().toString();
-        Assertions.assertEquals(expected, actual);
+
+        Assertions.assertEquals(expected + "\r\n", actual);
+    }
+
+    @Test
+    @DisplayName("Test class OutputServiceConsole, method getMessage(String keyMessage, Object... args)")
+    void shouldHaveCorrectMessage2() {
+        String expected = "Тестовое второе сообщение";
+
+        outputServiceConsoleString.getMessage("message-two", "второе");
+        String actual = config.getOut().toString();
+
+        Assertions.assertEquals(expected + "\r\n", actual);
     }
 
 }

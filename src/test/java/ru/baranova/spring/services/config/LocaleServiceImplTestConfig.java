@@ -6,8 +6,8 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import ru.baranova.spring.dao.LocaleProvider;
-import ru.baranova.spring.services.LocaleService;
-import ru.baranova.spring.services.LocaleServiceImpl;
+import ru.baranova.spring.services.message.LocaleService;
+import ru.baranova.spring.services.message.LocaleServiceImpl;
 
 @TestConfiguration
 public class LocaleServiceImplTestConfig {
@@ -27,7 +27,7 @@ public class LocaleServiceImplTestConfig {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("messages");
         messageSource.setDefaultEncoding("UTF-8");
-        messageSource.setUseCodeAsDefaultMessage(true);
+        messageSource.setUseCodeAsDefaultMessage(false);
         return messageSource;
     }
 

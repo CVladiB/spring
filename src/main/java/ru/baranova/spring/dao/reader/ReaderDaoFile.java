@@ -19,7 +19,6 @@ public class ReaderDaoFile implements ReaderDao {
     @Override
     public InputStream getResource(String path) {
         try {
-            log.info(path);
             return ctx.getResource(path).getInputStream();
         } catch (Exception e) {
             log.error("{}", e.getMessage());

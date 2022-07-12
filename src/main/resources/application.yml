@@ -22,6 +22,19 @@ app:
   services:
     test-service-impl:
       part-right-answers: 70
+    user-service-impl:
+      min-name-surname-symbol: 3
+    question-service-impl:
+      min-answer-symbol: 1
+---
 spring:
   main:
     allow-circular-references: true
+  profiles:
+    active: log-console
+---
+spring:
+  main:
+    allow-circular-references: true
+  profiles:
+    active: log-file

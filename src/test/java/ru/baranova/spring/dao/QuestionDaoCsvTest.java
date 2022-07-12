@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import ru.baranova.spring.config.ComponentScanStopConfig;
 import ru.baranova.spring.dao.config.QuestionDaoCsvActualConfig;
 import ru.baranova.spring.dao.reader.ReaderDao;
 import ru.baranova.spring.domain.Answer;
@@ -18,7 +18,6 @@ import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
-import ru.baranova.spring.services.LocaleService;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
@@ -27,16 +26,16 @@ import java.util.List;
 
 @DisplayName("Test class QuestionDaoCsv")
 @ActiveProfiles("question-dao-csv")
-@SpringBootTest(classes = {QuestionDaoCsvActualConfig.class})
+@SpringBootTest(classes = {QuestionDaoCsvActualConfig.class, ComponentScanStopConfig.class})
 public class QuestionDaoCsvTest {
     @Autowired
     private QuestionDaoCsv questionDaoCsv;
-    @MockBean
+    @Autowired
     private ReaderDao readerDaoFile;
-    @MockBean
+    @Autowired
     private LocaleProvider localeProviderImpl;
-    @MockBean
-    private LocaleService localeServiceImpl;
+//    @Autowired
+//    private ApplicationContext context;
 
     @Autowired
     private QuestionDaoCsvActualConfig questionDaoCsvActualConfig;
@@ -106,10 +105,11 @@ public class QuestionDaoCsvTest {
         Assertions.assertEquals(questionDaoCsv.loadQuestion(), new ArrayList<>());
     }
 
+
     @Test
     @DisplayName("Test class QuestionDaoCsv, method loadQuestion, return correct empty List Question")
     void shouldHaveEmptyList_IncorrectPath() {
-        questionDaoCsv.setPath("IncorrectPath");
+        languageDescription.setPath("IncorrectPath");
         Assertions.assertEquals(questionDaoCsv.loadQuestion(), new ArrayList<>());
     }
 
@@ -152,7 +152,6 @@ public class QuestionDaoCsvTest {
 
         Assertions.assertEquals(expected, actual);
     }
-
 }
 
 

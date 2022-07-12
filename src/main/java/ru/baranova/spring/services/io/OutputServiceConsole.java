@@ -3,7 +3,7 @@ package ru.baranova.spring.services.io;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.io.OutputDao;
-import ru.baranova.spring.services.LocaleService;
+import ru.baranova.spring.services.message.LocaleService;
 
 @Service
 @RequiredArgsConstructor
@@ -13,11 +13,13 @@ public class OutputServiceConsole implements OutputService {
 
     @Override
     public void getMessage(String keyMessage) {
-        outputDaoConsole.outputLine(localeServiceImpl.getMessage(keyMessage));
+        String message = localeServiceImpl.getMessage(keyMessage);
+        outputDaoConsole.outputLine(message);
     }
 
     @Override
     public void getMessage(String keyMessage, Object... args) {
-        outputDaoConsole.outputLine(localeServiceImpl.getMessage(keyMessage, args));
+        String message = localeServiceImpl.getMessage(keyMessage, args);
+        outputDaoConsole.outputLine(message);
     }
 }

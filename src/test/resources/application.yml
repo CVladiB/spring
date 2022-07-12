@@ -11,12 +11,12 @@ spring:
 # actual value
 question-dao-csv:
   question: Question First
-  optionOne: Answer First
+  option-one: Answer First
   initial-string-question-with-option-answers: Question First#Answer Second#Answer First#Answer Second
   initial-string-question-one-answer: Question First#Answer Second
   initial-string-question-without-answer: Question First
-  rightAnswer: Answer Second
-  optionTwo: Answer Second
+  right-answer: Answer Second
+  option-two: Answer Second
 #for bean questionDaoCsv
 app:
   dao:
@@ -30,17 +30,25 @@ app:
 spring:
   config:
     activate:
+      on-profile: question-visitor
+question-visitor-impl:
+  question: "Question First"
+  right-answer: "Answer Second"
+  option-one: "Answer First"
+  option-two: "Answer Second"
+  min-answer-symbol: 1
+---
+# QuestionServiceImpl.java
+spring:
+  config:
+    activate:
       on-profile: question-service-impl
-#for actual
+# actual value
 question-service-impl:
-  option-one: Answer First
-  right-answer: Answer Second
-  optionTwo: Answer Second
-  question: Question First
-#for bean questionServiceImplTest
-app:
-  services:
-    question-service-impl:
+  question: "Question First"
+  option-one: "Answer First"
+  right-answer: "Answer Second"
+  option-two: "Answer Second"
 ---
 # TestServiceImplTest
 spring:
@@ -50,4 +58,27 @@ spring:
 app:
   services:
     test-service-impl:
-      part-right-answers: '70'
+      part-right-answers: '71'
+---
+spring:
+  config:
+    activate:
+      on-profile: locale-provider
+app:
+  dao:
+    locale-provider:
+      languages:
+        - language: ${app.dao.locale-provider.language-description.language}
+          shortDescription: ${app.dao.locale-provider.language-description.shortDescription}
+          description: ${app.dao.locale-provider.language-description.description}
+          path: ${app.dao.locale-provider.language-description.path}
+        - language: "en-EN"
+          shortDescription: "En"
+          description: "English"
+          path: "classpath:questionnaire_en.csv"
+      language-description:
+        language: "ru-RU"
+        shortDescription: "Ру"
+        description: "Русский"
+        path: "classpath:questionnaire_ru.csv"
+

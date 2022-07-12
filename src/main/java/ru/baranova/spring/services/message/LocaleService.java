@@ -1,4 +1,4 @@
-package ru.baranova.spring.services;
+package ru.baranova.spring.services.message;
 
 public interface LocaleService {
 

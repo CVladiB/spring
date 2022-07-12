@@ -1,6 +1,5 @@
 package ru.baranova.spring.dao;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import ru.baranova.spring.domain.Question;
 import ru.baranova.spring.domain.QuestionOneAnswer;
 import ru.baranova.spring.domain.QuestionWithOptionAnswers;
 import ru.baranova.spring.domain.QuestionWithoutAnswer;
-import ru.baranova.spring.services.LocaleService;
+import ru.baranova.spring.services.message.LocaleService;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,8 +33,6 @@ public class QuestionDaoCsv implements QuestionDao {
     private final ReaderDao readerDaoFile;
     private final LocaleProvider localeProviderImpl;
     private final LocaleService localeServiceImpl;
-    @Getter
-    private String path;
     private String delimiter;
     private int questionPosition;
     private int rightAnswerPosition;

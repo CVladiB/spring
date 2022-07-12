@@ -13,7 +13,6 @@ import ru.baranova.spring.domain.User;
 import ru.baranova.spring.services.data.QuestionService;
 import ru.baranova.spring.services.data.UserService;
 import ru.baranova.spring.services.io.OutputService;
-import ru.baranova.spring.services.lang.AppSettingService;
 
 import java.util.List;
 
@@ -25,7 +24,6 @@ public class TestServiceImpl implements TestService {
     private final QuestionDao questionDaoCsv;
     private final UserService userServiceImpl;
     private final QuestionService questionServiceImpl;
-    private final AppSettingService chooseAppSettingServiceImpl;
 
     @Autowired
     private TestService self;
@@ -37,9 +35,6 @@ public class TestServiceImpl implements TestService {
     @MethodArg
     @Override
     public void test() {
-        chooseAppSettingServiceImpl.printOptionsOfLanguage();
-        chooseAppSettingServiceImpl.setLanguage();
-
         outputServiceConsole.getMessage("message.test-service-message.start");
         User user = userServiceImpl.createUser();
         List<Question> questions = questionDaoCsv.loadQuestion();

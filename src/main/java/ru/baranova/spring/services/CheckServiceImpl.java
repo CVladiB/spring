@@ -3,6 +3,7 @@ package ru.baranova.spring.services;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.baranova.spring.services.message.LocaleService;
 
 @Slf4j
 @Service
@@ -13,7 +14,7 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public int checkCorrectInputNumber(String str, int min, int max) {
         if (str == null || str.isEmpty()) {
-            log.info(localeServiceImpl.getMessage("log.nothing-input"));
+            log.error(localeServiceImpl.getMessage("log.nothing-input"));
             return -1;
         }
 
@@ -21,16 +22,16 @@ public class CheckServiceImpl implements CheckService {
         try {
             numb = Integer.parseInt(str);
         } catch (NumberFormatException e) {
-            log.info(localeServiceImpl.getMessage("log.should-number-input"));
+            log.error(localeServiceImpl.getMessage("log.should-number-input"));
             return -1;
         }
 
         if (numb > max) {
-            log.info(localeServiceImpl.getMessage("log.long-input"));
+            log.error(localeServiceImpl.getMessage("log.long-input"));
             return -1;
         }
         if (numb <= min) {
-            log.info(localeServiceImpl.getMessage("log.short-input"));
+            log.error(localeServiceImpl.getMessage("log.short-input"));
             return -1;
         }
 
@@ -40,11 +41,11 @@ public class CheckServiceImpl implements CheckService {
     @Override
     public boolean checkCorrectInputStr(String str, int min) {
         if (str == null || str.isEmpty()) {
-            log.info(localeServiceImpl.getMessage("log.nothing-input"));
+            log.error(localeServiceImpl.getMessage("log.nothing-input"));
             return false;
         }
         if (str.length() < min) {
-            log.info(localeServiceImpl.getMessage("log.short-input"));
+            log.error(localeServiceImpl.getMessage("log.short-input"));
             return false;
         }
         return true;

@@ -5,12 +5,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.baranova.spring.config.ComponentScanStopConfig;
 import ru.baranova.spring.domain.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Test class UserDaoImpl")
-@SpringBootTest(classes = {UserDaoImpl.class})
+@SpringBootTest(classes = {UserDaoImpl.class, ComponentScanStopConfig.class})
 public class UserDaoImplTest {
     @Autowired
     private UserDaoImpl userDaoImpl;

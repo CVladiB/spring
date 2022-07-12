@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.baranova.spring.config.ComponentScanStopConfig;
 import ru.baranova.spring.dao.io.config.InputDaoReaderConfig;
 
 @DisplayName("Test class InputDaoReader")
 @ActiveProfiles("input-dao-reader")
-@SpringBootTest(classes = {InputDaoReaderConfig.class, InputDaoReader.class})
+@SpringBootTest(classes = {InputDaoReaderConfig.class, InputDaoReader.class, ComponentScanStopConfig.class})
 class InputDaoReaderTest {
 
     @Autowired

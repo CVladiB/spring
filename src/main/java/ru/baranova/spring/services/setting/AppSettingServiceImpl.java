@@ -1,6 +1,7 @@
-package ru.baranova.spring.services.lang;
+package ru.baranova.spring.services.setting;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.LocaleProvider;
 import ru.baranova.spring.dao.io.InputDao;
@@ -17,6 +18,15 @@ public class AppSettingServiceImpl implements AppSettingService {
     private final CheckService checkServiceImpl;
     private final LocaleProvider localeProviderImpl;
     private final OutputService outputServiceConsole;
+    @Autowired
+    private AppSettingService self;
+
+    @Override
+    public void chooseLanguage() {
+        self.printOptionsOfLanguage();
+        int indexLanguage = self.inputNumberOfLanguage();
+        self.setLanguage(indexLanguage);
+    }
 
     @Override
     public void printOptionsOfLanguage() {
@@ -26,16 +36,24 @@ public class AppSettingServiceImpl implements AppSettingService {
             localeProviderImpl.setLanguageDescription(language);
             outputServiceConsole.getMessage("message.choose-language", ++count);
         }
+        outputDaoConsole.outputFormatLine("Место для ввода: ");
     }
 
     @Override
-    public void setLanguage() {
+    public int inputNumberOfLanguage() {
         int indexLanguage;
         do {
-            indexLanguage = checkServiceImpl.checkCorrectInputNumber(inputDaoReader.inputLine(), 0, localeProviderImpl.getLanguages().size());
+            String inputAnswer = inputDaoReader.inputLine();
+            int minInputNumber = 0;
+            int maxInputNumber = localeProviderImpl.getLanguages().size();
+            indexLanguage = checkServiceImpl.checkCorrectInputNumber(inputAnswer, minInputNumber, maxInputNumber);
         } while (indexLanguage == -1);
-
-        localeProviderImpl.setLanguageDescription(localeProviderImpl.getLanguages().get(indexLanguage - 1));
+        return indexLanguage;
     }
 
+    @Override
+    public void setLanguage(int indexLanguage) {
+        LanguageDescription languageDescriptionByIndex = localeProviderImpl.getLanguages().get(indexLanguage - 1);
+        localeProviderImpl.setLanguageDescription(languageDescriptionByIndex);
+    }
 }

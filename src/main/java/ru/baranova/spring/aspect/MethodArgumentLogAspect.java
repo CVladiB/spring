@@ -8,7 +8,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Aspect
@@ -28,7 +31,9 @@ public class MethodArgumentLogAspect {
     public void anyServices() {
     }
 
-    @Before("anyMethodArg() || anyServices()")
+    //todo
+    //@Before("anyMethodArg() || anyServices()")
+    @Before("anyMethodArg()")
     public void loggingMethodArgumentServices(JoinPoint joinPoint) {
         methodSignature = (MethodSignature) joinPoint.getSignature();
         className = methodSignature.getDeclaringTypeName();
@@ -42,16 +47,23 @@ public class MethodArgumentLogAspect {
 
         if (arguments.length > 0) {
             for (int i = 0; i < methodSignatureParameterNames.length; i++) {
-                if (arguments[i] instanceof Collection) {
-                    String argumentsCollection;
-                    StringBuilder sbCollection = new StringBuilder();
+                StringBuilder sbCollection = new StringBuilder();
+                //todo
+                if (arguments[i].getClass().isArray()) {
+                    List<Object> list = new ArrayList<>(Arrays.asList(arguments[i]));
+                    for (Object arg : list) {
+                        sbCollection.append(arg.toString()).append(", ");
+                    }
+                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], sbCollection);
+                    sb.append(", ").append(str);
+                } else if (arguments[i] instanceof Collection) {
                     for (Object arg : (Collection<?>) arguments[i]) {
-                        sbCollection.append(arg).append(", ");
+                        sbCollection.append(arg.toString()).append(", ");
                     }
                     String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], sbCollection);
                     sb.append(", ").append(str);
                 } else {
-                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], arguments[i]);
+                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], arguments[i].toString());
                     sb.append(", ").append(str);
                 }
             }
