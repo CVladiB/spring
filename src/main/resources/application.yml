@@ -1,3 +1,6 @@
+spring:
+  main:
+    allow-circular-references: true
 app:
   dao:
     question-dao-csv:
@@ -28,13 +31,9 @@ app:
       min-answer-symbol: 1
 ---
 spring:
-  main:
-    allow-circular-references: true
   profiles:
     active: log-console
 ---
 spring:
-  main:
-    allow-circular-references: true
   profiles:
     active: log-file
