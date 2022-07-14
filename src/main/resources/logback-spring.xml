@@ -21,9 +21,18 @@
         </logger>
     </springProfile>
 
-
     <!--        Конфа для вывода в консоль-->
     <springProfile name="log-console">
+        <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="org.springframework.web" level="DEBUG"/>
+    </springProfile>
+
+    <!--    any spring profile-->
+    <springProfile name="!(log-file|log-console)">
         <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
         <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <root level="INFO">

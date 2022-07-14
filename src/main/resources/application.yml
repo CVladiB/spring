@@ -37,3 +37,14 @@ spring:
 spring:
   profiles:
     active: log-file
+---
+spring:
+  profiles:
+    active: other
+a: 1
+---
+spring:
+  profiles:
+    active: other,log-file
+b: 2
+a: 2
