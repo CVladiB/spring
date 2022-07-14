@@ -3,6 +3,7 @@ package ru.baranova.spring.dao.io.config;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import ru.baranova.spring.dao.io.InputDao;
@@ -26,5 +27,15 @@ public class InputDaoReaderConfig {
     @Bean
     public InputStream byteArrayInputStream() {
         return new ByteArrayInputStream(value.getBytes());
+    }
+
+    @Bean
+    public InputDao testInputDaoReaderException(InputStream byteArrayInputStreamException) {
+        return new InputDaoReader(byteArrayInputStreamException);
+    }
+
+    @Bean
+    public InputStream byteArrayInputStreamException() {
+        return Mockito.mock(ByteArrayInputStream.class);
     }
 }

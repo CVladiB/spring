@@ -13,6 +13,7 @@ import ru.baranova.spring.dao.LocaleProvider;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.domain.LanguageDescription;
 import ru.baranova.spring.services.CheckService;
+import ru.baranova.spring.services.io.OutputService;
 import ru.baranova.spring.services.setting.config.AppSettingServiceImplTestConfig;
 
 import java.util.List;
@@ -29,6 +30,8 @@ class AppSettingServiceImplTest {
     private CheckService checkServiceImpl;
     @Autowired
     private LocaleProvider localeProviderImpl;
+    @Autowired
+    private OutputService outputServiceConsoleString;
     @Autowired
     private AppSettingServiceImplTestConfig config;
     private List<LanguageDescription> listLD;
@@ -50,8 +53,28 @@ class AppSettingServiceImplTest {
     @Test
     @DisplayName("Test class AppSettingServiceImpl, method printOptionsOfLanguage")
     void printOptionsOfLanguage() {
+        Mockito.when(localeProviderImpl.getLanguages()).thenReturn(listLD);
 
-        Assertions.assertTrue(false);
+        Mockito.doNothing().when(localeProviderImpl).setLanguageDescription(listLD.get(0));
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Введи 1 для продолжения на русском");
+            return null;
+        }).when(outputServiceConsoleString).getMessage("message.choose-language", 1);
+
+        Mockito.doNothing().when(localeProviderImpl).setLanguageDescription(listLD.get(1));
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Input 2 to select English");
+            return null;
+        }).when(outputServiceConsoleString).getMessage("message.choose-language", 2);
+
+        appSettingServiceImpl.printOptionsOfLanguage();
+        String expected = """
+                Выберите язык:\r
+                Введи 1 для продолжения на русском\r
+                Input 2 to select English\r
+                Место для ввода:\s""";
+        String actual = config.getOut().toString();
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -115,5 +138,44 @@ class AppSettingServiceImplTest {
         String actual = config.getOut().toString();
 
         Assertions.assertEquals(expected + "\r\n", actual);
+    }
+
+    @Test
+    @DisplayName("Test class AppSettingServiceImpl, method chooseLanguage, print all methods")
+    void chooseLanguage() {
+        int inputNumber = 1;
+        int min = 0;
+        int max = listLD.size();
+
+        // Mocks for printOptionsOfLanguage()
+        Mockito.when(localeProviderImpl.getLanguages()).thenReturn(listLD);
+        Mockito.doNothing().when(localeProviderImpl).setLanguageDescription(listLD.get(0));
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Введи 1 для продолжения на русском");
+            return null;
+        }).when(outputServiceConsoleString).getMessage("message.choose-language", 1);
+        Mockito.doNothing().when(localeProviderImpl).setLanguageDescription(listLD.get(1));
+        Mockito.doAnswer(invocation -> {
+            config.getWriter().println("Input 2 to select English");
+            return null;
+        }).when(outputServiceConsoleString).getMessage("message.choose-language", 2);
+
+        // Mocks for inputNumberOfLanguage()
+        Mockito.lenient().when(inputDaoReader.inputLine()).thenReturn(Integer.toString(inputNumber));
+        Mockito.when(localeProviderImpl.getLanguages()).thenReturn(listLD);
+        Mockito.when(checkServiceImpl.checkCorrectInputNumber(Integer.toString(inputNumber), min, max)).thenReturn(inputNumber);
+
+        // Mocks for setLanguage()
+        Mockito.when(localeProviderImpl.getLanguages()).thenReturn(listLD);
+        Mockito.doNothing().when(localeProviderImpl).setLanguageDescription(listLD.get(inputNumber - 1));
+
+        appSettingServiceImpl.chooseLanguage();
+        String expected = """
+                Выберите язык:\r
+                Введи 1 для продолжения на русском\r
+                Input 2 to select English\r
+                Место для ввода:\s""";
+        String actual = config.getOut().toString();
+        Assertions.assertEquals(expected, actual);
     }
 }

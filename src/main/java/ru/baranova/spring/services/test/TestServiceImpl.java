@@ -1,6 +1,5 @@
 package ru.baranova.spring.services.test;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ public class TestServiceImpl implements TestService {
     @Autowired
     private TestService self;
 
-    @Getter
     @Setter
     private int partRightAnswers;
 

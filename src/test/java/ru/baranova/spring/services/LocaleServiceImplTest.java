@@ -66,4 +66,13 @@ class LocaleServiceImplTest {
         Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    @DisplayName("Test class LocaleServiceImpl, method getMessage, error load message with arguments")
+    void shouldHaveError2() {
+        Mockito.when(testLocaleProviderImpl.getLocale()).thenReturn(Locale.forLanguageTag("ru-RU"));
+        String expected = "Ошибка загрузки сообщения, обратитесь к администратору";
+        String actual = testLocaleServiceImpl.getMessage("smth-test-key", 2);
+        Assertions.assertEquals(expected, actual);
+    }
+
 }
