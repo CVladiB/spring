@@ -1,0 +1,11 @@
+/build
+!build/libs/*.jar
+/src
+/log
+/out
+build.gradle
+gradle*
+.idea
+*.md
+.gitignore
+!Dockerfile

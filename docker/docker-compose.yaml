@@ -1,0 +1,9 @@
+version: "3.9"
+services:
+  app:
+    container_name: questionnaire
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    env_file:
+      - .env
