@@ -8,20 +8,16 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Aspect
 @Component
 public class MethodArgumentLogAspect {
-    MethodSignature methodSignature;
-    String className;
-    String methodName;
-    String[] methodSignatureParameterNames;
-    Object[] arguments;
 
     @Pointcut("@annotation(ru.baranova.spring.annotation.MethodArg)")
     public void anyMethodArg() {
@@ -31,39 +27,36 @@ public class MethodArgumentLogAspect {
     public void anyServices() {
     }
 
-    //todo
-    //@Before("anyMethodArg() || anyServices()")
-    @Before("anyMethodArg()")
+    @Before("anyMethodArg() || anyServices()")
     public void loggingMethodArgumentServices(JoinPoint joinPoint) {
-        methodSignature = (MethodSignature) joinPoint.getSignature();
-        className = methodSignature.getDeclaringTypeName();
-        methodName = methodSignature.getName();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+        String className = methodSignature.getDeclaringTypeName();
+        String methodName = methodSignature.getName();
 
-        methodSignatureParameterNames = methodSignature.getParameterNames();
-        arguments = joinPoint.getArgs();
+        String[] methodSignatureParameterNames = methodSignature.getParameterNames();
+        Object[] arguments = joinPoint.getArgs();
 
         StringBuilder sb = new StringBuilder();
         sb.append(className).append(".").append(methodName);
 
         if (arguments.length > 0) {
             for (int i = 0; i < methodSignatureParameterNames.length; i++) {
-                StringBuilder sbCollection = new StringBuilder();
-                //todo
-                if (arguments[i].getClass().isArray()) {
-                    List<Object> list = new ArrayList<>(Arrays.asList(arguments[i]));
-                    for (Object arg : list) {
-                        sbCollection.append(arg.toString()).append(", ");
-                    }
-                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], sbCollection);
+                Object argument = arguments[i];
+                if (!Objects.isNull(argument) && argument.getClass().isArray()) {
+                    Object[] array = (Object[]) argument;
+                    String args = Arrays.stream(array)
+                            .map(Objects::toString)
+                            .collect(Collectors.joining(", ", "[", "]"));
+                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], args);
                     sb.append(", ").append(str);
-                } else if (arguments[i] instanceof Collection) {
-                    for (Object arg : (Collection<?>) arguments[i]) {
-                        sbCollection.append(arg.toString()).append(", ");
-                    }
-                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], sbCollection);
+                } else if (!Objects.isNull(argument) &&  argument instanceof Collection) {
+                    String args = Stream.of(argument)
+                            .map(Objects::toString)
+                            .collect(Collectors.joining(", ", "[", "]"));
+                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], args);
                     sb.append(", ").append(str);
                 } else {
-                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], arguments[i].toString());
+                    String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], argument);
                     sb.append(", ").append(str);
                 }
             }
