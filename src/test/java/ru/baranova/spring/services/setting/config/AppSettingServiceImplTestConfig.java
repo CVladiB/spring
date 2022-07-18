@@ -6,7 +6,6 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import ru.baranova.spring.dao.LocaleProvider;
 import ru.baranova.spring.dao.io.InputDao;
 import ru.baranova.spring.dao.io.OutputDao;
@@ -14,8 +13,6 @@ import ru.baranova.spring.dao.io.OutputDaoConsole;
 import ru.baranova.spring.services.CheckService;
 import ru.baranova.spring.services.io.OutputService;
 import ru.baranova.spring.services.io.OutputServiceConsole;
-import ru.baranova.spring.services.message.LocaleService;
-import ru.baranova.spring.services.message.LocaleServiceImpl;
 import ru.baranova.spring.services.setting.AppSettingService;
 import ru.baranova.spring.services.setting.AppSettingServiceImpl;
 

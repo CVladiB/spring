@@ -72,7 +72,7 @@ class AppSettingServiceImplTest {
                 Выберите язык:\r
                 Введи 1 для продолжения на русском\r
                 Input 2 to select English\r
-                Место для ввода:\s""";
+                :>\s""";
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -174,7 +174,7 @@ class AppSettingServiceImplTest {
                 Выберите язык:\r
                 Введи 1 для продолжения на русском\r
                 Input 2 to select English\r
-                Место для ввода:\s""";
+                :>\s""";
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }

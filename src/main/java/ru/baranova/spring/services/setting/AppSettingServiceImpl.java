@@ -36,7 +36,7 @@ public class AppSettingServiceImpl implements AppSettingService {
             localeProviderImpl.setLanguageDescription(language);
             outputServiceConsole.getMessage("message.choose-language", ++count);
         }
-        outputDaoConsole.outputFormatLine("Место для ввода: ");
+        outputDaoConsole.outputFormatLine(":> ");
     }
 
     @Override
