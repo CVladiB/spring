@@ -49,7 +49,7 @@ public class MethodArgumentLogAspect {
                             .collect(Collectors.joining(", ", "[", "]"));
                     String str = String.format("Arg: %s - Value: %s", methodSignatureParameterNames[i], args);
                     sb.append(", ").append(str);
-                } else if (!Objects.isNull(argument) &&  argument instanceof Collection) {
+                } else if (!Objects.isNull(argument) && argument instanceof Collection) {
                     String args = Stream.of(argument)
                             .map(Objects::toString)
                             .collect(Collectors.joining(", ", "[", "]"));

@@ -21,7 +21,6 @@ public class ShellServiceImpl implements ShellService {
     @Override
     public void chooseLanguage() {
         appSettingServiceImpl.chooseLanguage();
-        System.out.println(5);
     }
 
     @Override
