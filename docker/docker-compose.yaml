@@ -1,9 +1,25 @@
 version: "3.9"
 services:
-  app:
-    container_name: questionnaire
+  app: &template
+    profiles:
+      - dev
+    container_name: questionnaire_dev
+    stdin_open: true
+    tty: true
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-    env_file:
-      - .env
+  app-prod:
+    <<: *template
+    container_name: questionnaire_prod
+    profiles:
+      - prod
+    environment:
+      - SPRING_PROFILES_ACTIVE=log-file
+  app-test:
+    <<: *template
+    container_name: questionnaire_test
+    profiles:
+      - test
+    environment:
+      - SPRING_PROFILES_ACTIVE=log-console
