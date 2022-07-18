@@ -1,0 +1,34 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'ru.baranova.spring'
+version = '2022.07-SNAPSHOT'
+sourceCompatibility = '17'
+
+ext{
+    versionLombok = '1.18.24'
+    versionSpringShell = '2.0.1.RELEASE'
+}
+
+dependencies {
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter'
+
+    // annotation
+    compileOnly "org.projectlombok:lombok:$versionLombok"
+    annotationProcessor "org.projectlombok:lombok:$versionLombok"
+
+
+    // Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2:2.1.214'
+    testCompileOnly "org.projectlombok:lombok:$versionLombok"
+    testAnnotationProcessor "org.projectlombok:lombok:$versionLombok"
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
