@@ -16,6 +16,10 @@ ext{
 dependencies {
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    //data
+    implementation 'org.postgresql:postgresql:42.3.6'
 
     // annotation
     compileOnly "org.projectlombok:lombok:$versionLombok"

@@ -4,7 +4,7 @@ import ru.baranova.spring.domain.Genre;
 
 public interface GenreDao {
     void create(Genre genre);
-    void read(int id);
+    Genre read(int id);
     void update(Genre genre);
     void delete(int id);
 }
