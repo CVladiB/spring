@@ -4,8 +4,7 @@ spring:
     username: library
     password: strong_pass
     driver-class-name: org.postgresql.Driver
-#  sql:
-#    init:
-#      mode: always
-#      data-locations: data.sql
-#      schema-locations: schema.sql
+  flyway:
+    locations: 'classpath:db/migration'
+    create-schemas: true
+    schemas: ['library']

@@ -3,11 +3,24 @@ flyway {
     url = "$flywayUrl"
     user = "$flywayUser"
     password = "$flywayPassword"
-    schemas =['public']
+    schemas =['library']
     cleanDisabled = true
-
+    locations = ["classpath:db/migration/"]
 }
 
-//flywayMigrate.dependsOn classes
-//flywayInfo.dependsOn classes
-//flyway.dependsOn classes
+task flywayLog{
+    group = 'flyway'
+    doFirst { logger.quiet("url: ${flyway.url}\nusername: ${flyway.user}\nlocations: ${flyway.locations}") }
+}
+
+
+project.afterEvaluate {
+    project.tasks.each {
+        if(it.name.startsWith("flyway")) {
+            it.dependsOn(classes)
+            if (!it.name.equals("flywayLog")) {
+                it.dependsOn(flywayLog)
+            }
+        }
+    }
+}

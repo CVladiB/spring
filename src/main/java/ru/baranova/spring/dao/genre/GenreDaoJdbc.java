@@ -45,9 +45,9 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public Genre read(int id) {
         String sql = """
-                select g.genre_id, g.genre_name, g.genre_description
-                from genre g
-                where g.genre_id = :id
+                select genre_id, genre_name, genre_description
+                from genre
+                where genre_id = :id
                 """;
         return jdbc.queryForObject(sql, Map.of("id", id), new GenreMapper());
     }
@@ -55,8 +55,8 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public List<Genre> read() {
         String sql = """
-                select g.genre_id, g.genre_name, g.genre_description
-                from genre g
+                select genre_id, genre_name, genre_description
+                from genre
                 """;
         return jdbc.getJdbcOperations().query(sql, new GenreMapper());
     }
@@ -74,8 +74,8 @@ public class GenreDaoJdbc implements GenreDao {
     @Override
     public void delete(int id) {
         String sql = """
-                delete from genre g
-                where g.genre_id = :id
+                delete from genre
+                where genre_id = :id
                 """;
         jdbc.update(sql, Map.of("id", id));
     }
