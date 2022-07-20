@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.7.1'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "org.flywaydb.flyway" version "9.0.1"
     id 'java'
 }
 
@@ -20,6 +21,7 @@ dependencies {
 
     //data
     implementation 'org.postgresql:postgresql:42.3.6'
+    implementation "org.flywaydb:flyway-core"
 
     // annotation
     compileOnly "org.projectlombok:lombok:$versionLombok"
@@ -36,3 +38,5 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+apply from:  'flyway.gradle'

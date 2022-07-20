@@ -1,0 +1,13 @@
+
+flyway {
+    url = "$flywayUrl"
+    user = "$flywayUser"
+    password = "$flywayPassword"
+    schemas =['public']
+    cleanDisabled = true
+
+}
+
+//flywayMigrate.dependsOn classes
+//flywayInfo.dependsOn classes
+//flyway.dependsOn classes
