@@ -7,4 +7,4 @@ spring:
   flyway:
     locations: 'classpath:db/migration'
     create-schemas: true
-    schemas: ['library']
+    schemas: [ 'library' ]

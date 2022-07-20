@@ -6,8 +6,12 @@ import java.util.List;
 
 public interface GenreDao {
     void create(Genre genre);
-    Genre read(int id);
+
+    Genre read(Integer id);
+
     List<Genre> read();
+
     void update(Genre genre);
-    void delete(int id);
+
+    void delete(Integer id);
 }

@@ -19,17 +19,6 @@ public class GenreDaoJdbc implements GenreDao {
         this.jdbc = jdbc;
     }
 
-    private static class GenreMapper implements RowMapper<Genre> {
-        @Override
-        public Genre mapRow(ResultSet resultSet, int i) throws SQLException {
-            Integer id = resultSet.getInt("genre_id");
-            String name = resultSet.getString("genre_name");
-            String description = resultSet.getString("genre_description");
-
-            return new Genre(id, name, description);
-        }
-    }
-
     @Override
     public void create(Genre genre) {
         String sql = """
@@ -43,7 +32,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public Genre read(int id) {
+    public Genre read(Integer id) {
         String sql = """
                 select genre_id, genre_name, genre_description
                 from genre
@@ -72,11 +61,22 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(Integer id) {
         String sql = """
                 delete from genre
                 where genre_id = :id
                 """;
         jdbc.update(sql, Map.of("id", id));
+    }
+
+    private static class GenreMapper implements RowMapper<Genre> {
+        @Override
+        public Genre mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            Integer id = resultSet.getInt("genre_id");
+            String name = resultSet.getString("genre_name");
+            String description = resultSet.getString("genre_description");
+
+            return new Genre(id, name, description);
+        }
     }
 }

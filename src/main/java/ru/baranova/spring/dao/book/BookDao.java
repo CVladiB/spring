@@ -6,8 +6,12 @@ import java.util.List;
 
 public interface BookDao {
     void create(Book book);
-    Book read(int id);
+
+    Book read(Integer id);
+
     List<Book> read();
+
     void update(Book book);
-    void delete(int id);
+
+    void delete(Integer id);
 }

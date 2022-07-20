@@ -19,28 +19,17 @@ public class AuthorDaoJdbc implements AuthorDao {
         this.jdbc = jdbc;
     }
 
-    private static class AuthorMapper implements RowMapper<Author> {
-        @Override
-        public Author mapRow(ResultSet resultSet, int i) throws SQLException {
-            Integer id = resultSet.getInt("author_id");
-            String surname = resultSet.getString("author_surname");
-            String name = resultSet.getString("author_name");
-
-            return new Author(id, surname, name);
-        }
-    }
-
     @Override
-    public void create(@NonNull Author author) {
+    public void create(@NonNull String surname, @NonNull String name) {
         String sql = """
-                insert into author (author_name, author_surname)
-                values (:name, :surname)
+                insert into author (author_surname, author_name)
+                values (:surname, :name)
                 """;
-        jdbc.update(sql, Map.of("name", author.getName(), "surname", author.getSurname()));
+        jdbc.update(sql, Map.of("surname", surname, "name", name));
     }
 
     @Override
-    public Author read(int id) {
+    public Author read(Integer id) {
         String sql = """
                 select author_id, author_surname, author_name
                 from author 
@@ -64,15 +53,26 @@ public class AuthorDaoJdbc implements AuthorDao {
                 update author set author_surname = :surname, author_name = :name 
                 where author_id = :id
                 """;
-        jdbc.update(sql, Map.of("id", author.getId(), "name", author.getName(), "surname", author.getSurname()));
+        jdbc.update(sql, Map.of("id", author.getId(), "surname", author.getSurname(), "name", author.getName()));
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(Integer id) {
         String sql = """
                 delete from author
                 where author_id = :id
                 """;
         jdbc.update(sql, Map.of("id", id));
+    }
+
+    private static class AuthorMapper implements RowMapper<Author> {
+        @Override
+        public Author mapRow(ResultSet resultSet, int rowNum) throws SQLException {
+            Integer id = resultSet.getInt("author_id");
+            String surname = resultSet.getString("author_surname");
+            String name = resultSet.getString("author_name");
+
+            return new Author(id, surname, name);
+        }
     }
 }
