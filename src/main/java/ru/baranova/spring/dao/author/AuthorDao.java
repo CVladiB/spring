@@ -6,7 +6,7 @@ import ru.baranova.spring.domain.Author;
 import java.util.List;
 
 public interface AuthorDao {
-    void create(@NonNull String surname, @NonNull String name);
+    void create(@NonNull Author author);
 
     Author read(Integer id);
 

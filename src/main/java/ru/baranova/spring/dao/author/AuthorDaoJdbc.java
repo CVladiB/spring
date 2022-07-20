@@ -20,19 +20,19 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public void create(@NonNull String surname, @NonNull String name) {
+    public void create(@NonNull Author author) {
         String sql = """
                 insert into author (author_surname, author_name)
                 values (:surname, :name)
                 """;
-        jdbc.update(sql, Map.of("surname", surname, "name", name));
+        jdbc.update(sql, Map.of("surname", author.getSurname(), "name", author.getName()));
     }
 
     @Override
     public Author read(Integer id) {
         String sql = """
                 select author_id, author_surname, author_name
-                from author 
+                from author
                 where author_id = :id
                 """;
         return jdbc.queryForObject(sql, Map.of("id", id), new AuthorMapper());
