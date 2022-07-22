@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.io;
+package ru.baranova.spring.dao.output;
 
 import org.springframework.stereotype.Component;
 
@@ -10,11 +10,11 @@ public class OutputDaoConsole implements OutputDao {
     private final PrintWriter writer;
 
     public OutputDaoConsole(OutputStream systemOutputStream) {
-        writer = new PrintWriter(System.out, true);
+        writer = new PrintWriter(systemOutputStream, true);
     }
 
     @Override
     public void output(String str) {
-        writer.println(str);
+        writer.print(str);
     }
 }

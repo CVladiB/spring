@@ -8,3 +8,5 @@ spring:
     locations: 'classpath:db/migration'
     create-schemas: true
     schemas: [ 'library' ]
+  main:
+    allow-circular-references: true

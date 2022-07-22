@@ -2,9 +2,6 @@ package ru.baranova.spring;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import ru.baranova.spring.dao.genre.GenreDao;
-import ru.baranova.spring.dao.genre.GenreDaoJdbc;
 
 @SpringBootApplication
 public class Library {

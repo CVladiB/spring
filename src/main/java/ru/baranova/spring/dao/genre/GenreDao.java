@@ -5,11 +5,13 @@ import ru.baranova.spring.domain.Genre;
 import java.util.List;
 
 public interface GenreDao {
-    void create(Genre genre);
+    Integer create(Genre genre);
 
-    Genre read(Integer id);
+    Genre getById(Integer id);
 
-    List<Genre> read();
+    Genre getByName(String name);
+
+    List<Genre> getAll();
 
     void update(Genre genre);
 

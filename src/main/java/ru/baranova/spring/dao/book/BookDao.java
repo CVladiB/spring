@@ -5,11 +5,13 @@ import ru.baranova.spring.domain.Book;
 import java.util.List;
 
 public interface BookDao {
-    void create(Book book);
+    Integer create(Book book);
 
-    Book read(Integer id);
+    Book getById(Integer id);
 
-    List<Book> read();
+    List<Book> getByTitle(String title);
+
+    List<Book> getAll();
 
     void update(Book book);
 

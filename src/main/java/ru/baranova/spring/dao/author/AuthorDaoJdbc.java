@@ -1,5 +1,6 @@
 package ru.baranova.spring.dao.author;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.lang.NonNull;
@@ -12,24 +13,24 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
+@RequiredArgsConstructor
 public class AuthorDaoJdbc implements AuthorDao {
     private final NamedParameterJdbcOperations jdbc;
 
-    public AuthorDaoJdbc(NamedParameterJdbcOperations jdbc) {
-        this.jdbc = jdbc;
-    }
-
     @Override
-    public void create(@NonNull Author author) {
+    public Integer create(@NonNull Author author) {
         String sql = """
                 insert into author (author_surname, author_name)
-                values (:surname, :name)
+                values (:author_surname, :author_name)
+                
                 """;
-        jdbc.update(sql, Map.of("surname", author.getSurname(), "name", author.getName()));
+        //returning author_id
+        final Map<String, Object> params = Map.of("author_surname", author.getSurname(), "author_name", author.getName());
+        return jdbc.update(sql, params);
     }
 
     @Override
-    public Author read(Integer id) {
+    public Author getById(Integer id) {
         String sql = """
                 select author_id, author_surname, author_name
                 from author
@@ -39,7 +40,27 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public List<Author> read() {
+    public List<Author> getBySurnameAndName(String surname, String name) {
+        String sql;
+        if (surname == null || name == null) {
+            sql = """
+                    select author_id, author_surname, author_name
+                    from author
+                    where author_surname = :surname OR author_name = :name
+                    """;
+        } else {
+            sql = """
+                    select author_id, author_surname, author_name
+                    from author
+                    where author_surname = :surname AND author_name = :name
+                    """;
+        }
+        return jdbc.getJdbcOperations().query(sql, new AuthorMapper());
+    }
+
+    @Override
+    public List<Author> getAll() {
+        //todo think about it
         String sql = """
                 select author_id, author_surname, author_name
                 from author
@@ -50,7 +71,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     @Override
     public void update(@NonNull Author author) {
         String sql = """
-                update author set author_surname = :surname, author_name = :name 
+                update author set author_surname = :surname, author_name = :name
                 where author_id = :id
                 """;
         jdbc.update(sql, Map.of("id", author.getId(), "surname", author.getSurname(), "name", author.getName()));

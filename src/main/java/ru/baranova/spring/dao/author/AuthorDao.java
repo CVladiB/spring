@@ -6,11 +6,13 @@ import ru.baranova.spring.domain.Author;
 import java.util.List;
 
 public interface AuthorDao {
-    void create(@NonNull Author author);
+    Integer create(@NonNull Author author);
 
-    Author read(Integer id);
+    Author getById(Integer id);
 
-    List<Author> read();
+    List<Author> getBySurnameAndName(String surname, String name);
+
+    List<Author> getAll();
 
     void update(Author author);
 

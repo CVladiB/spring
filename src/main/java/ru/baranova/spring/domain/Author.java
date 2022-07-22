@@ -5,14 +5,21 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.baranova.spring.service.print.visitor.EntityToStringVisitor;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-public class Author {
+public class Author implements Entity {
     private Integer id;
     private String surname;
     private String name;
+
+
+    @Override
+    public String accept(EntityToStringVisitor visitor) {
+        return visitor.toString(this);
+    }
 }

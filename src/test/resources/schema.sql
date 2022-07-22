@@ -1,4 +1,4 @@
-DROP TABLE if EXISTS author;
+DROP TABLE if EXISTS author CASCADE;
 CREATE TABLE author
 (
     author_id      SERIAL PRIMARY KEY,
@@ -7,7 +7,7 @@ CREATE TABLE author
     UNIQUE (author_surname, author_name)
 );
 
-DROP TABLE if EXISTS genre;
+DROP TABLE if EXISTS genre CASCADE;
 CREATE TABLE genre
 (
     genre_id          SERIAL PRIMARY KEY,
@@ -15,7 +15,7 @@ CREATE TABLE genre
     genre_description VARCHAR(200) NULL
 );
 
-DROP TABLE if EXISTS book;
+DROP TABLE if EXISTS book CASCADE;
 CREATE TABLE book
 (
     book_id    SERIAL PRIMARY KEY,
@@ -23,9 +23,9 @@ CREATE TABLE book
     author_id  INT         NOT NULL REFERENCES author (author_id) ON DELETE CASCADE
 );
 
-DROP TABLE if EXISTS book_genre;
+DROP TABLE if EXISTS book_genre CASCADE;
 CREATE TABLE book_genre
 (
     book_id  INT NOT NULL REFERENCES book (book_id) ON DELETE CASCADE,
-    genre_id INT NOT NULL REFERENCES genre (genre_id)
+    genre_id INT NOT NULL REFERENCES genre (genre_id) ON DELETE CASCADE
 );
