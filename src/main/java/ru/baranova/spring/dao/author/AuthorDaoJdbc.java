@@ -2,7 +2,10 @@ package ru.baranova.spring.dao.author;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import ru.baranova.spring.domain.Author;
@@ -11,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -21,51 +25,60 @@ public class AuthorDaoJdbc implements AuthorDao {
     public Integer create(@NonNull Author author) {
         String sql = """
                 insert into author (author_surname, author_name)
-                values (:author_surname, :author_name)
-                
+                values (:surname, :name)
                 """;
-        //returning author_id
-        final Map<String, Object> params = Map.of("author_surname", author.getSurname(), "author_name", author.getName());
-        return jdbc.update(sql, params);
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("surname", author.getSurname());
+        params.addValue("name", author.getName());
+
+        KeyHolder holder = new GeneratedKeyHolder();
+
+        jdbc.update(sql, params, holder, new String[]{"author_id"});
+
+        return (Integer) holder.getKey();
     }
 
     @Override
-    public Author getById(Integer id) {
+    public Author getById(@NonNull Integer id) {
         String sql = """
                 select author_id, author_surname, author_name
                 from author
                 where author_id = :id
                 """;
-        return jdbc.queryForObject(sql, Map.of("id", id), new AuthorMapper());
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        return jdbc.queryForObject(sql, params, new AuthorMapper());
     }
 
     @Override
     public List<Author> getBySurnameAndName(String surname, String name) {
-        String sql;
-        if (surname == null || name == null) {
-            sql = """
-                    select author_id, author_surname, author_name
-                    from author
-                    where author_surname = :surname OR author_name = :name
-                    """;
-        } else {
-            sql = """
-                    select author_id, author_surname, author_name
-                    from author
-                    where author_surname = :surname AND author_name = :name
-                    """;
-        }
-        return jdbc.getJdbcOperations().query(sql, new AuthorMapper());
+        String sql = """
+                select author_id, author_surname, author_name
+                from author
+                where (:surname is not null and :name is not null and 
+                                    (author_surname = :surname and author_name = :name))
+                    or (((:surname is not null and :name is null) or (:surname is null and :name is not null)) 
+                                    and (author_surname = :surname or author_name = :name))
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("surname", surname);
+        params.addValue("name", name);
+
+        return jdbc.query(sql, params, new AuthorMapper());
     }
 
     @Override
     public List<Author> getAll() {
-        //todo think about it
         String sql = """
                 select author_id, author_surname, author_name
                 from author
                 """;
-        return jdbc.getJdbcOperations().query(sql, new AuthorMapper());
+        return jdbc.queryForStream(sql, Map.of(), new AuthorMapper())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -74,16 +87,26 @@ public class AuthorDaoJdbc implements AuthorDao {
                 update author set author_surname = :surname, author_name = :name
                 where author_id = :id
                 """;
-        jdbc.update(sql, Map.of("id", author.getId(), "surname", author.getSurname(), "name", author.getName()));
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", author.getId());
+        params.addValue("surname", author.getSurname());
+        params.addValue("name", author.getName());
+
+        jdbc.update(sql, params);
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(@NonNull Integer id) {
         String sql = """
                 delete from author
                 where author_id = :id
                 """;
-        jdbc.update(sql, Map.of("id", id));
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        jdbc.update(sql, params);
     }
 
     private static class AuthorMapper implements RowMapper<Author> {

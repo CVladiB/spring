@@ -15,6 +15,6 @@ public class OutputDaoConsole implements OutputDao {
 
     @Override
     public void output(String str) {
-        writer.print(str);
+        writer.println(str);
     }
 }
