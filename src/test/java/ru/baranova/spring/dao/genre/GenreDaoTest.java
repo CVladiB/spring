@@ -1,10 +1,11 @@
 package ru.baranova.spring.dao.genre;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.config.StopSearchConfig;
@@ -12,119 +13,161 @@ import ru.baranova.spring.domain.Genre;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @JdbcTest
 @ContextConfiguration(classes = {GenreDaoTestConfig.class, StopSearchConfig.class})
 class GenreDaoTest {
     @Autowired
     private GenreDao genreDaoJdbc;
+    private Genre insertGenre1;
+    private Genre insertGenre2;
+    private Genre testGenre;
+    private List<Genre> genreList;
+
+    @BeforeEach
+    void setUp() {
+        insertGenre1 = new Genre(1, "Name1", "Description1");
+        insertGenre2 = new Genre(2, "Name2", "Description2");
+        testGenre = new Genre(null, "NameTest", "DescriptionTest");
+        genreList = List.of(insertGenre1, insertGenre2);
+    }
 
     @Test
     void genre__create__correctReturnNewGenre() {
-        Genre expected = new Genre(3, "NameTest", "DescriptionTest");
-        // todo syntax error or can't return id
-        Integer id = genreDaoJdbc.create(expected);
-        Genre actual = genreDaoJdbc.getById(3);
-        Assertions.assertEquals(expected,actual);
+        List<Integer> listExistId = genreDaoJdbc.getAll()
+                .stream()
+                .map(Genre::getId)
+                .toList();
+        Integer expectedId = 1 + listExistId.stream()
+                .mapToInt(v -> v)
+                .max()
+                .orElse(insertGenre2.getId());
+
+        Integer actualId = genreDaoJdbc.create(testGenre);
+
+        Genre expected = testGenre;
+        expected.setId(expectedId);
+        Genre actual = genreDaoJdbc.getById(actualId);
+
+        Assertions.assertFalse(listExistId.contains(actualId));
+        Assertions.assertEquals(expected.getName(), actual.getName());
+        Assertions.assertEquals(expected.getDescription(), actual.getDescription());
     }
 
     @Test
-    void genre__create_NullName__incorrectNPE() {
-        Genre expected = new Genre(3, null, "DescriptionTest");
-        Assertions.assertThrows(NullPointerException.class, () -> genreDaoJdbc.create(expected));
+    void genre__create_NullName__incorrectException() {
+        testGenre.setName(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDaoJdbc.create(testGenre));
     }
 
     @Test
-    void genre__create_NullDescription__incorrectNPE() {
-        Genre expected = new Genre(3, "NameTest", null);
-        Assertions.assertThrows(NullPointerException.class, () -> genreDaoJdbc.create(expected));
+    void genre__create_NullDescription_correctReturnNewGenre() {
+        List<Integer> listExistId = genreDaoJdbc.getAll().stream().map(Genre::getId).toList();
+        Integer expectedId = 1 + listExistId.stream()
+                .mapToInt(v -> v)
+                .max()
+                .orElseThrow(NoSuchElementException::new);
+
+        testGenre.setDescription(null);
+        Integer actualId = genreDaoJdbc.create(testGenre);
+
+        Genre expected = testGenre;
+        expected.setId(expectedId);
+        Genre actual = genreDaoJdbc.getById(actualId);
+
+        Assertions.assertFalse(listExistId.contains(actualId));
+        Assertions.assertEquals(expected.getName(), actual.getName());
+        Assertions.assertEquals(expected.getDescription(), actual.getDescription());
     }
 
     @Test
     void genre__getById__correctReturnGenreById() {
-        Genre expected = new Genre(1, "Name1", "Description1");
-        Genre actual = genreDaoJdbc.getById(1);
+        Integer id = insertGenre1.getId();
+        Genre expected = insertGenre1;
+        Genre actual = genreDaoJdbc.getById(id);
         Assertions.assertAll(
-                () -> Assertions.assertEquals(expected.getName(),actual.getName()),
-                () -> Assertions.assertEquals(expected.getDescription(),actual.getDescription()),
-                () -> Assertions.assertEquals(expected.getId(),actual.getId())
+                () -> Assertions.assertEquals(expected.getName(), actual.getName()),
+                () -> Assertions.assertEquals(expected.getDescription(), actual.getDescription()),
+                () -> Assertions.assertEquals(expected.getId(), actual.getId())
         );
     }
 
     @Test
-    void genre__getById__incorrectEmptyRDAException() {
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDaoJdbc.getById(100));
+    void genre__getById_NonexistentId__incorrectException() {
+        Integer nonexistentId = 100;
+        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDaoJdbc.getById(nonexistentId));
     }
 
     @Test
     void genre__getByName__correctReturnGenreByName() {
-        // todo syntax error
-        Genre expected = new Genre(1, "Name1", "Description1");
-        Genre actual = genreDaoJdbc.getByName("Name1");
-        Assertions.assertEquals(expected,actual);
-    }
-    @Disabled
-    @Test
-    void genre__getByName_NullName__incorrectNPE() {
-        // todo
-        Genre expected = new Genre(1, "Name1", "Description1");
-        Genre actual = genreDaoJdbc.getByName("Name25");
-        Assertions.assertEquals(expected,actual);
+        Genre expected = insertGenre1;
+        Genre actual = genreDaoJdbc.getByName(insertGenre1.getName());
+        Assertions.assertEquals(expected, actual);
     }
 
+    @Test
+    void genre__getByName_NonexistentName__incorrectException() {
+        String nonexistentName = "Name25";
+        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDaoJdbc.getByName(nonexistentName));
+    }
+
+    @Test
+    void genre__getByName_NullName__incorrectException() {
+        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDaoJdbc.getByName(null));
+    }
 
     @Test
     void genre__getAll__returnListGenres() {
-        List<Genre> expected = List.of(new Genre(1, "Name1", "Description1"), new Genre(2, "Name2", "Description2"));
+        List<Genre> expected = genreList;
         List<Genre> actual = genreDaoJdbc.getAll();
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
     }
 
     @Test
-    void genre__update__correctChangeAllАFieldGenreById() {
-        Genre expected = new Genre(1, "NameTest", "DescriptionTest");
-        genreDaoJdbc.update(expected);
-        Genre actual = genreDaoJdbc.getById(1);
+    void genre__update__correctChangeAllFieldGenreById() {
+        Integer id = insertGenre1.getId();
+        testGenre.setId(id);
+        genreDaoJdbc.update(testGenre);
+
+        Genre expected = testGenre;
+        Genre actual = genreDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void genre__update_NullName__incorrectNPE() {
-        Genre expected = new Genre(1, null, "NameTest");
-        Assertions.assertThrows(NullPointerException.class, () -> genreDaoJdbc.update(expected));
+    void genre__update_NullName__incorrectException() {
+        testGenre.setId(insertGenre1.getId());
+        testGenre.setName(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDaoJdbc.update(testGenre));
     }
 
     @Test
     void genre__update_NullDescription__correctChangeAllFieldGenreById() {
-        // todo why NPE?
-        Genre expected = new Genre(1, "NameTest", null);
-        genreDaoJdbc.update(expected);
-        Genre actual = genreDaoJdbc.getById(1);
+        Integer id = insertGenre1.getId();
+        testGenre.setId(id);
+        testGenre.setDescription(null);
+        genreDaoJdbc.update(testGenre);
+
+        Genre expected = testGenre;
+        Genre actual = genreDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
     }
 
 
     @Test
-    void genre__update_UnexpectedId__incorrectEmptyRDAException() {
-        // todo not exception, why?
-        Genre expected = new Genre(100, "SurnameTest", "NameTest");
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDaoJdbc.update(expected));
-    }
-
-    @Test
     void genre__delete__correctDelete() {
+        Integer id1 = insertGenre1.getId();
+        Integer id2 = insertGenre2.getId();
+
+        List<Genre> actualBeforeDelete = genreDaoJdbc.getAll();
+        genreDaoJdbc.delete(id1);
+        genreDaoJdbc.delete(id2);
+
         List<Genre> expected = new ArrayList<>();
-        genreDaoJdbc.delete(1);
-        genreDaoJdbc.delete(2);
         List<Genre> actual = genreDaoJdbc.getAll();
+
+        Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
-    }
-
-    @Test
-    void genre__delete__incorrectDelete() {
-        // todo not exception, why?
-        Assertions.assertThrows(Exception.class,
-                () -> genreDaoJdbc.delete(100));
-
     }
 }

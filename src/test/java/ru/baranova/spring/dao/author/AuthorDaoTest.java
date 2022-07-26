@@ -1,145 +1,181 @@
 package ru.baranova.spring.dao.author;
 
-import org.assertj.core.api.Assert;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @JdbcTest
 @ContextConfiguration(classes = {AuthorDaoTestConfig.class, StopSearchConfig.class})
 class AuthorDaoTest {
     @Autowired
     private AuthorDao authorDaoJdbc;
+    private Author insertAuthor1;
+    private Author insertAuthor2;
+    private Author testAuthor;
+    private List<Author> authorList;
+
+    @BeforeEach
+    void setUp() {
+        insertAuthor1 = new Author(1, "Surname1", "Name1");
+        insertAuthor2 = new Author(2, "Surname2", "Name2");
+        testAuthor = new Author(null, "SurnameTest", "NameTest");
+        authorList = List.of(insertAuthor1, insertAuthor2);
+    }
 
     @Test
     void author__create__correctReturnNewAuthor() {
-        Author expected = new Author(2, "SurnameTest", "NameTest");
-        // todo syntax error or can't return id
-        Integer id = authorDaoJdbc.create(expected);
-        Author actual = authorDaoJdbc.getById(2);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expected.getSurname(),actual.getSurname()),
-                () -> Assertions.assertEquals(expected.getName(),actual.getName()),
-                () -> Assertions.assertEquals(expected.getId(),actual.getId())
-        );
+        List<Integer> listExistId = authorDaoJdbc.getAll()
+                .stream()
+                .map(Author::getId)
+                .toList();
+        Integer expectedId = 1 + listExistId.stream()
+                .mapToInt(v -> v)
+                .max()
+                .orElse(insertAuthor2.getId());
+
+        Integer actualId = authorDaoJdbc.create(testAuthor);
+
+        Author expected = testAuthor;
+        expected.setId(expectedId);
+        Author actual = authorDaoJdbc.getById(actualId);
+
+        Assertions.assertFalse(listExistId.contains(actualId));
+        Assertions.assertEquals(expected.getSurname(), actual.getSurname());
+        Assertions.assertEquals(expected.getName(), actual.getName());
     }
 
     @Test
-    void author__create_NullSurname__incorrectNPE() {
-        Author expected = new Author(2, null, "NameTest");
-        Assertions.assertThrows(NullPointerException.class, () -> authorDaoJdbc.create(expected));
+    void author__create_NullSurname__incorrectException() {
+        testAuthor.setSurname(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.create(testAuthor));
     }
 
     @Test
-    void author__create_NullName__incorrectNPE() {
-        Author expected = new Author(2, "SurnameTest", null);
-        Assertions.assertThrows(NullPointerException.class, () -> authorDaoJdbc.create(expected));
+    void author__create_NullName__incorrectException() {
+        testAuthor.setName(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.create(testAuthor));
     }
 
     @Test
     void author__getById__correctReturnAuthorById() {
-        Author expected = new Author(1, "Surname", "Name");
-        Author actual = authorDaoJdbc.getById(1);
+        Integer id = insertAuthor1.getId();
+        Author expected = insertAuthor1;
+        Author actual = authorDaoJdbc.getById(id);
         Assertions.assertAll(
-                () -> Assertions.assertEquals(expected.getSurname(),actual.getSurname()),
-                () -> Assertions.assertEquals(expected.getName(),actual.getName()),
-                () -> Assertions.assertEquals(expected.getId(),actual.getId())
+                () -> Assertions.assertEquals(expected.getSurname(), actual.getSurname()),
+                () -> Assertions.assertEquals(expected.getName(), actual.getName()),
+                () -> Assertions.assertEquals(expected.getId(), actual.getId())
         );
     }
 
     @Test
-    void author__getById__incorrectEmptyRDAException() {
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> authorDaoJdbc.getById(100));
+    void author__getById_NonexistentId__incorrectException() {
+        Integer nonexistentId = 100;
+        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> authorDaoJdbc.getById(nonexistentId));
     }
 
     @Test
     void author__getBySurnameAndName__correctReturnListAuthors() {
-        // todo syntax error
-        List<Author> expected = List.of(new Author(1, "Surname", "Name"));
-        List<Author> actual = authorDaoJdbc.getBySurnameAndName("Surname", "Name");
-        Assertions.assertArrayEquals(expected.toArray(),actual.toArray());
-    }
-    @Disabled
-    @Test
-    void author__getBySurnameAndName_NullSurname__incorrectNPE() {
-        // todo
-        List<Author> expected = List.of(new Author(1, "Surname", "Name"));
-        List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, "Name");
-        Assertions.assertArrayEquals(expected.toArray(),actual.toArray());
+        List<Author> expected = List.of(insertAuthor1);
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor1.getName());
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
     }
 
-    @Disabled
     @Test
-    void author__getBySurnameAndName_NullName__incorrectNPE() {
-        // todo
-        List<Author> expected = List.of(new Author(1, "Surname", "Name"));
-        List<Author> actual = authorDaoJdbc.getBySurnameAndName("Surname", null);
-        Assertions.assertArrayEquals(expected.toArray(),actual.toArray());
+    void author__getBySurnameAndName_NullSurname__correctReturnListAuthors() {
+        List<Author> expected = List.of(insertAuthor1);
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, insertAuthor1.getName());
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void author__getBySurnameAndName_NullName__correctReturnListAuthors() {
+        List<Author> expected = List.of(insertAuthor1);
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), null);
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void author__getBySurnameAndName_NonexistentSurname__correctReturnListAuthors() {
+        String nonexistentSurname = "Smth";
+        List<Author> expected = new ArrayList<>();
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName());
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void author__getBySurnameAndName_NonexistentName__correctReturnListAuthors() {
+        String nonexistentName = "Smth";
+        List<Author> expected = new ArrayList<>();
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName);
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void author__getBySurnameAndName_NullSurnameAndName__correctReturnEmptyListAuthors() {
+        List<Author> expected = new ArrayList<>();
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, null);
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+    }
+
+    @Test
+    void author__getBySurnameAndName_DifferentSurnameAndName__correctReturnEmptyListAuthors() {
+        List<Author> expected = new ArrayList<>();
+        List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName());
+        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
     }
 
     @Test
     void author__getAll__returnListAuthors() {
-        List<Author> expected = List.of(new Author(1, "Surname", "Name"));
+        List<Author> expected = authorList;
         List<Author> actual = authorDaoJdbc.getAll();
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
     }
 
     @Test
     void author__update__correctChangeAllFieldAuthorById() {
-        Author expected = new Author(1, "SurnameTest", "NameTest");
-        authorDaoJdbc.update(expected);
-        Author actual = authorDaoJdbc.getById(1);
+        Integer id = insertAuthor1.getId();
+        testAuthor.setId(id);
+        authorDaoJdbc.update(testAuthor);
+        Author expected = testAuthor;
+        Author actual = authorDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void author__update_NullSurname__incorrectNPE() {
-        Author expected = new Author(1, null, "NameTest");
-        Assertions.assertThrows(NullPointerException.class, () -> authorDaoJdbc.update(expected));
+    void author__update_NullSurname__incorrectException() {
+        testAuthor.setId(insertAuthor1.getId());
+        testAuthor.setSurname(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.update(testAuthor));
     }
 
     @Test
-    void author__update_NullName__incorrectNPE() {
-        Author expected = new Author(1, "SurnameTest", null);
-        Assertions.assertThrows(NullPointerException.class, () -> authorDaoJdbc.update(expected));
-    }
-
-
-    @Test
-    void author__update_UnexpectedId__incorrectEmptyRDAException() {
-        // todo not exception, why?
-        Author expected = new Author(100, "SurnameTest", "NameTest");
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> authorDaoJdbc.update(expected));
+    void author__update_NullName__incorrectException() {
+        testAuthor.setId(insertAuthor1.getId());
+        testAuthor.setName(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.update(testAuthor));
     }
 
     @Test
     void author__delete__correctDelete() {
+        List<Author> actualBeforeDelete = authorDaoJdbc.getAll();
+        authorDaoJdbc.delete(insertAuthor1.getId());
+        authorDaoJdbc.delete(insertAuthor2.getId());
+
         List<Author> expected = new ArrayList<>();
-        authorDaoJdbc.delete(1);
         List<Author> actual = authorDaoJdbc.getAll();
+
+        Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
-    }
-
-    @Test
-    void author__delete__incorrectDelete() {
-        // todo not exception, why?
-        Assertions.assertThrows(NullPointerException.class, () -> authorDaoJdbc.delete(100));
-
     }
 }

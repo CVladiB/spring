@@ -1,8 +1,11 @@
 spring:
   datasource:
+    #http://localhost:8080/h2-console
     url: jdbc:h2:mem:testdb;MODE=PostgreSQL
     driver-class-name: org.h2.Driver
   sql:
     init:
       mode: always
       data-locations: data.sql
+  main:
+    allow-circular-references: true
