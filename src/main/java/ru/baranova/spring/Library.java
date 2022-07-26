@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Library {
 
     public static void main(String[] args) {
-        ApplicationContext ctx = SpringApplication.run(Library.class, args);
-        GenreDao dao = ctx.getBean(GenreDaoJdbc.class);
-
+        SpringApplication.run(Library.class, args);
     }
 }
