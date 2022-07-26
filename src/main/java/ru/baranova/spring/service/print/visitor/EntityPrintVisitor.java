@@ -4,10 +4,10 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.Book;
 import ru.baranova.spring.domain.Genre;
 
-public interface EntityToStringVisitor {
-    String toString(Author author);
+public interface EntityPrintVisitor {
+    void print(Author author);
 
-    String toString(Book book);
+    void print(Book book);
 
-    String toString(Genre genre);
+    void print(Genre genre);
 }
