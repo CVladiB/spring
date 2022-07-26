@@ -7,9 +7,9 @@ import java.util.List;
 public interface AuthorService {
     Author create(String surname, String name);
 
-    Author read(Integer id);
+    Author readById(Integer id);
 
-    List<Author> getBySurnameAndName(String surname, String name);
+    List<Author> readBySurnameAndName(String surname, String name);
 
     List<Author> readAll();
 
