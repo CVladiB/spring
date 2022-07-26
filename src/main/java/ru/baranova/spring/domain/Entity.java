@@ -1,7 +1,7 @@
 package ru.baranova.spring.domain;
 
-import ru.baranova.spring.service.print.visitor.EntityToStringVisitor;
+import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 public interface Entity {
-    String accept(EntityToStringVisitor visitor);
+    void print(EntityPrintVisitor visitor);
 }

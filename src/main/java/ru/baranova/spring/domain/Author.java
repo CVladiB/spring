@@ -5,7 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.baranova.spring.service.print.visitor.EntityToStringVisitor;
+import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 @Getter
 @Setter
@@ -19,7 +19,7 @@ public class Author implements Entity {
 
 
     @Override
-    public String accept(EntityToStringVisitor visitor) {
-        return visitor.toString(this);
+    public void print(EntityPrintVisitor visitor) {
+        visitor.print(this);
     }
 }
