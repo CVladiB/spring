@@ -7,9 +7,9 @@ import java.util.List;
 public interface GenreService {
     Genre create(String title, String description);
 
-    Genre getByName(String name);
+    Genre readById(Integer id);
 
-    Genre read(Integer id);
+    Genre readByName(String name);
 
     List<Genre> readAll();
 
