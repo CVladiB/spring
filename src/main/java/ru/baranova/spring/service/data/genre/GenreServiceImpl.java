@@ -1,12 +1,15 @@
 package ru.baranova.spring.service.data.genre;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -24,45 +27,49 @@ public class GenreServiceImpl implements GenreService {
         maxInputDescription = 200;
     }
 
+    @Nullable
     @Override
-    public Genre create(String name, String description) {
+    public Genre create(@NonNull String name, String description) {
         init();
-        List<String> listGenreName;
         Genre genre = null;
+        description = checkServiceImpl.returnNullField(description);
 
-        if (checkServiceImpl.checkCorrectInput(name, minInput, maxInputName)
-                && checkServiceImpl.checkCorrectInput(description, minInput, maxInputDescription)
-                && checkServiceImpl.checkCorrectInputWordWithoutSymbol(name)
-                && checkServiceImpl.checkCorrectInputWordWithoutSymbol(description)) {
-            listGenreName = readAll().stream().map(Genre::getName).toList();
-            if (checkServiceImpl.checkCorrectInputFromExist(name, listGenreName)) {
-                genre = new Genre();
-                genre.setName(name);
-                genre.setDescription(description);
+        if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)
+                && checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
+
+            Stream<String> nameStream = readAll().stream().map(Genre::getName);
+
+            if (!checkServiceImpl.isInputExist(name, nameStream, false)) {
+
+                genre = Genre.builder().name(name).description(description).build();
                 Integer id = genreDaoJdbc.create(genre);
                 genre.setId(id);
+
             }
         }
         return genre;
     }
 
+    @Nullable
     @Override
-    public Genre readById(Integer id) {
-        List<Integer> listId = readAll().stream().map(Genre::getId).toList();
+    public Genre readById(@NonNull Integer id) {
         Genre genre = null;
 
-        if (checkServiceImpl.checkCorrectInputFromExist(id, listId)) {
+        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             genre = genreDaoJdbc.getById(id);
         }
+
+
         return genre;
     }
 
+    @Nullable
     @Override
-    public Genre readByName(String name) {
-        List<String> listGenreName;
+    public Genre readByName(@NonNull String name) {
         Genre genre = null;
-        listGenreName = readAll().stream().map(Genre::getName).toList();
-        if (checkServiceImpl.checkCorrectInputFromExist(name, listGenreName)) {
+        Stream<String> nameStream = readAll().stream().map(Genre::getName);
+        if (checkServiceImpl.isInputExist(name, nameStream, true)) {
             genre = genreDaoJdbc.getByName(name);
         }
         return genre;
@@ -74,20 +81,19 @@ public class GenreServiceImpl implements GenreService {
         return genreList;
     }
 
+    @Nullable
     @Override
-    public Genre update(Integer id, String name, String description) {
-        List<Integer> listId = readAll().stream().map(Genre::getId).toList();
+    public Genre update(@NonNull Integer id, String name, String description) {
+        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
         Genre genre = null;
 
-        if (checkServiceImpl.checkCorrectInputFromExist(id, listId)) {
-            genre = genreDaoJdbc.getById(id);
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             init();
-            if (checkServiceImpl.checkCorrectInput(name, minInput, maxInputName)
-                    && checkServiceImpl.checkCorrectInputWordWithoutSymbol(name)) {
+            genre = genreDaoJdbc.getById(id);
+            if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
                 genre.setName(name);
             }
-            if (checkServiceImpl.checkCorrectInput(description, minInput, maxInputDescription)
-                    && checkServiceImpl.checkCorrectInputWordWithoutSymbol(description)) {
+            if (checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
                 genre.setDescription(description);
             }
             genreDaoJdbc.update(genre);
@@ -95,11 +101,15 @@ public class GenreServiceImpl implements GenreService {
         return genre;
     }
 
+    @Nullable
     @Override
-    public void delete(Integer id) {
-        List<Integer> listId = readAll().stream().map(Genre::getId).toList();
-        if (checkServiceImpl.checkCorrectInputFromExist(id, listId)) {
+    public boolean delete(@NonNull Integer id) {
+        boolean isComplete = false;
+        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             genreDaoJdbc.delete(id);
+            isComplete = readAll().stream().map(Genre::getId).noneMatch(id::equals);
         }
+        return isComplete;
     }
 }

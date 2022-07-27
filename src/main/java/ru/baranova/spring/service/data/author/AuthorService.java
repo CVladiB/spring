@@ -15,6 +15,6 @@ public interface AuthorService {
 
     Author update(Integer id, String surname, String name);
 
-    void delete(Integer id);
+    boolean delete(Integer id);
 
 }

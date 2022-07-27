@@ -15,6 +15,6 @@ public interface GenreService {
 
     Genre update(Integer id, String name, String description);
 
-    void delete(Integer id);
+    boolean delete(Integer id);
 
 }
