@@ -7,7 +7,9 @@ VALUES ('Name1', 'Description1'),
        ('Name2', 'Description2');
 
 INSERT INTO book(book_title, author_id)
-VALUES ('Title1', 1), ('Title2', 1), ('Title3', 2);
+VALUES ('Title1', 1),
+       ('Title2', 1),
+       ('Title3', 2);
 
 INSERT INTO book_genre(book_id, genre_id)
 VALUES (1, 1),

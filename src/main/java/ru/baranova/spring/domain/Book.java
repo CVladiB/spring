@@ -1,6 +1,7 @@
 package ru.baranova.spring.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import java.util.List;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
