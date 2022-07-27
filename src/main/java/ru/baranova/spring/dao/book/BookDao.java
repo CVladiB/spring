@@ -3,10 +3,9 @@ package ru.baranova.spring.dao.book;
 import ru.baranova.spring.domain.Book;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface BookDao {
-    Integer create(Book book);
+    Integer create(String title, Integer authorId, List<Integer> genreId);
 
     Book getById(Integer id);
 
@@ -14,7 +13,7 @@ public interface BookDao {
 
     List<Book> getAll();
 
-    void update(Book book);
+    void update(Integer id, String title, Integer authorId, List<Integer> genreId);
 
     void delete(Integer id);
 }
