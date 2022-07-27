@@ -1,6 +1,17 @@
 package ru.baranova.spring.service.app;
 
-// todo проверка на ноль, корректный ввод, наличие записей
-public class CheckService {
+import java.util.stream.Stream;
 
+public interface CheckService {
+    boolean isCorrectSymbolsInInputString(String str, int min, int max);
+
+    boolean isCorrectInputString(String str, int min, int max);
+
+    boolean isCorrectInputInt(Integer input);
+
+    <T> boolean isInputExist(T inputStr, Stream<T> existStr, Boolean shouldExist);
+
+    boolean isAllFieldsNotNull(Object obj);
+
+    String returnNullField(String str);
 }
