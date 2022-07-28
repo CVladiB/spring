@@ -21,7 +21,7 @@ public class GenreShellController {
     public String create(String name, String description) {
         Genre genre = genreServiceImpl.create(name, description);
         if (genre != null) {
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_CREATE;
+            return String.format(BusinessConstants.ShellEntityServiceLog.COMPLETE_CREATE, genre.getId());
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }

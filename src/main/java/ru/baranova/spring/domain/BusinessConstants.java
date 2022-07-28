@@ -2,11 +2,10 @@ package ru.baranova.spring.domain;
 
 public abstract class BusinessConstants {
     public interface ShellEntityServiceLog {
-        String COMPLETE_CREATE = "Новое поле добавлено";
+        String COMPLETE_CREATE = "Новое поле добавлено, присвоен id - %d";
         String COMPLETE_OUTPUT = "Корерктный вывод";
         String COMPLETE_UPDATE = "Поле изменено";
         String COMPLETE_DELETE = "Поле удалено";
-
         String WARNING = "Ошибка";
     }
 

@@ -21,7 +21,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
     public void print(Book book) {
         StringBuilder sb = new StringBuilder();
         sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\", ")
-                .append(book.getAuthor().getSurname()).append(book.getAuthor().getName().charAt(0))
+                .append(book.getAuthor().getSurname()).append(" ").append(book.getAuthor().getName().charAt(0)).append(".")
                 .append(", жанр: ");
         outputDaoConsole.output(sb.toString());
         book.getGenre().forEach(this::print);
@@ -29,7 +29,8 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
 
     @Override
     public void print(Genre genre) {
-        String str = String.format("%d. %s - %s", genre.getId(), genre.getName(), genre.getDescription());
+        String description = genre.getDescription() == null ? "описание жанра пока отсутствует" : genre.getDescription();
+        String str = String.format("   %d. %s - %s", genre.getId(), genre.getName(), description);
         outputDaoConsole.output(str);
     }
 }

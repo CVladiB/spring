@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.genre;
+package ru.baranova.spring.domain.genre;
 
 import ru.baranova.spring.domain.Genre;
 

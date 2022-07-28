@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.genre;
+package ru.baranova.spring.domain.genre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;

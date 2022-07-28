@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.domain.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
@@ -34,13 +34,11 @@ public class GenreServiceImpl implements GenreService {
         Genre genre = null;
         description = checkServiceImpl.returnNullField(description);
 
-        if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)
-                && checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
-
-            Stream<String> nameStream = readAll().stream().map(Genre::getName);
-
-            if (!checkServiceImpl.isInputExist(name, nameStream, false)) {
-
+        Stream<String> nameStream = readAll().stream().map(Genre::getName);
+        if (!checkServiceImpl.isInputExist(name, nameStream, null)) {
+            if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)
+                    && (description == null
+                    || checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription))) {
                 genre = Genre.builder().name(name).description(description).build();
                 Integer id = genreDaoJdbc.create(genre);
                 genre.setId(id);

@@ -6,7 +6,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
 
-import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -62,38 +61,18 @@ public class CheckServiceImpl implements CheckService {
     public <T> boolean isInputExist(@NonNull T inputStr, Stream<T> existStr, Boolean shouldExist) {
         boolean isExist = existStr.anyMatch(inputStr::equals);
 
-        if (!shouldExist && isExist) {
+        if (shouldExist != null && !shouldExist && isExist) {
             log.info(BusinessConstants.CheckServiceLog.WARNING_EXIST);
-        } else if (shouldExist && !isExist) {
+        } else if (shouldExist != null && shouldExist && !isExist) {
             log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
         }
 
         return isExist;
     }
 
-    @Override
-    //Для проверки всех полей объекта (удалю после коммита)
-    public boolean isAllFieldsNotNull(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        for (Field field : obj.getClass().getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                if (field.get(obj) == null) {
-                    log.info(BusinessConstants.CheckServiceLog.NOTHING_INPUT);
-                    return false;
-                }
-            } catch (IllegalAccessException e) {
-                log.error(e.getMessage());
-            }
-        }
-        return true;
-    }
-
     @Nullable
     @Override
     public String returnNullField(String str) {
-        return str.equals("-") ? null : str;
+        return str != null && str.equals("-") ? null : str;
     }
 }

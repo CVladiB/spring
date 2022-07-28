@@ -33,17 +33,16 @@ public class AuthorServiceImpl implements AuthorService {
         init();
         Author author = null;
 
-        if (checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)
-                && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
-            Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
-            Stream<String> nameStream = readAll().stream().map(Author::getName);
-            if (!checkServiceImpl.isInputExist(surname, surnameStream, false)
-                    && !checkServiceImpl.isInputExist(name, nameStream, false)) {
+        Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
+        Stream<String> nameStream = readAll().stream().map(Author::getName);
+        if (!checkServiceImpl.isInputExist(surname, surnameStream, null)
+                && !checkServiceImpl.isInputExist(name, nameStream, null)) {
+            if (checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)
+                    && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
 
                 author = Author.builder().surname(surname).name(name).build();
                 Integer id = authorDaoJdbc.create(author);
                 author.setId(id);
-
             }
         }
         return author;

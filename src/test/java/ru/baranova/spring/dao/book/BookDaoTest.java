@@ -46,7 +46,7 @@ public class BookDaoTest {
         insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
         insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
         insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre));
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2));
 
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }
@@ -146,7 +146,7 @@ public class BookDaoTest {
 
     @Test
     void book__update__correctChangeAllFieldBookById() {
-        Integer id = insertBook1.getId();
+        Integer id = insertBook3.getId();
         bookDaoJdbc.update(id, testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenre().stream().map(Genre::getId).toList());
         testBook.setId(id);
         Book expected = testBook;
@@ -156,7 +156,7 @@ public class BookDaoTest {
 
     @Test
     void book__update_NullTitle__incorrectException() {
-        Integer id = insertBook1.getId();
+        Integer id = insertBook3.getId();
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
                 () -> bookDaoJdbc.update(id, null, testBook.getAuthor().getId(), List.of(testBook.getGenre().get(0).getId())));

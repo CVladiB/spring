@@ -10,6 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.domain.genre.GenreDao;
 
 import java.util.ArrayList;
 import java.util.List;

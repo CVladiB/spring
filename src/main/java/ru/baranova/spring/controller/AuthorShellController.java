@@ -5,7 +5,6 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BusinessConstants;
-import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
@@ -15,19 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthorShellController {
     private final AuthorService authorServiceImpl;
-    private final CheckService checkServiceImpl;
     private final EntityPrintVisitor printer;
-    //Для использования нескольких способов печати (удалю после коммита)
-    //private final List<EntityPrintVisitor> printers;
 
     @ShellMethod(group = "Author", value = "Create author", key = {"create-author"})
     public String create(String surname, String name) {
         Author author = authorServiceImpl.create(surname, name);
-        // Проверка всех полей на наличие записей, достаточно вернуть null вместо объекта (удалю после коммита)
-        if (checkServiceImpl.isAllFieldsNotNull(author)) {
-            //Для использования нескольких способов печати (удалю после коммита)
-            //printers.forEach(v -> v.print(author));
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_CREATE;
+        if (author != null) {
+            return String.format(BusinessConstants.ShellEntityServiceLog.COMPLETE_CREATE, author.getId());
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }

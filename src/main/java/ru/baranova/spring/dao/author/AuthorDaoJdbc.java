@@ -12,6 +12,7 @@ import ru.baranova.spring.domain.Author;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,15 +59,15 @@ public class AuthorDaoJdbc implements AuthorDao {
         String sql = """
                 select author_id, author_surname, author_name
                 from author
-                where (:surname is not null and :name is not null and 
+                where (:surname is not null and :name is not null and
                                     (author_surname = :surname and author_name = :name))
-                    or (((:surname is not null and :name is null) or (:surname is null and :name is not null)) 
+                    or (((:surname is not null and :name is null) or (:name is not null and :surname is null)) 
                                     and (author_surname = :surname or author_name = :name))
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("surname", surname);
-        params.addValue("name", name);
+        params.addValue("surname", surname, Types.VARCHAR);
+        params.addValue("name", name, Types.VARCHAR);
 
         return jdbc.query(sql, params, new AuthorMapper());
     }
