@@ -32,6 +32,7 @@ dependencies {
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'com.h2database:h2:2.1.214'
+    testImplementation "org.flywaydb:flyway-core"
     testCompileOnly "org.projectlombok:lombok:$versionLombok"
     testAnnotationProcessor "org.projectlombok:lombok:$versionLombok"
 }

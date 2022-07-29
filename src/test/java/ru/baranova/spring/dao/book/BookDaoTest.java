@@ -63,7 +63,7 @@ public class BookDaoTest {
                 .max()
                 .orElse(insertBook3.getId());
 
-        Integer actualId = bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenre().stream().map(Genre::getId).toList());
+        Integer actualId = bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenreList().stream().map(Genre::getId).toList());
 
         Book expected = testBook;
         expected.setId(expectedId);
@@ -72,21 +72,21 @@ public class BookDaoTest {
         Assertions.assertFalse(listExistId.contains(actualId));
         Assertions.assertEquals(expected.getTitle(), actual.getTitle());
         Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertArrayEquals(expected.getGenre().toArray(), actual.getGenre().toArray());
+        Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray());
     }
 
     @Test
     void book__create_NullTitle__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(null, testBook.getAuthor().getId(), List.of(testBook.getGenre().get(0).getId())));
+                () -> bookDaoJdbc.create(null, testBook.getAuthor().getId(), List.of(testBook.getGenreList().get(0).getId())));
     }
 
     @Test
     void book__create_NullAuthorId__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(testBook.getTitle(), null, List.of(testBook.getGenre().get(0).getId())));
+                () -> bookDaoJdbc.create(testBook.getTitle(), null, List.of(testBook.getGenreList().get(0).getId())));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class BookDaoTest {
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expected.getTitle(), actual.getTitle()),
                 () -> Assertions.assertEquals(expected.getAuthor().getSurname(), actual.getAuthor().getSurname()),
-                () -> Assertions.assertArrayEquals(expected.getGenre().toArray(), actual.getGenre().toArray()),
+                () -> Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray()),
                 () -> Assertions.assertEquals(expected.getId(), actual.getId())
         );
     }
@@ -147,7 +147,7 @@ public class BookDaoTest {
     @Test
     void book__update__correctChangeAllFieldBookById() {
         Integer id = insertBook3.getId();
-        bookDaoJdbc.update(id, testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenre().stream().map(Genre::getId).toList());
+        bookDaoJdbc.update(id, testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenreList().stream().map(Genre::getId).toList());
         testBook.setId(id);
         Book expected = testBook;
         Book actual = bookDaoJdbc.getById(id);
@@ -159,7 +159,7 @@ public class BookDaoTest {
         Integer id = insertBook3.getId();
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.update(id, null, testBook.getAuthor().getId(), List.of(testBook.getGenre().get(0).getId())));
+                () -> bookDaoJdbc.update(id, null, testBook.getAuthor().getId(), List.of(testBook.getGenreList().get(0).getId())));
     }
 
     @Test
