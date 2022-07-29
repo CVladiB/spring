@@ -9,6 +9,7 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Service
@@ -33,10 +34,10 @@ public class AuthorServiceImpl implements AuthorService {
         init();
         Author author = null;
 
-        Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
-        Stream<String> nameStream = readAll().stream().map(Author::getName);
-        if (!checkServiceImpl.isInputExist(surname, surnameStream, null)
-                && !checkServiceImpl.isInputExist(name, nameStream, null)) {
+        Supplier<Stream<String>> surnameStream = () -> readAll().stream().map(Author::getSurname);
+        Supplier<Stream<String>> nameStream = () -> readAll().stream().map(Author::getName);
+        if (!checkServiceImpl.isInputExist(surname, surnameStream.get(), null)
+                && !checkServiceImpl.isInputExist(name, nameStream.get(), null)) {
             if (checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)
                     && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
 
@@ -53,8 +54,8 @@ public class AuthorServiceImpl implements AuthorService {
     public Author readById(@NonNull Integer id) {
         Author author = null;
 
-        Stream<Integer> idStream = readAll().stream().map(Author::getId);
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
+        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
+        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
             author = authorDaoJdbc.getById(id);
         }
 
@@ -63,28 +64,26 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Nullable
     @Override
-    // todo имеется проблема с null, работает только при полном вводе
     public List<Author> readBySurnameAndName(String surname, String name) {
         List<Author> authorList = null;
         surname = checkServiceImpl.returnNullField(surname);
         name = checkServiceImpl.returnNullField(name);
 
-        if (surname == null && name != null) {
-            Stream<String> nameStream = readAll().stream().map(Author::getName);
-            if (checkServiceImpl.isInputExist(name, nameStream, true)) {
+        Supplier<Stream<String>> surnameStream = () -> readAll().stream().map(Author::getSurname);
+        Supplier<Stream<String>> nameStream = () -> readAll().stream().map(Author::getName);
+
+        if (surname != null && name != null) {
+            if (checkServiceImpl.isInputExist(surname, surnameStream.get(), true)
+                    && checkServiceImpl.isInputExist(name, nameStream.get(), true)) {
+                authorList = authorDaoJdbc.getBySurnameAndName(surname, name);
+            }
+        } else if (surname == null && name != null) {
+            if (checkServiceImpl.isInputExist(name, nameStream.get(), true)) {
                 authorList = authorDaoJdbc.getBySurnameAndName(null, name);
             }
         } else if (surname != null) {
-            Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
-            if (checkServiceImpl.isInputExist(surname, surnameStream, true)) {
-                if (name == null) {
-                    authorList = authorDaoJdbc.getBySurnameAndName(surname, null);
-                } else {
-                    Stream<String> nameStream = readAll().stream().map(Author::getName);
-                    if (checkServiceImpl.isInputExist(name, nameStream, true)) {
-                        authorList = authorDaoJdbc.getBySurnameAndName(surname, name);
-                    }
-                }
+            if (checkServiceImpl.isInputExist(surname, surnameStream.get(), true)) {
+                authorList = authorDaoJdbc.getBySurnameAndName(surname, null);
             }
         }
 
@@ -100,10 +99,10 @@ public class AuthorServiceImpl implements AuthorService {
     @Nullable
     @Override
     public Author update(@NonNull Integer id, String surname, String name) {
-        Stream<Integer> idStream = readAll().stream().map(Author::getId);
+        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
         Author author = null;
 
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
+        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
             init();
             author = authorDaoJdbc.getById(id);
             surname = checkServiceImpl.returnNullField(surname);
@@ -116,7 +115,9 @@ public class AuthorServiceImpl implements AuthorService {
                 author.setName(name);
             }
 
-            authorDaoJdbc.update(author);
+            if (authorDaoJdbc.update(author) == 0) {
+                author = null;
+            }
         }
         return author;
     }
@@ -125,10 +126,11 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public boolean delete(@NonNull Integer id) {
         boolean isComplete = false;
-        Stream<Integer> idStream = readAll().stream().map(Author::getId);
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            authorDaoJdbc.delete(id);
-            isComplete = readAll().stream().map(Author::getId).noneMatch(id::equals);
+        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
+        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
+            if (authorDaoJdbc.delete(id) > 0) {
+                isComplete = true;
+            }
         }
         return isComplete;
     }
