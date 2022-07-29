@@ -13,7 +13,7 @@ public class AppServiceImpl implements AppService {
     private ApplicationContext context;
 
     @Override
-    public void stopApplication() {
-        SpringApplication.exit(context);
+    public int stopApplication() {
+        return SpringApplication.exit(context);
     }
 }

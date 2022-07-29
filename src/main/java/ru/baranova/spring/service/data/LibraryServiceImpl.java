@@ -26,17 +26,20 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull String authorSurname, @NonNull String authorName, @NonNull String... genreArg) {
+    public Book create(@NonNull String title, @NonNull String authorSurname, @NonNull String authorName, @NonNull List<String> genreNameList) {
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
-        List<Genre> genreList = checkAndCreateGenreForBook(genreArg);
-        Book book = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
+        List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
+        Book book = null;
+        if (author != null && genreList != null) {
+            book = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
+        }
 
         if (book == null) {
             log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
             return null;
         } else {
             book.setAuthor(author);
-            book.setGenre(genreList);
+            book.setGenreList(genreList);
         }
 
         return book;
@@ -44,22 +47,24 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreId) {
+    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         Book book = null;
         Author author = authorServiceImpl.readById(authorId);
-        List<Genre> genreList = genreId.stream().map(genreServiceImpl::readById).toList();
+        List<Genre> genreList = genreIdList.stream().map(genreServiceImpl::readById).toList();
         if (author != null && !genreList.contains(null)) {
-            book = bookServiceImpl.create(title, authorId, genreId);
-
-            if (book == null) {
-                log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
-            } else {
-                book = checkAndSetFieldsToBook(book);
-            }
+            book = bookServiceImpl.create(title, authorId, genreIdList);
         }
+
+        if (book == null) {
+            log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
+        } else {
+            book = checkAndSetFieldsToBook(book);
+        }
+
         return book;
     }
 
+    @Nullable
     private Author checkAndCreateAuthorForBook(String authorSurname, String authorName) {
         Author author = null;
         List<Author> authorList = authorServiceImpl.readBySurnameAndName(authorSurname, authorName);
@@ -77,9 +82,10 @@ public class LibraryServiceImpl implements LibraryService {
         return author;
     }
 
-    private List<Genre> checkAndCreateGenreForBook(String... genreArg) {
+    @Nullable
+    private List<Genre> checkAndCreateGenreForBook(List<String> genreNameList) {
         List<Genre> genreList = new ArrayList<>();
-        for (String genreName : genreArg) {
+        for (String genreName : genreNameList) {
             Genre genre = genreServiceImpl.readByName(genreName);
             if (genre == null) {
                 genre = genreServiceImpl.create(genreName, null);
@@ -139,26 +145,30 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     private Book checkAndSetFieldsToBook(Book book) {
-        Author author = authorServiceImpl.readById(book.getAuthor().getId());
-        if (author == null) {
-            return null;
-        } else {
-            book.setAuthor(author);
-        }
-
-        List<Genre> genreList = new ArrayList<>();
-        for (Genre genreOnlyId : book.getGenre()) {
-            Genre genre = genreServiceImpl.readById(genreOnlyId.getId());
-            if (genre == null) {
+        if (book.getAuthor() != null) {
+            Author author = authorServiceImpl.readById(book.getAuthor().getId());
+            if (author == null) {
                 return null;
             } else {
-                genreList.add(genre);
+                book.setAuthor(author);
             }
         }
-        if (genreList.isEmpty()) {
-            return null;
-        } else {
-            book.setGenre(genreList);
+
+        if (book.getGenreList() != null) {
+            List<Genre> genreList = new ArrayList<>();
+            for (Genre genreOnlyId : book.getGenreList()) {
+                Genre genre = genreServiceImpl.readById(genreOnlyId.getId());
+                if (genre == null) {
+                    return null;
+                } else {
+                    genreList.add(genre);
+                }
+            }
+            if (genreList.isEmpty()) {
+                return null;
+            } else {
+                book.setGenreList(genreList);
+            }
         }
 
         return book;
@@ -166,10 +176,10 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book update(Integer id, String title, String authorSurname, String authorName, String... genreArg) {
+    public Book update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList) {
         Book book = bookServiceImpl.readById(id);
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
-        List<Genre> genreList = checkAndCreateGenreForBook(genreArg);
+        List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
 
         if (book != null && author != null && genreList != null && !genreList.contains(null)) {
             book = bookServiceImpl.update(id, title, author.getId(), genreList.stream().map(Genre::getId).toList());
@@ -178,7 +188,7 @@ public class LibraryServiceImpl implements LibraryService {
                 log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
             } else {
                 book.setAuthor(author);
-                book.setGenre(genreList);
+                book.setGenreList(genreList);
             }
         } else {
             book = null;
@@ -188,12 +198,12 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book update(@NonNull Integer id, String title, Integer authorId, List<Integer> genreId) {
+    public Book update(@NonNull Integer id, String title, Integer authorId, List<Integer> genreIdList) {
         Book book = bookServiceImpl.readById(id);
         Author author = authorServiceImpl.readById(authorId);
-        List<Genre> genreList = genreId.stream().map(genreServiceImpl::readById).toList();
-        if (book != null && author != null && genreList != null && !genreList.contains(null)) {
-            book = bookServiceImpl.update(id, title, authorId, genreId);
+        List<Genre> genreList = genreIdList.stream().map(genreServiceImpl::readById).toList();
+        if (book != null && author != null && !genreList.contains(null)) {
+            book = bookServiceImpl.update(id, title, authorId, genreIdList);
 
             if (book == null) {
                 log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);

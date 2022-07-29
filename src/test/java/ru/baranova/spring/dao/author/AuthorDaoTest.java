@@ -88,21 +88,21 @@ class AuthorDaoTest {
     void author__getBySurnameAndName__correctReturnListAuthors() {
         List<Author> expected = List.of(insertAuthor1);
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor1.getName());
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_NullSurname__correctReturnListAuthors() {
         List<Author> expected = List.of(insertAuthor1);
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, insertAuthor1.getName());
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_NullName__correctReturnListAuthors() {
         List<Author> expected = List.of(insertAuthor1);
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), null);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -110,7 +110,7 @@ class AuthorDaoTest {
         String nonexistentSurname = "Smth";
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName());
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -118,28 +118,28 @@ class AuthorDaoTest {
         String nonexistentName = "Smth";
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_NullSurnameAndName__correctReturnEmptyListAuthors() {
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, null);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_DifferentSurnameAndName__correctReturnEmptyListAuthors() {
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName());
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getAll__returnListAuthors() {
         List<Author> expected = authorList;
         List<Author> actual = authorDaoJdbc.getAll();
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -176,6 +176,6 @@ class AuthorDaoTest {
         List<Author> actual = authorDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 }

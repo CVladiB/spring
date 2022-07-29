@@ -61,7 +61,7 @@ public class AuthorDaoJdbc implements AuthorDao {
                 from author
                 where (:surname is not null and :name is not null and
                                     (author_surname = :surname and author_name = :name))
-                    or (((:surname is not null and :name is null) or (:name is not null and :surname is null)) 
+                    or (((:surname is not null and :name is null) or (:name is not null and :surname is null))
                                     and (author_surname = :surname or author_name = :name))
                 """;
 
@@ -83,7 +83,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public void update(@NonNull Author author) {
+    public int update(@NonNull Author author) {
         String sql = """
                 update author set author_surname = :surname, author_name = :name
                 where author_id = :id
@@ -94,11 +94,11 @@ public class AuthorDaoJdbc implements AuthorDao {
         params.addValue("surname", author.getSurname());
         params.addValue("name", author.getName());
 
-        jdbc.update(sql, params);
+        return jdbc.update(sql, params);
     }
 
     @Override
-    public void delete(@NonNull Integer id) {
+    public int delete(@NonNull Integer id) {
         String sql = """
                 delete from author
                 where author_id = :id
@@ -107,7 +107,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
-        jdbc.update(sql, params);
+        return jdbc.update(sql, params);
     }
 
     private static class AuthorMapper implements RowMapper<Author> {

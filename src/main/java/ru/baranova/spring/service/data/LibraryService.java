@@ -5,9 +5,9 @@ import ru.baranova.spring.domain.Book;
 import java.util.List;
 
 public interface LibraryService {
-    Book create(String title, String authorSurname, String authorName, String... genreArg);
+    Book create(String title, String authorSurname, String authorName, List<String> genreNameList);
 
-    Book create(String title, Integer authorId, List<Integer> genreId);
+    Book create(String title, Integer authorId, List<Integer> genreIdList);
 
     Book readById(Integer id);
 
@@ -15,9 +15,9 @@ public interface LibraryService {
 
     List<Book> readAll();
 
-    Book update(Integer id, String title, String authorSurname, String authorName, String... genreArg);
+    Book update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList);
 
-    Book update(Integer id, String title, Integer authorId, List<Integer> genreId);
+    Book update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
 
     boolean delete(Integer id);
 }

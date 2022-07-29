@@ -2,7 +2,6 @@ package ru.baranova.spring.service.app;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
 
@@ -58,7 +57,7 @@ public class CheckServiceImpl implements CheckService {
     }
 
     @Override
-    public <T> boolean isInputExist(@NonNull T inputStr, Stream<T> existStr, Boolean shouldExist) {
+    public <T> boolean isInputExist(@NonNull T inputStr, @NonNull Stream<T> existStr, Boolean shouldExist) {
         boolean isExist = existStr.anyMatch(inputStr::equals);
 
         if (shouldExist != null && !shouldExist && isExist) {
@@ -70,9 +69,5 @@ public class CheckServiceImpl implements CheckService {
         return isExist;
     }
 
-    @Nullable
-    @Override
-    public String returnNullField(String str) {
-        return str != null && str.equals("-") ? null : str;
-    }
+
 }

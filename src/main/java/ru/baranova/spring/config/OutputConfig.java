@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.output.config;
+package ru.baranova.spring.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

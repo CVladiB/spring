@@ -1,4 +1,4 @@
-package ru.baranova.spring.domain.genre;
+package ru.baranova.spring.dao.genre;
 
 import ru.baranova.spring.domain.Genre;
 
@@ -13,7 +13,7 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
-    void update(Genre genre);
+    int update(Genre genre);
 
-    void delete(Integer id);
+    int delete(Integer id);
 }

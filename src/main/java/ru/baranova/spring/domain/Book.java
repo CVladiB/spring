@@ -20,7 +20,7 @@ public class Book implements Entity {
     private Integer id;
     private String title;
     private Author author;
-    private List<Genre> genre;
+    private List<Genre> genreList;
 
     @Override
     public void print(EntityPrintVisitor visitor) {

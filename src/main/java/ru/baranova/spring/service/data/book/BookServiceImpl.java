@@ -9,6 +9,7 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.Book;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
+import ru.baranova.spring.service.app.ParseService;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -19,6 +20,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookDao bookDaoJdbc;
     private final CheckService checkServiceImpl;
+    private final ParseService parseServiceImpl;
     private int minInput;
     private int maxInput;
 
@@ -29,7 +31,7 @@ public class BookServiceImpl implements BookService {
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreId) {
+    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         init();
         Book book = null;
 
@@ -38,8 +40,12 @@ public class BookServiceImpl implements BookService {
                     .title(title)
                     .author(Author.builder().id(authorId).build())
                     .build();
-            Integer id = bookDaoJdbc.create(title, authorId, genreId);
-            book.setId(id);
+            Integer id = bookDaoJdbc.create(title, authorId, genreIdList);
+            if (id != null) {
+                book.setId(id);
+            } else {
+                book = null;
+            }
         }
         return book;
     }
@@ -78,9 +84,9 @@ public class BookServiceImpl implements BookService {
 
     @Nullable
     @Override
-    public Book update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreId) {
+    public Book update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         init();
-        title = checkServiceImpl.returnNullField(title);
+        title = parseServiceImpl.parseDashToNull(title);
         Book book = null;
         Stream<Integer> idStream = readAll().stream().map(Book::getId);
 
@@ -89,9 +95,11 @@ public class BookServiceImpl implements BookService {
             book = bookDaoJdbc.getById(id);
             book.setTitle(title);
             book.setAuthor(Author.builder().id(authorId).build());
-            book.setGenre(genreId.stream().map(g -> Genre.builder().id(g).build()).toList());
+            book.setGenreList(genreIdList.stream().map(g -> Genre.builder().id(g).build()).toList());
 
-            bookDaoJdbc.update(id, title, authorId, genreId);
+            if (bookDaoJdbc.update(id, title, authorId, genreIdList) == 0) {
+                book = null;
+            }
         }
         return book;
     }
@@ -102,7 +110,9 @@ public class BookServiceImpl implements BookService {
         Stream<Integer> idStream = readAll().stream().map(Book::getId);
         if (checkServiceImpl.isInputExist(id, idStream, true)) {
             bookDaoJdbc.delete(id);
-            isComplete = readAll().stream().map(Book::getId).noneMatch(id::equals);
+            if (bookDaoJdbc.delete(id) > 0) {
+                isComplete = true;
+            }
         }
         return isComplete;
     }

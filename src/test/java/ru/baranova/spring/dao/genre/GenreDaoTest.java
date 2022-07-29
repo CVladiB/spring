@@ -121,7 +121,7 @@ class GenreDaoTest {
     void genre__getAll__returnListGenres() {
         List<Genre> expected = genreList;
         List<Genre> actual = genreDaoJdbc.getAll();
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -168,6 +168,6 @@ class GenreDaoTest {
         List<Genre> actual = genreDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 }

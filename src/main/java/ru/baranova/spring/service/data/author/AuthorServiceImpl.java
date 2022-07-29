@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.author.AuthorDao;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.app.CheckService;
+import ru.baranova.spring.service.app.ParseService;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Service
@@ -18,6 +18,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorDao authorDaoJdbc;
     private final CheckService checkServiceImpl;
+    private final ParseService parseServiceImpl;
     private int minInput;
     private int maxInputSurname;
     private int maxInputName;
@@ -34,10 +35,10 @@ public class AuthorServiceImpl implements AuthorService {
         init();
         Author author = null;
 
-        Supplier<Stream<String>> surnameStream = () -> readAll().stream().map(Author::getSurname);
-        Supplier<Stream<String>> nameStream = () -> readAll().stream().map(Author::getName);
-        if (!checkServiceImpl.isInputExist(surname, surnameStream.get(), null)
-                && !checkServiceImpl.isInputExist(name, nameStream.get(), null)) {
+        Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
+        Stream<String> nameStream = readAll().stream().map(Author::getName);
+        if (!checkServiceImpl.isInputExist(surname, surnameStream, null)
+                && !checkServiceImpl.isInputExist(name, nameStream, null)) {
             if (checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)
                     && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
 
@@ -54,8 +55,8 @@ public class AuthorServiceImpl implements AuthorService {
     public Author readById(@NonNull Integer id) {
         Author author = null;
 
-        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
-        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
+        Stream<Integer> idStream = readAll().stream().map(Author::getId);
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             author = authorDaoJdbc.getById(id);
         }
 
@@ -66,23 +67,23 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public List<Author> readBySurnameAndName(String surname, String name) {
         List<Author> authorList = null;
-        surname = checkServiceImpl.returnNullField(surname);
-        name = checkServiceImpl.returnNullField(name);
+        surname = parseServiceImpl.parseDashToNull(surname);
+        name = parseServiceImpl.parseDashToNull(name);
 
-        Supplier<Stream<String>> surnameStream = () -> readAll().stream().map(Author::getSurname);
-        Supplier<Stream<String>> nameStream = () -> readAll().stream().map(Author::getName);
+        Stream<String> surnameStream = readAll().stream().map(Author::getSurname);
+        Stream<String> nameStream = readAll().stream().map(Author::getName);
 
         if (surname != null && name != null) {
-            if (checkServiceImpl.isInputExist(surname, surnameStream.get(), true)
-                    && checkServiceImpl.isInputExist(name, nameStream.get(), true)) {
+            if (checkServiceImpl.isInputExist(surname, surnameStream, true)
+                    && checkServiceImpl.isInputExist(name, nameStream, true)) {
                 authorList = authorDaoJdbc.getBySurnameAndName(surname, name);
             }
         } else if (surname == null && name != null) {
-            if (checkServiceImpl.isInputExist(name, nameStream.get(), true)) {
+            if (checkServiceImpl.isInputExist(name, nameStream, true)) {
                 authorList = authorDaoJdbc.getBySurnameAndName(null, name);
             }
         } else if (surname != null) {
-            if (checkServiceImpl.isInputExist(surname, surnameStream.get(), true)) {
+            if (checkServiceImpl.isInputExist(surname, surnameStream, true)) {
                 authorList = authorDaoJdbc.getBySurnameAndName(surname, null);
             }
         }
@@ -92,21 +93,20 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public List<Author> readAll() {
-        List<Author> authorList = authorDaoJdbc.getAll();
-        return authorList;
+        return authorDaoJdbc.getAll();
     }
 
     @Nullable
     @Override
     public Author update(@NonNull Integer id, String surname, String name) {
-        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
+        Stream<Integer> idStream = readAll().stream().map(Author::getId);
         Author author = null;
 
-        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             init();
             author = authorDaoJdbc.getById(id);
-            surname = checkServiceImpl.returnNullField(surname);
-            name = checkServiceImpl.returnNullField(name);
+            surname = parseServiceImpl.parseDashToNull(surname);
+            name = parseServiceImpl.parseDashToNull(name);
 
             if (surname != null && checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)) {
                 author.setSurname(surname);
@@ -126,8 +126,8 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public boolean delete(@NonNull Integer id) {
         boolean isComplete = false;
-        Supplier<Stream<Integer>> idStream = () -> readAll().stream().map(Author::getId);
-        if (checkServiceImpl.isInputExist(id, idStream.get(), true)) {
+        Stream<Integer> idStream = readAll().stream().map(Author::getId);
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
             if (authorDaoJdbc.delete(id) > 0) {
                 isComplete = true;
             }

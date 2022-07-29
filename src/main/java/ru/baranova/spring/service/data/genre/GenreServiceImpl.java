@@ -4,9 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
-import ru.baranova.spring.domain.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
+import ru.baranova.spring.service.app.ParseService;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -17,6 +18,7 @@ public class GenreServiceImpl implements GenreService {
 
     private final GenreDao genreDaoJdbc;
     private final CheckService checkServiceImpl;
+    private final ParseService parseServiceImpl;
     private int minInput;
     private int maxInputName;
     private int maxInputDescription;
@@ -32,7 +34,7 @@ public class GenreServiceImpl implements GenreService {
     public Genre create(@NonNull String name, String description) {
         init();
         Genre genre = null;
-        description = checkServiceImpl.returnNullField(description);
+        description = parseServiceImpl.parseDashToNull(description);
 
         Stream<String> nameStream = readAll().stream().map(Genre::getName);
         if (!checkServiceImpl.isInputExist(name, nameStream, null)) {
@@ -75,8 +77,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public List<Genre> readAll() {
-        List<Genre> genreList = genreDaoJdbc.getAll();
-        return genreList;
+        return genreDaoJdbc.getAll();
     }
 
     @Nullable
@@ -94,7 +95,10 @@ public class GenreServiceImpl implements GenreService {
             if (checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
                 genre.setDescription(description);
             }
-            genreDaoJdbc.update(genre);
+
+            if (genreDaoJdbc.update(genre) == 0) {
+                genre = null;
+            }
         }
         return genre;
     }
@@ -105,8 +109,9 @@ public class GenreServiceImpl implements GenreService {
         boolean isComplete = false;
         Stream<Integer> idStream = readAll().stream().map(Genre::getId);
         if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            genreDaoJdbc.delete(id);
-            isComplete = readAll().stream().map(Genre::getId).noneMatch(id::equals);
+            if (genreDaoJdbc.delete(id) > 0) {
+                isComplete = true;
+            }
         }
         return isComplete;
     }

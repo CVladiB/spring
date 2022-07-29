@@ -13,7 +13,7 @@ public interface BookDao {
 
     List<Book> getAll();
 
-    void update(Integer id, String title, Integer authorId, List<Integer> genreId);
+    int update(Integer id, String title, Integer authorId, List<Integer> genreId);
 
-    void delete(Integer id);
+    int delete(Integer id);
 }

@@ -20,11 +20,16 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
     @Override
     public void print(Book book) {
         StringBuilder sb = new StringBuilder();
-        sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\", ")
-                .append(book.getAuthor().getSurname()).append(" ").append(book.getAuthor().getName().charAt(0)).append(".")
-                .append(", жанр: ");
+        sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\", ");
+
+        if (book.getAuthor() != null) {
+            sb.append(book.getAuthor().getSurname()).append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
+        }
         outputDaoConsole.output(sb.toString());
-        book.getGenre().forEach(this::print);
+        if (book.getGenreList() != null) {
+            outputDaoConsole.output(", жанр: ");
+            book.getGenreList().forEach(this::print);
+        }
     }
 
     @Override

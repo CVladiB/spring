@@ -1,4 +1,4 @@
-package ru.baranova.spring.domain.genre;
+package ru.baranova.spring.dao.genre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.RowMapper;
@@ -74,7 +74,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public void update(@NonNull Genre genre) {
+    public int update(@NonNull Genre genre) {
         String sql = """
                 update genre set genre_name = :name, genre_description = :description
                 where genre_id = :id
@@ -85,11 +85,11 @@ public class GenreDaoJdbc implements GenreDao {
         params.addValue("name", genre.getName());
         params.addValue("description", genre.getDescription());
 
-        jdbc.update(sql, params);
+        return jdbc.update(sql, params);
     }
 
     @Override
-    public void delete(@NonNull Integer id) {
+    public int delete(@NonNull Integer id) {
         String sql = """
                 delete from genre
                 where genre_id = :id
@@ -98,7 +98,7 @@ public class GenreDaoJdbc implements GenreDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
-        jdbc.update(sql, params);
+        return jdbc.update(sql, params);
     }
 
     public static class GenreMapper implements RowMapper<Genre> {

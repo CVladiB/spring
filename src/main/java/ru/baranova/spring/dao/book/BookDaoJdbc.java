@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.Book;
@@ -21,6 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Repository
@@ -28,6 +30,7 @@ import java.util.stream.Collectors;
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbc;
 
+    @Nullable
     @Override
     public Integer create(@NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreId) {
         String sql = """
@@ -43,7 +46,9 @@ public class BookDaoJdbc implements BookDao {
 
         jdbc.update(sql, params, holder, new String[]{"book_id"});
         Integer id = (Integer) holder.getKey();
-        createBookGenreByBookId(id, genreId);
+        if (id != null) {
+            createBookGenreByBookId(id, genreId);
+        }
         return id;
     }
 
@@ -70,52 +75,12 @@ public class BookDaoJdbc implements BookDao {
 
         Book book = jdbc.queryForObject(sql, params, new BookMapper());
         Book bookGenre = getBookGenreById(id);
-        if (book.getId() == bookGenre.getId()) {
-            book.setGenre(bookGenre.getGenre());
+
+        if (book != null && book.getId().equals(bookGenre.getId())) {
+            book.setGenreList(bookGenre.getGenreList());
         }
 
         return book;
-    }
-
-    @Override
-    public List<Book> getByTitle(@NonNull String title) {
-        String sql = """
-                select book_id, book_title, author_id
-                from book
-                where book_title = :title
-                """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("title", title);
-
-        List<Book> bookList = jdbc.query(sql, params, new BookMapper());
-        bookList.forEach(b -> {
-            Book bookGenre = getBookGenreById(b.getId());
-            if (b.getId() == bookGenre.getId()) {
-                b.setGenre(bookGenre.getGenre());
-            }
-        });
-
-        return bookList;
-    }
-
-    @Override
-    public List<Book> getAll() {
-        String sql = """
-                select book_id, book_title, author_id
-                from book
-                """;
-
-        List<Book> bookList = jdbc.queryForStream(sql, Map.of(), new BookMapper())
-                .collect(Collectors.toList());
-        bookList.forEach(b -> {
-            Book bookGenre = getBookGenreById(b.getId());
-            if (b.getId() == bookGenre.getId()) {
-                b.setGenre(bookGenre.getGenre());
-            }
-        });
-
-        return bookList;
     }
 
     private Book getBookGenreById(@NonNull Integer id) {
@@ -132,7 +97,32 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public void update(@NonNull Integer id, @NonNull String title, @NonNull Integer authorId, List<Integer> genreIdList) {
+    public List<Book> getByTitle(@NonNull String title) {
+        String sql = """
+                select book_id, book_title, author_id
+                from book
+                where book_title = :title
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", title);
+
+        return jdbc.query(sql, params, new BookMapper());
+    }
+
+    @Override
+    public List<Book> getAll() {
+        String sql = """
+                select book_id, book_title, author_id
+                from book
+                """;
+
+        return jdbc.queryForStream(sql, Map.of(), new BookMapper())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public int update(@NonNull Integer id, @NonNull String title, @NonNull Integer authorId, List<Integer> genreIdList) {
         String sql = """
                 update book set book_title = :title, author_id = :author_id
                 where book_id = :id
@@ -143,38 +133,34 @@ public class BookDaoJdbc implements BookDao {
         params.addValue("title", title);
         params.addValue("author_id", authorId);
 
-        jdbc.update(sql, params);
+        int changesFieldCount = 0;
         if (genreIdList != null) {
-            updateBookGenreByBookId(id, genreIdList);
+            changesFieldCount += updateBookGenreByBookId(id, genreIdList);
         }
+        return changesFieldCount + jdbc.update(sql, params);
     }
 
-    private void updateBookGenreByBookId(@NonNull Integer bookId, @NonNull List<Integer> genreList) {
+    private int updateBookGenreByBookId(@NonNull Integer bookId, @NonNull List<Integer> genreList) {
         String sqlGenre = """
                 update book_genre set genre_id = :genre_id
                 where book_id = :book_id
                 """;
+
+        AtomicInteger changesFieldCount = new AtomicInteger();
         genreList.forEach(genre ->
-                jdbc.update(sqlGenre, Map.of("book_id", bookId, "genre_id", genre))
+                changesFieldCount.addAndGet(jdbc.update(sqlGenre, Map.of("book_id", bookId, "genre_id", genre)))
         );
+
+        return changesFieldCount.intValue();
     }
 
     @Override
-    public void delete(@NonNull Integer id) {
+    public int delete(@NonNull Integer id) {
         String sql = """
                 delete from book
                 where book_id = :id
                 """;
-        jdbc.update(sql, Map.of("id", id));
-        deleteBookGenreById(id);
-    }
-
-    private void deleteBookGenreById(@NonNull Integer id) {
-        String sql = """
-                delete from book_genre
-                where book_id = :id
-                """;
-        jdbc.update(sql, Map.of("id", id));
+        return jdbc.update(sql, Map.of("id", id));
     }
 
     @Getter
@@ -211,7 +197,7 @@ public class BookDaoJdbc implements BookDao {
 
             return Book.builder()
                     .id(bookId)
-                    .genre(genreList)
+                    .genreList(genreList)
                     .build();
         }
     }

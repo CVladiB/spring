@@ -21,12 +21,6 @@ import java.util.List;
 public class BookDaoTest {
     @Autowired
     private BookDao bookDaoJdbc;
-    private Author insertAuthor1;
-    private Author insertAuthor2;
-    private Author testAuthor;
-    private Genre insertGenre1;
-    private Genre insertGenre2;
-    private Genre testGenre;
     private Book insertBook1;
     private Book insertBook2;
     private Book insertBook3;
@@ -35,13 +29,13 @@ public class BookDaoTest {
 
     @BeforeEach
     void setUp() {
-        insertAuthor1 = new Author(1, null, null);
-        insertAuthor2 = new Author(2, null, null);
-        testAuthor = new Author(1, null, null);
+        Author insertAuthor1 = new Author(1, null, null);
+        Author insertAuthor2 = new Author(2, null, null);
+        Author testAuthor = new Author(1, null, null);
 
-        insertGenre1 = new Genre(1, null, null);
-        insertGenre2 = new Genre(2, null, null);
-        testGenre = new Genre(1, null, null);
+        Genre insertGenre1 = new Genre(1, null, null);
+        Genre insertGenre2 = new Genre(2, null, null);
+        Genre testGenre = new Genre(1, null, null);
 
         insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
         insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
@@ -117,16 +111,17 @@ public class BookDaoTest {
 
     @Test
     void book__getByTitle__correctReturnListBooks() {
+        insertBook1.setGenreList(null);
         List<Book> expected = List.of(insertBook1);
         List<Book> actual = bookDaoJdbc.getByTitle(insertBook1.getTitle());
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__getByTitle_NullTitle__correctReturnEmptyListBooks() {
         List<Book> expected = new ArrayList<>();
         List<Book> actual = bookDaoJdbc.getByTitle(null);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -134,14 +129,15 @@ public class BookDaoTest {
         String nonexistentTitle = "Smth";
         List<Book> expected = new ArrayList<>();
         List<Book> actual = bookDaoJdbc.getByTitle(nonexistentTitle);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__getAll__returnListBooks() {
+        bookList.forEach(book -> book.setGenreList(null));
         List<Book> expected = bookList;
         List<Book> actual = bookDaoJdbc.getAll();
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -173,7 +169,7 @@ public class BookDaoTest {
         List<Book> actual = bookDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertArrayEquals(expected.toArray(), actual.toArray());
+        Assertions.assertEquals(expected, actual);
     }
 
 
