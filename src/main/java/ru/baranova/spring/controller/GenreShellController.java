@@ -17,7 +17,7 @@ public class GenreShellController {
     private final GenreService genreServiceImpl;
     private final EntityPrintVisitor printer;
 
-    @ShellMethod(group = "Genre", value = "Create genre", key = {"create-genre"})
+    @ShellMethod(group = "Genre", value = "Create genre", key = {"gc"})
     public String create(String name, String description) {
         Genre genre = genreServiceImpl.create(name, description);
         if (genre != null) {
@@ -27,7 +27,7 @@ public class GenreShellController {
         }
     }
 
-    @ShellMethod(group = "Genre", value = "Read genre by Id", key = {"read-genre-id"})
+    @ShellMethod(group = "Genre", value = "Read genre by Id", key = {"gr-id"})
     public String readById(Integer id) {
         Genre genre = genreServiceImpl.readById(id);
         if (genre != null) {
@@ -38,7 +38,7 @@ public class GenreShellController {
         }
     }
 
-    @ShellMethod(group = "Genre", value = "Read genre by name", key = {"read-genre-name"})
+    @ShellMethod(group = "Genre", value = "Read genre by name", key = {"gr"})
     public String readByName(String name) {
         Genre genre = genreServiceImpl.readByName(name);
         if (genre != null) {
@@ -49,7 +49,7 @@ public class GenreShellController {
         }
     }
 
-    @ShellMethod(group = "Genre", value = "Read all genres", key = {"read-all-genre"})
+    @ShellMethod(group = "Genre", value = "Read all genres", key = {"gr-all"})
     public String readAll() {
         List<Genre> genreList = genreServiceImpl.readAll();
         if (!genreList.isEmpty()) {
@@ -60,7 +60,7 @@ public class GenreShellController {
         }
     }
 
-    @ShellMethod(group = "Genre", value = "Update genre", key = {"update-genre"})
+    @ShellMethod(group = "Genre", value = "Update genre", key = {"gu"})
     public String update(Integer id, String name, String description) {
         Genre genre = genreServiceImpl.update(id, name, description);
         if (genre != null) {
@@ -70,7 +70,7 @@ public class GenreShellController {
         }
     }
 
-    @ShellMethod(group = "Genre", value = "Delete genre", key = {"delete-genre"})
+    @ShellMethod(group = "Genre", value = "Delete genre", key = {"gd"})
     public String delete(Integer id) {
         if (genreServiceImpl.delete(id)) {
             return BusinessConstants.ShellEntityServiceLog.COMPLETE_DELETE;

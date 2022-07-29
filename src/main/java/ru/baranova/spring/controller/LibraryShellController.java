@@ -18,7 +18,7 @@ public class LibraryShellController {
 
     private final EntityPrintVisitor printer;
 
-    @ShellMethod(group = "Book", value = "Create book", key = {"create-book"})
+    @ShellMethod(group = "Book", value = "Create book", key = {"bc"})
     public String create(String title, String authorSurname, String authorName, String... genreArg) {
         Book book = libraryServiceImpl.create(title, authorSurname, authorName, genreArg);
         if (book != null) {
@@ -28,7 +28,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Create book", key = {"create-book-by-id"})
+    @ShellMethod(group = "Book", value = "Create book", key = {"bc-id"})
     public String createById(String title, Integer authorId, Integer... genreArg) {
         Book book = libraryServiceImpl.create(title, authorId, List.of(genreArg));
         if (book != null) {
@@ -38,7 +38,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Read book", key = {"read-book-id"})
+    @ShellMethod(group = "Book", value = "Read book", key = {"br-id"})
     public String readById(Integer id) {
         Book book = libraryServiceImpl.readById(id);
         if (book != null) {
@@ -49,7 +49,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Read book", key = {"read-book-title"})
+    @ShellMethod(group = "Book", value = "Read book", key = {"br"})
     public String readByTitle(String title) {
         List<Book> bookList = libraryServiceImpl.readByTitle(title);
         if (bookList != null) {
@@ -60,7 +60,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Read all book", key = {"read-all-books"})
+    @ShellMethod(group = "Book", value = "Read all book", key = {"br-all"})
     public String readAll() {
         List<Book> bookList = libraryServiceImpl.readAll();
         if (!bookList.isEmpty()) {
@@ -71,7 +71,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Update book", key = {"update-book"})
+    @ShellMethod(group = "Book", value = "Update book", key = {"bu"})
     public String update(Integer id, String title, String authorSurname, String authorName, String... genreArg) {
         Book book = libraryServiceImpl.update(id, title, authorSurname, authorName, genreArg);
         if (book != null) {
@@ -81,7 +81,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Update book", key = {"update-book-by-id"})
+    @ShellMethod(group = "Book", value = "Update book", key = {"bu-id"})
     public String updateById(Integer id, String title, Integer authorId, Integer... genreArg) {
         Book book = libraryServiceImpl.update(id, title, authorId, List.of(genreArg));
         if (book != null) {
@@ -91,7 +91,7 @@ public class LibraryShellController {
         }
     }
 
-    @ShellMethod(group = "Book", value = "Delete book", key = {"delete-book"})
+    @ShellMethod(group = "Book", value = "Delete book", key = {"bd"})
     public String delete(Integer id) {
         if (libraryServiceImpl.delete(id)) {
             return BusinessConstants.ShellEntityServiceLog.COMPLETE_DELETE;

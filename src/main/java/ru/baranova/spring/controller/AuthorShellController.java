@@ -16,7 +16,7 @@ public class AuthorShellController {
     private final AuthorService authorServiceImpl;
     private final EntityPrintVisitor printer;
 
-    @ShellMethod(group = "Author", value = "Create author", key = {"create-author"})
+    @ShellMethod(group = "Author", value = "Create author", key = {"ac"})
     public String create(String surname, String name) {
         Author author = authorServiceImpl.create(surname, name);
         if (author != null) {
@@ -26,7 +26,7 @@ public class AuthorShellController {
         }
     }
 
-    @ShellMethod(group = "Author", value = "Read author by Id", key = {"read-author-id"})
+    @ShellMethod(group = "Author", value = "Read author by Id", key = {"ar-id"})
     public String readById(Integer id) {
         Author author = authorServiceImpl.readById(id);
         if (author != null) {
@@ -37,7 +37,7 @@ public class AuthorShellController {
         }
     }
 
-    @ShellMethod(group = "Author", value = "Read author by surname and name", key = {"read-author"})
+    @ShellMethod(group = "Author", value = "Read author by surname and name", key = {"ar"})
     public String readBySurnameAndName(String surname, String name) {
         List<Author> authorList = authorServiceImpl.readBySurnameAndName(surname, name);
         if (authorList != null && !authorList.isEmpty()) {
@@ -48,7 +48,7 @@ public class AuthorShellController {
         }
     }
 
-    @ShellMethod(group = "Author", value = "Read all authors", key = {"read-all-author"})
+    @ShellMethod(group = "Author", value = "Read all authors", key = {"ar-all"})
     public String readAll() {
         List<Author> authorList = authorServiceImpl.readAll();
         if (!authorList.isEmpty()) {
@@ -59,7 +59,7 @@ public class AuthorShellController {
         }
     }
 
-    @ShellMethod(group = "Author", value = "Update author", key = {"update-author"})
+    @ShellMethod(group = "Author", value = "Update author", key = {"au"})
     public String update(Integer id, String surname, String name) {
         Author author = authorServiceImpl.update(id, surname, name);
         if (author != null) {
@@ -69,7 +69,7 @@ public class AuthorShellController {
         }
     }
 
-    @ShellMethod(group = "Author", value = "Delete author", key = {"delete-author"})
+    @ShellMethod(group = "Author", value = "Delete author", key = {"ad"})
     public String delete(Integer id) {
         if (authorServiceImpl.delete(id)) {
             return BusinessConstants.ShellEntityServiceLog.COMPLETE_DELETE;
