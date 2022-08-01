@@ -21,7 +21,12 @@ public abstract class BusinessConstants {
     public interface LibraryServiceLog {
         String WARNING_EXIST_MANY = "Существует несколько полей с указанными значениями, перепроверьте ввод или укажите Id";
         String WARNING_CREATE = "Ошибка добавления поля, перепроверьте ввод или добавьте автора и жанры отдельно";
+    }
 
-
+    public interface PrintService {
+        String WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
+        String WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
+        String WARNING_BOOK_NULL = "Ошибка печати книги, поля не заполнены";
+        String GENRE_DESCRIPTION_NULL = "описание жанра пока отсутствует";
     }
 }

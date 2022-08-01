@@ -1,24 +1,25 @@
 package ru.baranova.spring.service.data.genre;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
-import ru.baranova.spring.service.app.ParseService;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
     private final GenreDao genreDaoJdbc;
     private final CheckService checkServiceImpl;
-    private final ParseService parseServiceImpl;
     private int minInput;
     private int maxInputName;
     private int maxInputDescription;
@@ -34,18 +35,16 @@ public class GenreServiceImpl implements GenreService {
     public Genre create(@NonNull String name, String description) {
         init();
         Genre genre = null;
-        description = parseServiceImpl.parseDashToNull(description);
 
         Stream<String> nameStream = readAll().stream().map(Genre::getName);
-        if (!checkServiceImpl.isInputExist(name, nameStream, null)) {
-            if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)
-                    && (description == null
-                    || checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription))) {
-                genre = Genre.builder().name(name).description(description).build();
-                Integer id = genreDaoJdbc.create(genre);
-                genre.setId(id);
-
+        if (!checkServiceImpl.isInputExist(name, nameStream, null)
+                && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
+            if (!checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
+                description = null;
             }
+            genre = Genre.builder().name(name).description(description).build();
+            Integer id = genreDaoJdbc.create(genre);
+            genre.setId(id);
         }
         return genre;
     }
@@ -56,10 +55,13 @@ public class GenreServiceImpl implements GenreService {
         Genre genre = null;
 
         Stream<Integer> idStream = readAll().stream().map(Genre::getId);
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            genre = genreDaoJdbc.getById(id);
+        try {
+            if (checkServiceImpl.isInputExist(id, idStream, true)) {
+                genre = genreDaoJdbc.getById(id);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.info(e.getMessage());
         }
-
 
         return genre;
     }
@@ -68,9 +70,14 @@ public class GenreServiceImpl implements GenreService {
     @Override
     public Genre readByName(@NonNull String name) {
         Genre genre = null;
+
         Stream<String> nameStream = readAll().stream().map(Genre::getName);
-        if (checkServiceImpl.isInputExist(name, nameStream, true)) {
-            genre = genreDaoJdbc.getByName(name);
+        try {
+            if (checkServiceImpl.isInputExist(name, nameStream, true)) {
+                genre = genreDaoJdbc.getByName(name);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.info(e.getMessage());
         }
         return genre;
     }
@@ -89,6 +96,7 @@ public class GenreServiceImpl implements GenreService {
         if (checkServiceImpl.isInputExist(id, idStream, true)) {
             init();
             genre = genreDaoJdbc.getById(id);
+
             if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
                 genre.setName(name);
             }
@@ -96,7 +104,7 @@ public class GenreServiceImpl implements GenreService {
                 genre.setDescription(description);
             }
 
-            if (genreDaoJdbc.update(genre) == 0) {
+            if (readByName(name) != null || genreDaoJdbc.update(genre) == 0) {
                 genre = null;
             }
         }

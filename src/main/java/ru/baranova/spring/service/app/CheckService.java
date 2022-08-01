@@ -11,5 +11,5 @@ public interface CheckService {
 
     <T> boolean isInputExist(T inputStr, Stream<T> existStr, Boolean shouldExist);
 
-
+    boolean isAllFieldsNotNull(Object obj);
 }

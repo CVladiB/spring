@@ -5,6 +5,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
 
+import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -69,5 +70,23 @@ public class CheckServiceImpl implements CheckService {
         return isExist;
     }
 
+    @Override
+    public boolean isAllFieldsNotNull(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        for (Field field : obj.getClass().getDeclaredFields()) {
+            try {
+                field.setAccessible(true);
+                if (field.get(obj) == null) {
+                    log.info("{} {}", BusinessConstants.CheckServiceLog.NOTHING_INPUT, field);
+                    return false;
+                }
+            } catch (IllegalAccessException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return true;
+    }
 
 }

@@ -62,6 +62,11 @@ class GenreDaoTest {
     }
 
     @Test
+    void genre__create_DuplicateName__incorrectException() {
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDaoJdbc.create(insertGenre1));
+    }
+
+    @Test
     void genre__create_NullDescription_correctReturnNewGenre() {
         List<Integer> listExistId = genreDaoJdbc.getAll().stream().map(Genre::getId).toList();
         Integer expectedId = 1 + listExistId.stream()
@@ -120,6 +125,14 @@ class GenreDaoTest {
     @Test
     void genre__getAll__returnListGenres() {
         List<Genre> expected = genreList;
+        List<Genre> actual = genreDaoJdbc.getAll();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void genre__getAll_Empty_incorrectException() {
+        genreList.stream().map(Genre::getId).forEach(genreDaoJdbc::delete);
+        List<Genre> expected = new ArrayList<>();
         List<Genre> actual = genreDaoJdbc.getAll();
         Assertions.assertEquals(expected, actual);
     }
@@ -194,12 +207,12 @@ class GenreDaoTest {
         int countAffectedRowsExpected = 0;
         int countAffectedRowsActual;
 
-        Integer id1 = insertGenre1.getId();
-        Integer id2 = insertGenre2.getId();
 
         List<Genre> actualBeforeDelete = genreDaoJdbc.getAll();
-        countAffectedRowsActual = genreDaoJdbc.delete(actualBeforeDelete.size() + 1);
-        countAffectedRowsActual += genreDaoJdbc.delete(actualBeforeDelete.size() + 2);
+        Integer id1 = actualBeforeDelete.size() + 1;
+        Integer id2 = actualBeforeDelete.size() + 2;
+        countAffectedRowsActual = genreDaoJdbc.delete(id1);
+        countAffectedRowsActual += genreDaoJdbc.delete(id2);
 
         List<Genre> expected = actualBeforeDelete;
         List<Genre> actual = genreDaoJdbc.getAll();

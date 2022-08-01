@@ -3,6 +3,7 @@ package ru.baranova.spring.dao.book;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -32,7 +33,7 @@ public class BookDaoJdbc implements BookDao {
 
     @Nullable
     @Override
-    public Integer create(@NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreId) {
+    public Integer create(@NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreId) throws DataIntegrityViolationException {
         String sql = """
                 insert into book (book_title, author_id)
                 values (:title, :author_id)

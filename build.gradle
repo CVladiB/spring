@@ -20,14 +20,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter:2.0.1.RELEASE'
 
-    //data
+    // Fix warning unknown enum constant When.MAYBE
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+
+    // Data
     implementation 'org.postgresql:postgresql:42.3.6'
     implementation "org.flywaydb:flyway-core"
 
-    // annotation
+    // Annotation
     compileOnly "org.projectlombok:lombok:$versionLombok"
     annotationProcessor "org.projectlombok:lombok:$versionLombok"
-
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -1,6 +1,9 @@
 package ru.baranova.spring.service.data.book;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -9,18 +12,18 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.Book;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
-import ru.baranova.spring.service.app.ParseService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
     private final BookDao bookDaoJdbc;
     private final CheckService checkServiceImpl;
-    private final ParseService parseServiceImpl;
     private int minInput;
     private int maxInput;
 
@@ -35,16 +38,24 @@ public class BookServiceImpl implements BookService {
         init();
         Book book = null;
 
-        if (checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
-            book = Book.builder()
-                    .title(title)
-                    .author(Author.builder().id(authorId).build())
-                    .build();
-            Integer id = bookDaoJdbc.create(title, authorId, genreIdList);
-            if (id != null) {
-                book.setId(id);
-            } else {
-                book = null;
+        if (readAll().stream()
+                .filter(bookStream -> bookStream.getTitle().equals(title))
+                .filter(bookStream -> bookStream.getAuthor().getId().equals(authorId))
+                .map(p -> Boolean.FALSE).findAny().orElse(Boolean.TRUE)) {
+            if (checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
+                book = Book.builder()
+                        .title(title)
+                        .author(Author.builder().id(authorId).build())
+                        .genreList(genreIdList.stream().map(id -> Genre.builder().id(id).build()).toList())
+                        .build();
+                try {
+                    Integer id = bookDaoJdbc.create(title, authorId, genreIdList);
+                    if (id != null) {
+                        book.setId(id);
+                    }
+                } catch (DataIntegrityViolationException e) {
+                    book = null;
+                }
             }
         }
         return book;
@@ -55,24 +66,28 @@ public class BookServiceImpl implements BookService {
     public Book readById(@NonNull Integer id) {
         Book book = null;
 
-        if (checkServiceImpl.isCorrectInputInt(id)) {
-            Stream<Integer> idStream = readAll().stream().map(Book::getId);
+        Stream<Integer> idStream = readAll().stream().map(Book::getId);
+        try {
             if (checkServiceImpl.isInputExist(id, idStream, true)) {
                 book = bookDaoJdbc.getById(id);
             }
+        } catch (EmptyResultDataAccessException e) {
+            log.info(e.getMessage());
         }
-
         return book;
     }
 
-    @Nullable
     @Override
     public List<Book> readByTitle(@NonNull String title) {
-        List<Book> bookList = null;
+        List<Book> bookList = new ArrayList<>();
 
         Stream<String> titleStream = readAll().stream().map(Book::getTitle);
-        if (checkServiceImpl.isInputExist(title, titleStream, true)) {
-            bookList = bookDaoJdbc.getByTitle(title);
+        try {
+            if (checkServiceImpl.isInputExist(title, titleStream, true)) {
+                bookList = bookDaoJdbc.getByTitle(title);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            log.info(e.getMessage());
         }
         return bookList;
     }
@@ -85,19 +100,25 @@ public class BookServiceImpl implements BookService {
     @Nullable
     @Override
     public Book update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
-        init();
-        title = parseServiceImpl.parseDashToNull(title);
-        Book book = null;
         Stream<Integer> idStream = readAll().stream().map(Book::getId);
+        Book book = null;
 
-        if (checkServiceImpl.isInputExist(id, idStream, true) &&
-                checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
+        if (checkServiceImpl.isInputExist(id, idStream, true)) {
+            init();
             book = bookDaoJdbc.getById(id);
-            book.setTitle(title);
+
+            if (checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
+                book.setTitle(title);
+            }
+
             book.setAuthor(Author.builder().id(authorId).build());
             book.setGenreList(genreIdList.stream().map(g -> Genre.builder().id(g).build()).toList());
 
-            if (bookDaoJdbc.update(id, title, authorId, genreIdList) == 0) {
+            try {
+                if (bookDaoJdbc.update(id, book.getTitle(), authorId, genreIdList) == 0) {
+                    book = null;
+                }
+            } catch (DataIntegrityViolationException e) {
                 book = null;
             }
         }
