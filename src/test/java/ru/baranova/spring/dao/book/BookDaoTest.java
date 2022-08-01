@@ -84,10 +84,24 @@ public class BookDaoTest {
     }
 
     @Test
+    void book__create_NonexistentAuthorId__incorrectException() {
+        Assertions.assertThrows(
+                DataIntegrityViolationException.class,
+                () -> bookDaoJdbc.create(testBook.getTitle(), 100, List.of(testBook.getGenreList().get(0).getId())));
+    }
+
+    @Test
     void book__create_NullGenreId__incorrectException() {
         Assertions.assertThrows(
                 NullPointerException.class,
                 () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), null));
+    }
+
+    @Test
+    void book__create_NonexistentGenreId__incorrectException() {
+        Assertions.assertThrows(
+                DataIntegrityViolationException.class,
+                () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), List.of(100)));
     }
 
     @Test
@@ -142,12 +156,30 @@ public class BookDaoTest {
 
     @Test
     void book__update__correctChangeAllFieldBookById() {
+        int countAffectedRowsExpected = 2;
+        int countAffectedRowsActual;
         Integer id = insertBook3.getId();
-        bookDaoJdbc.update(id, testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenreList().stream().map(Genre::getId).toList());
+        countAffectedRowsActual = bookDaoJdbc.update(id
+                , testBook.getTitle()
+                , testBook.getAuthor().getId()
+                , testBook.getGenreList().stream().map(Genre::getId).toList());
         testBook.setId(id);
         Book expected = testBook;
         Book actual = bookDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    }
+
+    @Test
+    void book__update_NonexistentId__notChange() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+        Integer id = 100;
+        countAffectedRowsActual = bookDaoJdbc.update(id
+                , testBook.getTitle()
+                , testBook.getAuthor().getId()
+                , testBook.getGenreList().stream().map(Genre::getId).toList());
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
     @Test
@@ -160,17 +192,38 @@ public class BookDaoTest {
 
     @Test
     void book__delete__correctDelete() {
+        int countAffectedRowsExpected = 3;
+        int countAffectedRowsActual;
+
         List<Book> actualBeforeDelete = bookDaoJdbc.getAll();
-        bookDaoJdbc.delete(insertBook1.getId());
-        bookDaoJdbc.delete(insertBook2.getId());
-        bookDaoJdbc.delete(insertBook3.getId());
+        countAffectedRowsActual = bookDaoJdbc.delete(insertBook1.getId());
+        countAffectedRowsActual += bookDaoJdbc.delete(insertBook2.getId());
+        countAffectedRowsActual += bookDaoJdbc.delete(insertBook3.getId());
 
         List<Book> expected = new ArrayList<>();
         List<Book> actual = bookDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
+    @Test
+    void book__delete_NonexistentId__notDelete() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+
+        List<Book> actualBeforeDelete = bookDaoJdbc.getAll();
+        countAffectedRowsActual = bookDaoJdbc.delete(actualBeforeDelete.size() + 1);
+        countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 2);
+        countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 3);
+
+        List<Book> expected = actualBeforeDelete;
+        List<Book> actual = bookDaoJdbc.getAll();
+
+        Assertions.assertNotNull(actualBeforeDelete);
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    }
 
 }

@@ -5,8 +5,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
+import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.config.CheckServiceImplTestConfig;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 @SpringBootTest(classes = {CheckServiceImplTestConfig.class, StopSearchConfig.class})
@@ -130,5 +134,42 @@ class CheckServiceImplTest {
         Assertions.assertTrue(checkServiceImpl.isInputExist(inputNumber, streamOfInput, isShouldExist));
     }
 
+    @Test
+    void book__isAllFieldsNotNull__true() {
+        Author testAuthor = new Author(1, "SurnameTest", "NameTest");
+        Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        Assertions.assertTrue(checkServiceImpl.isAllFieldsNotNull(testBook));
+    }
+
+    @Test
+    void book__isAllFieldsNotNull_NullFieldNestedField_AuthorId__true() {
+        Author testAuthor = new Author(null, "SurnameTest", "NameTest");
+        Genre testGenre = new Genre(1, "NameTest", null);
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        Assertions.assertTrue(checkServiceImpl.isAllFieldsNotNull(testBook));
+    }
+
+    @Test
+    void book__isAllFieldsNotNull_NullFieldNestedField_GenreId__true() {
+        Author testAuthor = new Author(1, "SurnameTest", "NameTest");
+        Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        Assertions.assertTrue(checkServiceImpl.isAllFieldsNotNull(testBook));
+    }
+
+    @Test
+    void book__isAllFieldsNotNull_NullField_AuthorNull__false() {
+        Author testAuthor = null;
+        Genre testGenre = new Genre(1, "NameTest", null);
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        Assertions.assertFalse(checkServiceImpl.isAllFieldsNotNull(testBook));
+    }
+
+    @Test
+    void book__isAllFieldsNotNull_NullObject__false() {
+        Book testBook = null;
+        Assertions.assertFalse(checkServiceImpl.isAllFieldsNotNull(testBook));
+    }
 
 }

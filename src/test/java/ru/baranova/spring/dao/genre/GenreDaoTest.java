@@ -126,13 +126,27 @@ class GenreDaoTest {
 
     @Test
     void genre__update__correctChangeAllFieldGenreById() {
+        int countAffectedRowsExpected = 1;
+        int countAffectedRowsActual;
         Integer id = insertGenre1.getId();
         testGenre.setId(id);
-        genreDaoJdbc.update(testGenre);
+        countAffectedRowsActual = genreDaoJdbc.update(testGenre);
 
         Genre expected = testGenre;
         Genre actual = genreDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+
+    }
+
+    @Test
+    void genre__update_NonexistentId__notChange() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+        Integer id = 100;
+        testGenre.setId(id);
+        countAffectedRowsActual = genreDaoJdbc.update(testGenre);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
     @Test
@@ -157,17 +171,41 @@ class GenreDaoTest {
 
     @Test
     void genre__delete__correctDelete() {
+        int countAffectedRowsExpected = 2;
+        int countAffectedRowsActual;
+
         Integer id1 = insertGenre1.getId();
         Integer id2 = insertGenre2.getId();
 
         List<Genre> actualBeforeDelete = genreDaoJdbc.getAll();
-        genreDaoJdbc.delete(id1);
-        genreDaoJdbc.delete(id2);
+        countAffectedRowsActual = genreDaoJdbc.delete(id1);
+        countAffectedRowsActual += genreDaoJdbc.delete(id2);
 
         List<Genre> expected = new ArrayList<>();
         List<Genre> actual = genreDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    }
+
+    @Test
+    void genre__delete_NonexistentId__notDelete() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+
+        Integer id1 = insertGenre1.getId();
+        Integer id2 = insertGenre2.getId();
+
+        List<Genre> actualBeforeDelete = genreDaoJdbc.getAll();
+        countAffectedRowsActual = genreDaoJdbc.delete(actualBeforeDelete.size() + 1);
+        countAffectedRowsActual += genreDaoJdbc.delete(actualBeforeDelete.size() + 2);
+
+        List<Genre> expected = actualBeforeDelete;
+        List<Genre> actual = genreDaoJdbc.getAll();
+
+        Assertions.assertNotNull(actualBeforeDelete);
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 }

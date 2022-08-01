@@ -144,12 +144,25 @@ class AuthorDaoTest {
 
     @Test
     void author__update__correctChangeAllFieldAuthorById() {
+        int countAffectedRowsExpected = 1;
+        int countAffectedRowsActual;
         Integer id = insertAuthor1.getId();
         testAuthor.setId(id);
-        authorDaoJdbc.update(testAuthor);
+        countAffectedRowsActual = authorDaoJdbc.update(testAuthor);
         Author expected = testAuthor;
         Author actual = authorDaoJdbc.getById(id);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    }
+
+    @Test
+    void author__update_NonexistentId__notChange() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+        Integer id = 100;
+        testAuthor.setId(id);
+        countAffectedRowsActual = authorDaoJdbc.update(testAuthor);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
     @Test
@@ -168,14 +181,35 @@ class AuthorDaoTest {
 
     @Test
     void author__delete__correctDelete() {
+        int countAffectedRowsExpected = 2;
+        int countAffectedRowsActual;
+
         List<Author> actualBeforeDelete = authorDaoJdbc.getAll();
-        authorDaoJdbc.delete(insertAuthor1.getId());
-        authorDaoJdbc.delete(insertAuthor2.getId());
+        countAffectedRowsActual = authorDaoJdbc.delete(insertAuthor1.getId());
+        countAffectedRowsActual += authorDaoJdbc.delete(insertAuthor2.getId());
 
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    }
+
+    @Test
+    void author__delete_NonexistentId__notDelete() {
+        int countAffectedRowsExpected = 0;
+        int countAffectedRowsActual;
+
+        List<Author> actualBeforeDelete = authorDaoJdbc.getAll();
+        countAffectedRowsActual = authorDaoJdbc.delete(actualBeforeDelete.size() + 1);
+        countAffectedRowsActual += authorDaoJdbc.delete(actualBeforeDelete.size() + 2);
+
+        List<Author> expected = actualBeforeDelete;
+        List<Author> actual = authorDaoJdbc.getAll();
+
+        Assertions.assertNotNull(actualBeforeDelete);
+        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 }
