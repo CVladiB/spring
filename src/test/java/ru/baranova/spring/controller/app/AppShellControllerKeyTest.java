@@ -1,10 +1,11 @@
 package ru.baranova.spring.controller.app;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.shell.CommandNotFound;
 import org.springframework.shell.Shell;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AppShellController;
@@ -36,19 +37,20 @@ class AppShellControllerKeyTest {
         Mockito.verify(appServiceImpl, Mockito.never()).stopApplication();
     }
 
-    @Disabled
     @Test
     void echo_correctKey() {
-        // todo
         String test = "smth";
-        shell.evaluate(() -> config.getEcho() + " " + test);
+        String expected = test;
+        String actual = shell.evaluate(() -> config.getEcho() + " " + test).toString();
+        Assertions.assertEquals(expected, actual);
     }
 
-    @Disabled
     @Test
     void echo_incorrectKey() {
-        // todo
-        shell.evaluate(() -> "smthWrong");
+        String test = "smth";
+        Class<CommandNotFound> expected = org.springframework.shell.CommandNotFound.class;
+        Class<?> actual = shell.evaluate(() -> "smthWrong" + " " + test).getClass();
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
