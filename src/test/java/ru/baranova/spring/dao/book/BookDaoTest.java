@@ -10,7 +10,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 
 import java.util.ArrayList;
@@ -21,11 +21,11 @@ import java.util.List;
 public class BookDaoTest {
     @Autowired
     private BookDao bookDaoJdbc;
-    private Book insertBook1;
-    private Book insertBook2;
-    private Book insertBook3;
-    private Book testBook;
-    private List<Book> bookList;
+    private BookEntity insertBook1;
+    private BookEntity insertBook2;
+    private BookEntity insertBook3;
+    private BookEntity testBook;
+    private List<BookEntity> bookList;
 
     @BeforeEach
     void setUp() {
@@ -37,11 +37,10 @@ public class BookDaoTest {
         Genre insertGenre2 = new Genre(2, null, null);
         Genre testGenre = new Genre(1, null, null);
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2));
-
+        insertBook1 = new BookEntity(1, "Title1", insertAuthor1.getId(), List.of(insertGenre1.getId(), insertGenre2.getId()));
+        insertBook2 = new BookEntity(2, "Title2", insertAuthor1.getId(), List.of(insertGenre2.getId()));
+        insertBook3 = new BookEntity(3, "Title3", insertAuthor2.getId(), List.of(insertGenre1.getId()));
+        testBook = new BookEntity(null, "TitleTest", testAuthor.getId(), List.of(insertGenre2.getId()));
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }
 
@@ -49,70 +48,65 @@ public class BookDaoTest {
     void book__create__correctReturnNewBook() {
         List<Integer> listExistId = bookDaoJdbc.getAll()
                 .stream()
-                .map(Book::getId)
+                .map(BookEntity::getId)
                 .toList();
-        Integer expectedId = 1 + listExistId
-                .stream()
-                .mapToInt(v -> v)
-                .max()
-                .orElse(insertBook3.getId());
 
-        Integer actualId = bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), testBook.getGenreList().stream().map(Genre::getId).toList());
+        BookEntity expected = testBook;
+        BookEntity actual = bookDaoJdbc.create(testBook.getTitle()
+                , testBook.getAuthorId()
+                , testBook.getGenreListId());
 
-        Book expected = testBook;
-        expected.setId(expectedId);
-        Book actual = bookDaoJdbc.getById(actualId);
 
-        Assertions.assertFalse(listExistId.contains(actualId));
+        Assertions.assertFalse(listExistId.contains(actual.getId()));
         Assertions.assertEquals(expected.getTitle(), actual.getTitle());
-        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
-        Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray());
+        Assertions.assertEquals(expected.getAuthorId(), actual.getAuthorId());
+        Assertions.assertArrayEquals(expected.getGenreListId().toArray(), actual.getGenreListId().toArray());
     }
 
     @Test
     void book__create_NullTitle__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(null, testBook.getAuthor().getId(), List.of(testBook.getGenreList().get(0).getId())));
+                () -> bookDaoJdbc.create(null, testBook.getAuthorId(), testBook.getGenreListId()));
     }
 
     @Test
     void book__create_NullAuthorId__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(testBook.getTitle(), null, List.of(testBook.getGenreList().get(0).getId())));
+                () -> bookDaoJdbc.create(testBook.getTitle(), null, testBook.getGenreListId()));
     }
 
     @Test
     void book__create_NonexistentAuthorId__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(testBook.getTitle(), 100, List.of(testBook.getGenreList().get(0).getId())));
+                () -> bookDaoJdbc.create(testBook.getTitle(), 100, testBook.getGenreListId()));
     }
 
     @Test
     void book__create_NullGenreId__incorrectException() {
         Assertions.assertThrows(
                 NullPointerException.class,
-                () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), null));
+                () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthorId(), null));
     }
 
     @Test
     void book__create_NonexistentGenreId__incorrectException() {
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthor().getId(), List.of(100)));
+                () -> bookDaoJdbc.create(testBook.getTitle(), testBook.getAuthorId(), List.of(100)));
     }
 
     @Test
     void book__getById__correctReturnBookById() {
         Integer id = insertBook1.getId();
-        Book expected = insertBook1;
-        Book actual = bookDaoJdbc.getById(id);
+        BookEntity expected = insertBook1;
+        BookEntity actual = bookDaoJdbc.getById(id);
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expected.getTitle(), actual.getTitle()),
-                () -> Assertions.assertEquals(expected.getAuthor().getSurname(), actual.getAuthor().getSurname()),
-                () -> Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray()),
+                () -> Assertions.assertEquals(expected.getAuthorId(), actual.getAuthorId()),
+                () -> Assertions.assertArrayEquals(expected.getGenreListId().toArray(), actual.getGenreListId().toArray()),
                 () -> Assertions.assertEquals(expected.getId(), actual.getId())
         );
     }
@@ -125,61 +119,53 @@ public class BookDaoTest {
 
     @Test
     void book__getByTitle__correctReturnListBooks() {
-        insertBook1.setGenreList(null);
-        List<Book> expected = List.of(insertBook1);
-        List<Book> actual = bookDaoJdbc.getByTitle(insertBook1.getTitle());
+        insertBook1.setGenreListId(null);
+        List<BookEntity> expected = List.of(insertBook1);
+        List<BookEntity> actual = bookDaoJdbc.getByTitle(insertBook1.getTitle());
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__getByTitle_NullTitle__correctReturnEmptyListBooks() {
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = bookDaoJdbc.getByTitle(null);
+        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> actual = bookDaoJdbc.getByTitle(null);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__getByTitle_NonexistentTitle__correctReturnEmptyListBooks() {
         String nonexistentTitle = "Smth";
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = bookDaoJdbc.getByTitle(nonexistentTitle);
+        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> actual = bookDaoJdbc.getByTitle(nonexistentTitle);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__getAll__returnListBooks() {
-        bookList.forEach(book -> book.setGenreList(null));
-        List<Book> expected = bookList;
-        List<Book> actual = bookDaoJdbc.getAll();
+        bookList.forEach(book -> book.setGenreListId(null));
+        List<BookEntity> expected = bookList;
+        List<BookEntity> actual = bookDaoJdbc.getAll();
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__update__correctChangeAllFieldBookById() {
-        int countAffectedRowsExpected = 2;
-        int countAffectedRowsActual;
         Integer id = insertBook3.getId();
-        countAffectedRowsActual = bookDaoJdbc.update(id
-                , testBook.getTitle()
-                , testBook.getAuthor().getId()
-                , testBook.getGenreList().stream().map(Genre::getId).toList());
         testBook.setId(id);
-        Book expected = testBook;
-        Book actual = bookDaoJdbc.getById(id);
+        BookEntity expected = testBook;
+        BookEntity actual = bookDaoJdbc.update(id
+                , testBook.getTitle()
+                , testBook.getAuthorId()
+                , testBook.getGenreListId());
         Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
     @Test
-    void book__update_NonexistentId__notChange() {
-        int countAffectedRowsExpected = 0;
-        int countAffectedRowsActual;
-        Integer id = 100;
-        countAffectedRowsActual = bookDaoJdbc.update(id
-                , testBook.getTitle()
-                , testBook.getAuthor().getId()
-                , testBook.getGenreList().stream().map(Genre::getId).toList());
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    void book__update_NonexistentId__incorrectException() {
+        testBook.setId(100);
+        Assertions.assertThrows(
+                DataIntegrityViolationException.class,
+                () -> bookDaoJdbc.update(testBook.getId(), testBook.getTitle(), testBook.getAuthorId(), testBook.getGenreListId()));
     }
 
     @Test
@@ -187,7 +173,7 @@ public class BookDaoTest {
         Integer id = insertBook3.getId();
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDaoJdbc.update(id, null, testBook.getAuthor().getId(), List.of(testBook.getGenreList().get(0).getId())));
+                () -> bookDaoJdbc.update(id, null, testBook.getAuthorId(), testBook.getGenreListId()));
     }
 
     @Test
@@ -195,13 +181,13 @@ public class BookDaoTest {
         int countAffectedRowsExpected = 3;
         int countAffectedRowsActual;
 
-        List<Book> actualBeforeDelete = bookDaoJdbc.getAll();
+        List<BookEntity> actualBeforeDelete = bookDaoJdbc.getAll();
         countAffectedRowsActual = bookDaoJdbc.delete(insertBook1.getId());
         countAffectedRowsActual += bookDaoJdbc.delete(insertBook2.getId());
         countAffectedRowsActual += bookDaoJdbc.delete(insertBook3.getId());
 
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = bookDaoJdbc.getAll();
+        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> actual = bookDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertEquals(expected, actual);
@@ -213,13 +199,13 @@ public class BookDaoTest {
         int countAffectedRowsExpected = 0;
         int countAffectedRowsActual;
 
-        List<Book> actualBeforeDelete = bookDaoJdbc.getAll();
+        List<BookEntity> actualBeforeDelete = bookDaoJdbc.getAll();
         countAffectedRowsActual = bookDaoJdbc.delete(actualBeforeDelete.size() + 1);
         countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 2);
         countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 3);
 
-        List<Book> expected = actualBeforeDelete;
-        List<Book> actual = bookDaoJdbc.getAll();
+        List<BookEntity> expected = actualBeforeDelete;
+        List<BookEntity> actual = bookDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertEquals(expected, actual);

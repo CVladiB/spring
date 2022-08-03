@@ -110,18 +110,15 @@ public class AuthorServiceImpl implements AuthorService {
     public Author update(@NonNull Integer id, String surname, String name) {
         Stream<Integer> idStream = readAll().stream().map(Author::getId);
         Author author = null;
-
         if (checkServiceImpl.isInputExist(id, idStream, true)) {
             init();
             author = authorDaoJdbc.getById(id);
-
             if (checkServiceImpl.isCorrectSymbolsInInputString(surname, minInput, maxInputSurname)) {
                 author.setSurname(surname);
             }
             if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
                 author.setName(name);
             }
-
             if (readBySurnameAndName(surname, name) != null || authorDaoJdbc.update(author) == 0) {
                 author = null;
             }

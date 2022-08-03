@@ -30,6 +30,18 @@ class GenreServiceImplDeleteTest {
         genreList = List.of(insertGenre1, insertGenre2);
     }
 
+    @Test
+    void genre__delete__true() {
+        int countAffectedRows = 1;
+        Integer inputId = genreList.size();
+
+        Mockito.doReturn(genreList).when(genreServiceImpl).readAll();
+        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
+                .thenReturn(Boolean.TRUE);
+        Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(countAffectedRows);
+
+        Assertions.assertTrue(genreServiceImpl.delete(inputId));
+    }
 
     @Test
     void genre__delete_NonexistentId__false() {

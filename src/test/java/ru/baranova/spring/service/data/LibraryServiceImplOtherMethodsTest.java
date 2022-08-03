@@ -75,6 +75,22 @@ class LibraryServiceImplOtherMethodsTest {
     }
 
     @Test
+    void author__checkAndCreateAuthorForBook_ErrorCreate__returnNull() {
+        String inputAuthorSurname = insertAuthor1.getSurname();
+        String inputAuthorName = insertAuthor2.getName();
+
+        Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
+                .thenReturn(new ArrayList<>());
+
+        testAuthor.setId(authorList.size() + 1);
+        testAuthor.setName(inputAuthorSurname);
+        testAuthor.setName(inputAuthorName);
+        Mockito.when(authorServiceImpl.create(inputAuthorSurname, inputAuthorName)).thenReturn(null);
+
+        Assertions.assertNull(libraryServiceImpl.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
+    }
+
+    @Test
     void author__checkAndCreateAuthorForBook__returnOneExistAuthor() {
         String inputAuthorSurname = insertAuthor1.getSurname();
         String inputAuthorName = insertAuthor1.getName();

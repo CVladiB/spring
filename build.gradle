@@ -18,7 +18,7 @@ dependencies {
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'org.springframework.shell:spring-shell-starter:2.0.1.RELEASE'
+    implementation 'org.springframework.shell:spring-shell-starter:2.1.0'
 
     // Fix warning unknown enum constant When.MAYBE
     implementation 'com.google.code.findbugs:jsr305:3.0.2'

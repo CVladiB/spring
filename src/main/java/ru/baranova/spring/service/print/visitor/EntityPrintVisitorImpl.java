@@ -33,7 +33,8 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
 
             if (book.getAuthor() != null) {
                 if (checkServiceImpl.isAllFieldsNotNull(book.getAuthor())) {
-                    sb.append(", ").append(book.getAuthor().getSurname()).append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
+                    sb.append(", ").append(book.getAuthor().getSurname())
+                            .append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
                 }
             }
 

@@ -1,12 +1,11 @@
 package ru.baranova.spring.dao.author;
 
-import org.springframework.lang.NonNull;
 import ru.baranova.spring.domain.Author;
 
 import java.util.List;
 
 public interface AuthorDao {
-    Integer create(@NonNull Author author);
+    Author create(String surname, String name);
 
     Author getById(Integer id);
 
@@ -14,7 +13,7 @@ public interface AuthorDao {
 
     List<Author> getAll();
 
-    int update(Author author);
+    Author update(Integer id, String surname, String name);
 
     int delete(Integer id);
 }

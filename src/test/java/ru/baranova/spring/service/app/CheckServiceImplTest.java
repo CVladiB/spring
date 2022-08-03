@@ -2,6 +2,9 @@ package ru.baranova.spring.service.app;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
@@ -18,59 +21,38 @@ class CheckServiceImplTest {
     @Autowired
     private CheckService checkServiceImpl;
 
-    @Test
-    void string_Min_Max__isCorrectSymbolsInInputString__true() {
-        String inputStr = "azAZаяАЯёЁ-";
+    @ParameterizedTest
+    @ValueSource(strings = {"azAZаяАЯёЁ-"})
+    void string_Min_Max__isCorrectSymbolsInInputString__true(String inputStr) {
         int minSizeInputStr = 1;
         int maxSizeInputStr = 20;
         Assertions.assertTrue(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
     }
 
-    @Test
-    void string_Min_Max__isCorrectSymbolsInInputString_WrongSymbol__false() {
-        String inputStr = "a!zAZаяАЯёЁ-";
+    @ParameterizedTest
+    @ValueSource(strings = {"a!zAZаяАЯёЁ-", "123", "a zAZаяАЯёЁ", ""})
+    void string_Min_Max__isCorrectSymbolsInInputString_WrongSymbol__false(String inputStr) {
         int minSizeInputStr = 1;
         int maxSizeInputStr = 20;
         Assertions.assertFalse(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
     }
 
-    @Test
-    void string_Min_Max__isCorrectSymbolsInInputString_Number__false() {
-        String inputStr = "123";
-        int minSizeInputStr = 1;
-        int maxSizeInputStr = 20;
-        Assertions.assertFalse(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
-    }
-
-    @Test
-    void string_Min_Max__isCorrectSymbolsInInputString_Backspace__false() {
-        String inputStr = "a zAZаяАЯёЁ";
-        int minSizeInputStr = 1;
-        int maxSizeInputStr = 20;
-        Assertions.assertFalse(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
-    }
-
-    @Test
-    void string_Min_Max__isCorrectInputString_MinInput__true() {
-        String inputStr = "a";
-        int minSizeInputStr = 1;
-        int maxSizeInputStr = 20;
+    @ParameterizedTest
+    @CsvSource({
+            "a, 1, 3",
+            "aa, 1, 3"
+    })
+    void string_Min_Max__isCorrectInputString__true(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         Assertions.assertTrue(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
     }
 
-    @Test
-    void string_Min_Max__isCorrectInputString_MaxInput__true() {
-        String inputStr = "aa";
-        int minSizeInputStr = 1;
-        int maxSizeInputStr = 3;
-        Assertions.assertTrue(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
-    }
-
-    @Test
-    void string_Min_Max__isCorrectInputString_EmptyInput__false() {
-        String inputStr = "";
-        int minSizeInputStr = 0;
-        int maxSizeInputStr = 20;
+    @ParameterizedTest
+    @CsvSource({
+            "a, 2, 20",
+            "aaa, 1, 3",
+            "aaaa, 1, 3"
+    })
+    void string_Min_Max__isCorrectInputString_MinInput__false(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         Assertions.assertFalse(checkServiceImpl.isCorrectSymbolsInInputString(inputStr, minSizeInputStr, maxSizeInputStr));
     }
 

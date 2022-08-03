@@ -1,17 +1,19 @@
 package ru.baranova.spring.dao.genre;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.RowMapper;
+import lombok.SneakyThrows;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.baranova.spring.domain.Genre;
 
+import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -19,20 +21,35 @@ import java.util.List;
 public class GenreDaoJdbc implements GenreDao {
     private final NamedParameterJdbcOperations jdbc;
 
+    @SneakyThrows
+    private static Genre genreMapper(ResultSet resultSet, int rowNum) {
+        Integer id = resultSet.getInt("genre_id");
+        String name = resultSet.getString("genre_name");
+        String description = resultSet.getString("genre_description");
+
+        return new Genre(id, name, description);
+    }
+
     @Override
-    public Integer create(@NonNull Genre genre) {
+    public Genre create(@NonNull String name, String description) {
         String sql = """
                 insert into genre (genre_name, genre_description)
                 values (:name, :description)
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", genre.getName());
-        params.addValue("description", genre.getDescription());
+        params.addValue("name", name);
+        params.addValue("description", description);
 
         KeyHolder holder = new GeneratedKeyHolder();
+
         jdbc.update(sql, params, holder, new String[]{"genre_id"});
-        return (Integer) holder.getKey();
+
+        return Genre.builder()
+                .id((Integer) holder.getKey())
+                .name(name)
+                .description(description)
+                .build();
     }
 
     @Override
@@ -43,10 +60,9 @@ public class GenreDaoJdbc implements GenreDao {
                 where genre_id = :id
                 """;
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
 
-        return jdbc.queryForObject(sql, params, new GenreMapper());
+        return jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
     }
 
     @Override
@@ -56,11 +72,9 @@ public class GenreDaoJdbc implements GenreDao {
                 from genre
                 where genre_name = :name
                 """;
+        MapSqlParameterSource params = new MapSqlParameterSource("name", name);
 
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("name", name);
-
-        return jdbc.queryForObject(sql, params, new GenreMapper());
+        return jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
     }
 
     @Override
@@ -70,22 +84,31 @@ public class GenreDaoJdbc implements GenreDao {
                 from genre
                 """;
 
-        return jdbc.query(sql, new GenreMapper());
+        return jdbc.query(sql, GenreDaoJdbc::genreMapper);
     }
 
     @Override
-    public int update(@NonNull Genre genre) {
+    @Nullable
+    public Genre update(@NonNull Integer id, @NotNull String name, @NotNull String description) {
         String sql = """
                 update genre set genre_name = :name, genre_description = :description
                 where genre_id = :id
                 """;
 
         MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", genre.getId());
-        params.addValue("name", genre.getName());
-        params.addValue("description", genre.getDescription());
+        params.addValue("id", id);
+        params.addValue("name", name);
+        params.addValue("description", description);
 
-        return jdbc.update(sql, params);
+        if (jdbc.update(sql, params) == 0) {
+            throw new DataIntegrityViolationException("");
+        }
+
+        return Genre.builder()
+                .id(id)
+                .name(name)
+                .description(description)
+                .build();
     }
 
     @Override
@@ -94,21 +117,8 @@ public class GenreDaoJdbc implements GenreDao {
                 delete from genre
                 where genre_id = :id
                 """;
-
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("id", id);
+        MapSqlParameterSource params = new MapSqlParameterSource("id", id);
 
         return jdbc.update(sql, params);
-    }
-
-    public static class GenreMapper implements RowMapper<Genre> {
-        @Override
-        public Genre mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-            Integer id = resultSet.getInt("genre_id");
-            String name = resultSet.getString("genre_name");
-            String description = resultSet.getString("genre_description");
-
-            return new Genre(id, name, description);
-        }
     }
 }

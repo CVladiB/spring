@@ -48,10 +48,8 @@ public class CheckServiceImpl implements CheckService {
 
     @Override
     public boolean isCorrectInputInt(Integer i) {
-        boolean isCorrect = false;
-        if (i != null) {
-            isCorrect = true;
-        } else {
+        boolean isCorrect = i != null;
+        if (!isCorrect) {
             log.info(BusinessConstants.CheckServiceLog.NOTHING_INPUT);
         }
         return isCorrect;
@@ -84,6 +82,7 @@ public class CheckServiceImpl implements CheckService {
                 }
             } catch (IllegalAccessException e) {
                 log.error(e.getMessage());
+                return false;
             }
         }
         return true;

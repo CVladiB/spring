@@ -14,8 +14,8 @@ public class AppShellController {
     private final OutputDao outputDaoConsole;
 
     @ShellMethod(group = "App", value = "Exit the shell. Stop application", key = {"sa"})
-    public void stopApplication() {
-        appServiceImpl.stopApplication();
+    public String stopApplication() {
+        return appServiceImpl.stopApplication() == 0 ? "Correct exit" : "Error";
     }
 
     @ShellMethod(group = "App", value = "Return input", key = {"echo"})

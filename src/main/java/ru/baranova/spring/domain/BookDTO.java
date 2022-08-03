@@ -7,16 +7,18 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
+import java.util.List;
+
 @Builder
 @Getter
 @Setter
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Author implements Entity {
+public class BookDTO implements Entity {
     private Integer id;
-    private String surname;
-    private String name;
-
+    private String title;
+    private Author author;
+    private List<Genre> genreList;
 
     @Override
     public void print(EntityPrintVisitor visitor) {

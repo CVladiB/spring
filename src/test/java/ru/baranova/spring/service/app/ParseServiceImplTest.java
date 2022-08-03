@@ -2,6 +2,8 @@ package ru.baranova.spring.service.app;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
@@ -23,14 +25,6 @@ class ParseServiceImplTest {
     }
 
     @Test
-    void string__parseDashToNull_AnotherSymbol__notParseCorrectEcho() {
-        String inputStr = "a";
-        String expected = inputStr;
-        String actual = parseServiceImpl.parseDashToNull(inputStr);
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
     void string__parseDashToNull_Null__correctParse() {
         String inputStr = null;
         String actual = parseServiceImpl.parseDashToNull(inputStr);
@@ -38,16 +32,16 @@ class ParseServiceImplTest {
     }
 
     @Test
-    void string__parseLinesToListByComma__correctParse() {
-        String inputStr = "a,b,c";
-        List<String> expected = List.of("a", "b", "c");
-        List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
+    void string__parseDashToNull_AnotherSymbol__notParseCorrectEcho() {
+        String inputStr = "a";
+        String expected = inputStr;
+        String actual = parseServiceImpl.parseDashToNull(inputStr);
         Assertions.assertEquals(expected, actual);
     }
 
-    @Test
-    void string__parseLinesToListByComma_ManySeparators__correctParse() {
-        String inputStr = "a,,,,,,b,c,";
+    @ParameterizedTest
+    @ValueSource(strings = {"a,b,c", "a,,,,,,b,c,"})
+    void string__parseLinesToListByComma__correctParse(String inputStr) {
         List<String> expected = List.of("a", "b", "c");
         List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
         Assertions.assertEquals(expected, actual);
@@ -64,7 +58,7 @@ class ParseServiceImplTest {
     @Test
     void string__parseLinesToListByCommaByComma_StrWithoutSeparator__correctParse_Echo() {
         String inputStr = "a";
-        List<String> expected = List.of(inputStr);
+        List<String> expected = List.of("a");
         List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
         Assertions.assertEquals(expected, actual);
     }
@@ -78,31 +72,9 @@ class ParseServiceImplTest {
         Assertions.assertEquals(expected, actual);
     }
 
-    @Test
-    void string__parseStringToInt_Backspace__notParseReturnNull() {
-        String inputStr = "55 ";
-        Integer actual = parseServiceImpl.parseStringToInt(inputStr);
-        Assertions.assertNull(actual);
-    }
-
-    @Test
-    void string__parseStringToInt_Symbol__notParseReturnNull() {
-        String inputStr = "a";
-        Integer actual = parseServiceImpl.parseStringToInt(inputStr);
-        Assertions.assertNull(actual);
-    }
-
-    @Test
-    void string__parseStringToInt_Point__notParseReturnNull() {
-        String inputStr = "5.5";
-        Integer actual = parseServiceImpl.parseStringToInt(inputStr);
-        Assertions.assertNull(actual);
-    }
-
-    @Test
-    void string__parseStringToInt_Comma__notParseReturnNull() {
-        String inputStr = "5,5";
-        Integer actual = parseServiceImpl.parseStringToInt(inputStr);
-        Assertions.assertNull(actual);
+    @ParameterizedTest
+    @ValueSource(strings = {"55 ", "a", "5.5", "5,5"})
+    void string__parseStringToInt_IncorrectInput__returnNull(String inputStr) {
+        Assertions.assertNull(parseServiceImpl.parseStringToInt(inputStr));
     }
 }

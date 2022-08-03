@@ -1,19 +1,21 @@
 package ru.baranova.spring.dao.book;
 
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookEntity;
 
 import java.util.List;
 
 public interface BookDao {
-    Integer create(String title, Integer authorId, List<Integer> genreId);
+    BookEntity create(String title, Integer authorId, List<Integer> genreId);
 
-    Book getById(Integer id);
+    BookEntity getById(Integer id);
 
-    List<Book> getByTitle(String title);
+    BookEntity getByIdWithoutGenre(Integer id);
 
-    List<Book> getAll();
+    List<BookEntity> getByTitle(String title);
 
-    int update(Integer id, String title, Integer authorId, List<Integer> genreId);
+    List<BookEntity> getAll();
+
+    BookEntity update(Integer id, String title, Integer authorId, List<Integer> genreId);
 
     int delete(Integer id);
 }

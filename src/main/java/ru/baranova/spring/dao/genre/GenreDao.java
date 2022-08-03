@@ -5,7 +5,7 @@ import ru.baranova.spring.domain.Genre;
 import java.util.List;
 
 public interface GenreDao {
-    Integer create(Genre genre);
+    Genre create(String name, String description);
 
     Genre getById(Integer id);
 
@@ -13,7 +13,7 @@ public interface GenreDao {
 
     List<Genre> getAll();
 
-    int update(Genre genre);
+    Genre update(Integer id, String name, String description);
 
     int delete(Integer id);
 }

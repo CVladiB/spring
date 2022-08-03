@@ -34,36 +34,28 @@ class AuthorDaoTest {
 
     @Test
     void author__create__correctReturnNewAuthor() {
-        List<Integer> listExistId = authorDaoJdbc.getAll()
-                .stream()
+        List<Integer> listExistId = authorDaoJdbc.getAll().stream()
                 .map(Author::getId)
                 .toList();
-        Integer expectedId = 1 + listExistId.stream()
-                .mapToInt(v -> v)
-                .max()
-                .orElse(insertAuthor2.getId());
-
-        Integer actualId = authorDaoJdbc.create(testAuthor);
 
         Author expected = testAuthor;
-        expected.setId(expectedId);
-        Author actual = authorDaoJdbc.getById(actualId);
+        Author actual = authorDaoJdbc.create(testAuthor.getSurname(), testAuthor.getName());
 
-        Assertions.assertFalse(listExistId.contains(actualId));
+        Assertions.assertFalse(listExistId.contains(actual.getId()));
         Assertions.assertEquals(expected.getSurname(), actual.getSurname());
         Assertions.assertEquals(expected.getName(), actual.getName());
     }
 
     @Test
     void author__create_NullSurname__incorrectException() {
-        testAuthor.setSurname(null);
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.create(testAuthor));
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> authorDaoJdbc.create(null, testAuthor.getName()));
     }
 
     @Test
     void author__create_NullName__incorrectException() {
-        testAuthor.setName(null);
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.create(testAuthor));
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> authorDaoJdbc.create(testAuthor.getSurname(), null));
     }
 
     @Test
@@ -144,39 +136,32 @@ class AuthorDaoTest {
 
     @Test
     void author__update__correctChangeAllFieldAuthorById() {
-        int countAffectedRowsExpected = 1;
-        int countAffectedRowsActual;
         Integer id = insertAuthor1.getId();
         testAuthor.setId(id);
-        countAffectedRowsActual = authorDaoJdbc.update(testAuthor);
         Author expected = testAuthor;
-        Author actual = authorDaoJdbc.getById(id);
+        Author actual = authorDaoJdbc.update(testAuthor.getId(), testAuthor.getSurname(), testAuthor.getName());
         Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
     @Test
-    void author__update_NonexistentId__notChange() {
-        int countAffectedRowsExpected = 0;
-        int countAffectedRowsActual;
-        Integer id = 100;
-        testAuthor.setId(id);
-        countAffectedRowsActual = authorDaoJdbc.update(testAuthor);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+    void author__update_NonexistentId__incorrectException() {
+        testAuthor.setId(100);
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> authorDaoJdbc.update(testAuthor.getId(), testAuthor.getSurname(), testAuthor.getName()));
     }
 
     @Test
     void author__update_NullSurname__incorrectException() {
         testAuthor.setId(insertAuthor1.getId());
-        testAuthor.setSurname(null);
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.update(testAuthor));
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> authorDaoJdbc.update(testAuthor.getId(), null, testAuthor.getName()));
     }
 
     @Test
     void author__update_NullName__incorrectException() {
         testAuthor.setId(insertAuthor1.getId());
-        testAuthor.setName(null);
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.update(testAuthor));
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> authorDaoJdbc.update(testAuthor.getId(), testAuthor.getSurname(), null));
     }
 
     @Test

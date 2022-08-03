@@ -57,8 +57,12 @@ public class LibraryShellController {
     public String readById(Integer id) {
         Book book = libraryServiceImpl.readById(id);
         if (book != null) {
-            printer.print(book);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                printer.print(book);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_BOOK_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -67,9 +71,13 @@ public class LibraryShellController {
     @ShellMethod(group = "Book", value = "Read book", key = {"br"})
     public String readByTitle(String title) {
         List<Book> bookList = libraryServiceImpl.readByTitle(title);
-        if (bookList != null) {
-            bookList.forEach(printer::print);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+        if (!bookList.isEmpty()) {
+            try {
+                bookList.forEach(printer::print);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_BOOK_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -79,8 +87,12 @@ public class LibraryShellController {
     public String readAll() {
         List<Book> bookList = libraryServiceImpl.readAll();
         if (!bookList.isEmpty()) {
-            bookList.forEach(printer::print);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                bookList.forEach(printer::print);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_BOOK_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
