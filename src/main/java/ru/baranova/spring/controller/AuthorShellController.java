@@ -30,8 +30,12 @@ public class AuthorShellController {
     public String readById(Integer id) {
         Author author = authorServiceImpl.readById(id);
         if (author != null) {
-            printer.print(author);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                printer.print(author);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -40,9 +44,13 @@ public class AuthorShellController {
     @ShellMethod(group = "Author", value = "Read author by surname and name", key = {"ar"})
     public String readBySurnameAndName(String surname, String name) {
         List<Author> authorList = authorServiceImpl.readBySurnameAndName(surname, name);
-        if (authorList != null && !authorList.isEmpty()) {
-            authorList.forEach(printer::print);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+        if (!authorList.isEmpty()) {
+            try {
+                authorList.forEach(printer::print);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -52,8 +60,12 @@ public class AuthorShellController {
     public String readAll() {
         List<Author> authorList = authorServiceImpl.readAll();
         if (!authorList.isEmpty()) {
-            authorList.forEach(printer::print);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                authorList.forEach(printer::print);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.book.BookDao;
 import ru.baranova.spring.domain.Author;
@@ -69,6 +70,18 @@ class BookServiceImplReadTest {
     }
 
     @Test
+    void book__readById_Exception__returnNull() {
+        Integer inputId = bookList.size();
+
+        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
+        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
+                .thenReturn(Boolean.TRUE);
+        Mockito.when(bookDaoJdbc.getById(inputId)).thenThrow(EmptyResultDataAccessException.class);
+
+        Assertions.assertNull(bookServiceImpl.readById(inputId));
+    }
+
+    @Test
     void book__readByTitle__correctReturnListObject() {
         insertBook2.setTitle(insertBook1.getTitle());
         String inputTitle = insertBook1.getTitle();
@@ -91,7 +104,21 @@ class BookServiceImplReadTest {
         Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
         Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputTitle), Mockito.any(), Mockito.any()))
                 .thenReturn(Boolean.FALSE);
-        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenReturn(List.of(insertBook1, insertBook2));
+
+        List<Book> expected = new ArrayList<>();
+        List<Book> actual = bookServiceImpl.readByTitle(inputTitle);
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__readByTitle_Exception__returnNull() {
+        String inputTitle = testBook.getTitle();
+
+        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
+        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputTitle), Mockito.any(), Mockito.any()))
+                .thenReturn(Boolean.TRUE);
+        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenThrow(EmptyResultDataAccessException.class);
 
         List<Book> expected = new ArrayList<>();
         List<Book> actual = bookServiceImpl.readByTitle(inputTitle);

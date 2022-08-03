@@ -21,11 +21,12 @@ public class AuthorShellControllerTestConfig {
     private String readAll;
     private String update;
     private String delete;
-    private String COMPLETE_CREATE = "Новое поле добавлено, присвоен id - %d";
-    private String COMPLETE_OUTPUT = "Корерктный вывод";
-    private String COMPLETE_UPDATE = "Поле изменено";
-    private String COMPLETE_DELETE = "Поле удалено";
-    private String WARNING = "Ошибка";
+    private String COMPLETE_CREATE;
+    private String COMPLETE_OUTPUT;
+    private String COMPLETE_UPDATE;
+    private String COMPLETE_DELETE;
+    private String WARNING;
+    private String WARNING_AUTHOR_NULL;
 
     @Bean
     public AuthorShellController authorShellController(AuthorService authorServiceImpl, EntityPrintVisitor printer) {
@@ -41,6 +42,8 @@ public class AuthorShellControllerTestConfig {
         COMPLETE_UPDATE = "Поле изменено";
         COMPLETE_DELETE = "Поле удалено";
         WARNING = "Ошибка";
+        WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
+
 
         return new AuthorShellController(authorServiceImpl, printer);
     }

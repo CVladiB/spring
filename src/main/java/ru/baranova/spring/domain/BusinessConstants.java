@@ -7,6 +7,10 @@ public abstract class BusinessConstants {
         String COMPLETE_UPDATE = "Поле изменено";
         String COMPLETE_DELETE = "Поле удалено";
         String WARNING = "Ошибка";
+        String WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
+        String WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
+        String WARNING_BOOK_NULL = "Ошибка печати книги, поля не заполнены";
+
     }
 
     public interface CheckServiceLog {
@@ -16,17 +20,16 @@ public abstract class BusinessConstants {
         String CHAR_OR_NUMBER_INPUT = "Недопустимый ввод, исключите символы";
         String SHORT_INPUT = "Слишком короткий ввод, минимум %d символов";
         String LONG_INPUT = "Слишком длинный ввод, максимум %d символов";
+
     }
 
     public interface LibraryServiceLog {
         String WARNING_EXIST_MANY = "Существует несколько полей с указанными значениями, перепроверьте ввод или укажите Id";
         String WARNING_CREATE = "Ошибка добавления поля, перепроверьте ввод или добавьте автора и жанры отдельно";
+
     }
 
     public interface PrintService {
-        String WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
-        String WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
-        String WARNING_BOOK_NULL = "Ошибка печати книги, поля не заполнены";
         String GENRE_DESCRIPTION_NULL = "описание жанра пока отсутствует";
     }
 }

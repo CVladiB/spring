@@ -31,8 +31,12 @@ public class GenreShellController {
     public String readById(Integer id) {
         Genre genre = genreServiceImpl.readById(id);
         if (genre != null) {
-            printer.print(genre);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                printer.print(genre);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -42,8 +46,12 @@ public class GenreShellController {
     public String readByName(String name) {
         Genre genre = genreServiceImpl.readByName(name);
         if (genre != null) {
-            printer.print(genre);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                printer.print(genre);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
@@ -53,8 +61,12 @@ public class GenreShellController {
     public String readAll() {
         List<Genre> genreList = genreServiceImpl.readAll();
         if (!genreList.isEmpty()) {
-            genreList.forEach(printer::print);
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            try {
+                genreList.forEach(printer::print);
+                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
+            } catch (NullPointerException e) {
+                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+            }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
