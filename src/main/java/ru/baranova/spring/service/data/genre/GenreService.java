@@ -5,7 +5,7 @@ import ru.baranova.spring.domain.Genre;
 import java.util.List;
 
 public interface GenreService {
-    Genre create(String title, String description);
+    Genre create(String name, String description);
 
     Genre readById(Integer id);
 
@@ -17,4 +17,7 @@ public interface GenreService {
 
     boolean delete(Integer id);
 
+    boolean checkExist(Integer id);
+
+    boolean checkExist(String name);
 }

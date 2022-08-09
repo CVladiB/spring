@@ -2,140 +2,131 @@ package ru.baranova.spring.service.data.book;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.book.BookDao;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.domain.BookEntity;
+import ru.baranova.spring.domain.BusinessConstants;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
 
+    private final static int MIN_INPUT = 3;
+    private final static int MAX_INPUT = 40;
     private final BookDao bookDaoJdbc;
     private final CheckService checkServiceImpl;
-    private int minInput;
-    private int maxInput;
-
-    private void init() {
-        minInput = 3;
-        maxInput = 40;
-    }
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
-        init();
-        Book book = null;
-
-        if (readAll().stream()
-                .filter(bookStream -> bookStream.getTitle().equals(title))
-                .filter(bookStream -> bookStream.getAuthor().getId().equals(authorId))
-                .map(p -> Boolean.FALSE).findAny().orElse(Boolean.TRUE)) {
-            if (checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
-                book = Book.builder()
-                        .title(title)
-                        .author(Author.builder().id(authorId).build())
-                        .genreList(genreIdList.stream().map(id -> Genre.builder().id(id).build()).toList())
-                        .build();
-                try {
-                    Integer id = bookDaoJdbc.create(title, authorId, genreIdList);
-                    if (id != null) {
-                        book.setId(id);
-                    }
-                } catch (DataIntegrityViolationException e) {
-                    book = null;
-                }
-            }
-        }
-        return book;
-    }
-
-    @Nullable
-    @Override
-    public Book readById(@NonNull Integer id) {
-        Book book = null;
-
-        Stream<Integer> idStream = readAll().stream().map(Book::getId);
+    public BookEntity create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
+        BookEntity bookEntity = null;
         try {
-            if (checkServiceImpl.isInputExist(id, idStream, true)) {
-                book = bookDaoJdbc.getById(id);
+            if (!checkExist(title, authorId) && checkServiceImpl.isCorrectInputString(title, MIN_INPUT, MAX_INPUT)) {
+                bookEntity = bookDaoJdbc.create(title, authorId, genreIdList);
             }
-        } catch (EmptyResultDataAccessException e) {
-            log.info(e.getMessage());
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
         }
-        return book;
-    }
-
-    @Override
-    public List<Book> readByTitle(@NonNull String title) {
-        List<Book> bookList = new ArrayList<>();
-
-        Stream<String> titleStream = readAll().stream().map(Book::getTitle);
-        try {
-            if (checkServiceImpl.isInputExist(title, titleStream, true)) {
-                bookList = bookDaoJdbc.getByTitle(title);
-            }
-        } catch (EmptyResultDataAccessException e) {
-            log.info(e.getMessage());
-        }
-        return bookList;
-    }
-
-    @Override
-    public List<Book> readAll() {
-        return bookDaoJdbc.getAll();
+        return bookEntity;
     }
 
     @Nullable
     @Override
-    public Book update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
-        Stream<Integer> idStream = readAll().stream().map(Book::getId);
-        Book book = null;
-
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            init();
-            book = bookDaoJdbc.getById(id);
-
-            if (checkServiceImpl.isCorrectInputString(title, minInput, maxInput)) {
-                book.setTitle(title);
-            }
-
-            book.setAuthor(Author.builder().id(authorId).build());
-            book.setGenreList(genreIdList.stream().map(g -> Genre.builder().id(g).build()).toList());
-
-            try {
-                if (bookDaoJdbc.update(id, book.getTitle(), authorId, genreIdList) == 0) {
-                    book = null;
-                }
-            } catch (DataIntegrityViolationException e) {
-                book = null;
-            }
+    public BookEntity readById(@NonNull Integer id) {
+        try {
+            return bookDaoJdbc.getById(id);
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return null;
         }
-        return book;
+    }
+
+    @Override
+    public List<BookEntity> readByTitle(@NonNull String title) {
+        try {
+            return bookDaoJdbc.getByTitle(title);
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<BookEntity> readAll() {
+        try {
+            return bookDaoJdbc.getAll();
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return new ArrayList<>();
+        }
+    }
+
+    @Nullable
+    @Override
+    public BookEntity update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
+        BookEntity bookEntity = null;
+        try {
+            if (checkExist(id) && !checkExist(title, authorId)) {
+                if (!checkServiceImpl.isCorrectInputString(title, MIN_INPUT, MAX_INPUT)) {
+                    title = bookDaoJdbc.getById(id).getTitle();
+                }
+                bookEntity = bookDaoJdbc.update(id, title, authorId, genreIdList);
+            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+        }
+        return bookEntity;
     }
 
     @Override
     public boolean delete(@NonNull Integer id) {
-        boolean isComplete = false;
-        Stream<Integer> idStream = readAll().stream().map(Book::getId);
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            bookDaoJdbc.delete(id);
-            if (bookDaoJdbc.delete(id) > 0) {
-                isComplete = true;
-            }
+        try {
+            return checkExist(id) && bookDaoJdbc.delete(id) > 0;
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return false;
         }
-        return isComplete;
+    }
+
+    public boolean checkExist(Integer id) {
+        boolean isExist = false;
+        try {
+            if (readById(id) == null) {
+                log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
+            } else {
+                isExist = true;
+            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+        }
+        return isExist;
+    }
+
+    public boolean checkExist(String title, Integer authorId) {
+        boolean isExist = true;
+        try {
+            if (Optional.ofNullable(readByTitle(title))
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .noneMatch(bookAuthorId -> bookAuthorId.getAuthorId().equals(authorId))) {
+                isExist = false;
+            } else {
+                log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST);
+            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+        }
+        return isExist;
     }
 
 }

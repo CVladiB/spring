@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.book.BookService;
 
@@ -21,14 +22,14 @@ class LibraryServiceImplReadTest {
     private BookService bookServiceImpl;
     @Autowired
     private LibraryService libraryServiceImpl;
-    private Book insertBook1;
-    private Book insertBook2;
-    private Book insertBook3;
-    private Book emptyInsertBook1;
-    private Book emptyInsertBook2;
-    private Book emptyInsertBook3;
-    private List<Book> bookList;
-    private List<Book> emptyBookList;
+    private BookDTO insertBook1;
+    private BookDTO insertBook2;
+    private BookDTO insertBook3;
+    private BookEntity emptyInsertBook1;
+    private BookEntity emptyInsertBook2;
+    private BookEntity emptyInsertBook3;
+    private List<BookDTO> bookList;
+    private List<BookEntity> emptyBookList;
 
     @BeforeEach
     void setUp() {
@@ -37,17 +38,13 @@ class LibraryServiceImplReadTest {
         Genre insertGenre1 = new Genre(1, "Name1", "Description1");
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
+        insertBook1 = new BookDTO(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
+        insertBook2 = new BookDTO(2, "Title2", insertAuthor1, List.of(insertGenre2));
+        insertBook3 = new BookDTO(3, "Title3", insertAuthor2, List.of(insertGenre1));
         bookList = List.of(insertBook1, insertBook2, insertBook3);
-        emptyInsertBook1 = new Book(1, "Title1", new Author(1, null, null), List.of(
-                new Genre(1, null, null)
-                , new Genre(2, null, null)));
-        emptyInsertBook2 = new Book(2, "Title2", new Author(1, null, null)
-                , List.of(new Genre(2, null, null)));
-        emptyInsertBook3 = new Book(3, "Title3", new Author(2, null, null)
-                , List.of(new Genre(1, null, null)));
+        emptyInsertBook1 = new BookEntity(1, "Title1", 1, List.of(1, 2));
+        emptyInsertBook2 = new BookEntity(2, "Title2", 1, List.of(2));
+        emptyInsertBook3 = new BookEntity(3, "Title3", 2, List.of(1));
         emptyBookList = List.of(emptyInsertBook1, emptyInsertBook2, emptyInsertBook3);
     }
 
@@ -57,8 +54,8 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookServiceImpl.readById(id)).thenReturn(emptyInsertBook1);
         Mockito.doReturn(insertBook1).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        Book expected = insertBook1;
-        Book actual = libraryServiceImpl.readById(id);
+        BookDTO expected = insertBook1;
+        BookDTO actual = libraryServiceImpl.readById(id);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -88,8 +85,8 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(List.of(emptyInsertBook1));
         Mockito.doReturn(insertBook1).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        List<Book> expected = List.of(insertBook1);
-        List<Book> actual = libraryServiceImpl.readByTitle(title);
+        List<BookDTO> expected = List.of(insertBook1);
+        List<BookDTO> actual = libraryServiceImpl.readByTitle(title);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -100,8 +97,8 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(new ArrayList<>());
         Mockito.doReturn(insertBook1).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = libraryServiceImpl.readByTitle(title);
+        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> actual = libraryServiceImpl.readByTitle(title);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -112,8 +109,8 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(List.of(emptyInsertBook1));
         Mockito.doReturn(null).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = libraryServiceImpl.readByTitle(title);
+        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> actual = libraryServiceImpl.readByTitle(title);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -125,8 +122,8 @@ class LibraryServiceImplReadTest {
         Mockito.doReturn(insertBook2).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook2);
         Mockito.doReturn(insertBook3).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook3);
 
-        List<Book> expected = bookList;
-        List<Book> actual = libraryServiceImpl.readAll();
+        List<BookDTO> expected = bookList;
+        List<BookDTO> actual = libraryServiceImpl.readAll();
 
         Assertions.assertEquals(expected, actual);
     }
@@ -138,8 +135,8 @@ class LibraryServiceImplReadTest {
         Mockito.doReturn(insertBook2).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook2);
         Mockito.doReturn(null).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook3);
 
-        List<Book> expected = List.of(insertBook1, insertBook2);
-        List<Book> actual = libraryServiceImpl.readAll();
+        List<BookDTO> expected = List.of(insertBook1, insertBook2);
+        List<BookDTO> actual = libraryServiceImpl.readAll();
 
         Assertions.assertEquals(expected, actual);
     }
@@ -148,8 +145,8 @@ class LibraryServiceImplReadTest {
     void book__readAll_NotFields__correctReturnEmptyList() {
         Mockito.when(bookServiceImpl.readAll()).thenReturn(new ArrayList<>());
 
-        List<Book> expected = new ArrayList<>();
-        List<Book> actual = libraryServiceImpl.readAll();
+        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> actual = libraryServiceImpl.readAll();
 
         Assertions.assertEquals(expected, actual);
     }

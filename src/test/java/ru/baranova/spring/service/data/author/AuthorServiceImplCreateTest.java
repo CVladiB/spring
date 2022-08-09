@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.author.AuthorDao;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(classes = {AuthorServiceImplTestConfig.class, StopSearchConfig.class})
@@ -45,37 +47,38 @@ class AuthorServiceImplCreateTest {
         String inputName = testAuthor.getName();
         Integer newId = authorList.size() + 1;
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.TRUE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
                 .thenReturn(Boolean.TRUE);
-
-        Mockito.when(authorDaoJdbc.create(Mockito.any())).thenReturn(newId);
-
         testAuthor.setId(newId);
+        Mockito.when(authorDaoJdbc.create(Mockito.any(), Mockito.any())).thenReturn(testAuthor);
+
         Author expected = testAuthor;
         Author actual = authorServiceImpl.create(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    void author__create_ExistSurname__returnNull() {
-        String inputSurname = insertAuthor1.getSurname();
+    void author__create_Exception__returnNull() {
+        String inputSurname = testAuthor.getSurname();
         String inputName = testAuthor.getName();
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
+        Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
+        Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
+                .thenReturn(Boolean.TRUE);
+        Mockito.doThrow(DataIntegrityViolationException.class).when(authorDaoJdbc).create(Mockito.any(), Mockito.any());
+
+        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+    }
+
+    @Test
+    void author__create_ExistNameSurnameException__returnNull() {
+        String inputSurname = insertAuthor1.getSurname();
+        String inputName = insertAuthor1.getName();
+
+        Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName)).thenReturn(List.of(insertAuthor1));
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.TRUE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
@@ -85,23 +88,43 @@ class AuthorServiceImplCreateTest {
     }
 
     @Test
-    void author__create_ExistName__returnNull() {
+    void author__create_ExistSurname__correctReturnNewObject() {
+        testAuthor.setSurname(insertAuthor1.getSurname());
         String inputSurname = testAuthor.getSurname();
-        String inputName = insertAuthor1.getName();
+        String inputName = testAuthor.getName();
+        Integer newId = authorList.size() + 1;
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
+        Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName)).thenReturn(new ArrayList<>());
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.TRUE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
                 .thenReturn(Boolean.TRUE);
+        testAuthor.setId(newId);
+        Mockito.when(authorDaoJdbc.create(Mockito.any(), Mockito.any())).thenReturn(testAuthor);
 
+        Author expected = testAuthor;
+        Author actual = authorServiceImpl.create(inputSurname, inputName);
+        Assertions.assertEquals(expected, actual);
+    }
 
-        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+    @Test
+    void author__create_ExistName__correctReturnNewObject() {
+        String inputSurname = testAuthor.getSurname();
+        testAuthor.setName(insertAuthor1.getName());
+        String inputName = testAuthor.getName();
+        Integer newId = authorList.size() + 1;
+
+        Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName)).thenReturn(new ArrayList<>());
+        Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
+                .thenReturn(Boolean.TRUE);
+        Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
+                .thenReturn(Boolean.TRUE);
+        testAuthor.setId(newId);
+        Mockito.when(authorDaoJdbc.create(Mockito.any(), Mockito.any())).thenReturn(testAuthor);
+
+        Author expected = testAuthor;
+        Author actual = authorServiceImpl.create(inputSurname, inputName);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -109,12 +132,6 @@ class AuthorServiceImplCreateTest {
         String inputSurname = "smth";
         String inputName = testAuthor.getName();
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.FALSE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))
@@ -128,12 +145,6 @@ class AuthorServiceImplCreateTest {
         String inputSurname = testAuthor.getSurname();
         String inputName = "smth";
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputSurname, minInput, maxInputSurname))
                 .thenReturn(Boolean.TRUE);
         Mockito.when(checkServiceImpl.isCorrectSymbolsInInputString(inputName, minInput, maxInputName))

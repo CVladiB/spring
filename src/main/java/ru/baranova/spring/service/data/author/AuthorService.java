@@ -17,4 +17,8 @@ public interface AuthorService {
 
     boolean delete(Integer id);
 
+    boolean checkExist(Integer id);
+
+    boolean checkIfNotExist(String surname, String name);
+
 }

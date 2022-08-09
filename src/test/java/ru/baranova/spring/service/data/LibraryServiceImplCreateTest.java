@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
@@ -32,9 +33,9 @@ class LibraryServiceImplCreateTest {
     private List<Genre> genreList;
     private Author testAuthor;
     private List<Author> authorList;
-    private Book testBook;
-    private Book emptyTestBook;
-    private List<Book> bookList;
+    private BookDTO testBook;
+    private BookEntity emptyTestBook;
+    private List<BookDTO> bookList;
 
     @BeforeEach
     void setUp() {
@@ -49,13 +50,11 @@ class LibraryServiceImplCreateTest {
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
 
-        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2));
-        emptyTestBook = new Book(null, "TitleTest", new Author(3, null, null), List.of(
-                new Genre(3, null, null)
-                , new Genre(4, null, null)));
+        BookDTO insertBook1 = new BookDTO(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
+        BookDTO insertBook2 = new BookDTO(2, "Title2", insertAuthor1, List.of(insertGenre2));
+        BookDTO insertBook3 = new BookDTO(3, "Title3", insertAuthor2, List.of(insertGenre1));
+        testBook = new BookDTO(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2));
+        emptyTestBook = new BookEntity(null, "TitleTest", 3, List.of(3, 4));
 
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }
@@ -79,8 +78,8 @@ class LibraryServiceImplCreateTest {
         Mockito.when(bookServiceImpl.create(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(emptyTestBook);
 
         testBook.setId(newId);
-        Book expected = testBook;
-        Book actual = libraryServiceImpl.create(inputTitle, inputAuthorSurname, inputAuthorName, inputGenreNameList);
+        BookDTO expected = testBook;
+        BookDTO actual = libraryServiceImpl.create(inputTitle, inputAuthorSurname, inputAuthorName, inputGenreNameList);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -156,8 +155,8 @@ class LibraryServiceImplCreateTest {
                 .when(libraryServiceImpl).checkAndSetFieldsToBook(emptyTestBook);
 
         testBook.setId(newId);
-        Book expected = testBook;
-        Book actual = libraryServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList);
+        BookDTO expected = testBook;
+        BookDTO actual = libraryServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList);
 
         Assertions.assertEquals(expected, actual);
     }

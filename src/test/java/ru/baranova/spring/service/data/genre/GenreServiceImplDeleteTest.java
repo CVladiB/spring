@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
-import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
 
@@ -17,8 +17,6 @@ import java.util.List;
 class GenreServiceImplDeleteTest {
     @Autowired
     private GenreDao genreDaoJdbc;
-    @Autowired
-    private CheckService checkServiceImpl;
     @Autowired
     private GenreService genreServiceImpl;
     private List<Genre> genreList;
@@ -34,23 +32,22 @@ class GenreServiceImplDeleteTest {
     void genre__delete__true() {
         int countAffectedRows = 1;
         Integer inputId = genreList.size();
-
-        Mockito.doReturn(genreList).when(genreServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
+        Mockito.when(genreServiceImpl.readById(inputId)).thenReturn(genreList.get(1));
         Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(countAffectedRows);
-
         Assertions.assertTrue(genreServiceImpl.delete(inputId));
+    }
+
+    @Test
+    void genre__delete_Exception__false() {
+        Integer inputId = genreList.size();
+        Mockito.doThrow(EmptyResultDataAccessException.class).when(genreDaoJdbc).delete(inputId);
+        Assertions.assertFalse(genreServiceImpl.delete(inputId));
     }
 
     @Test
     void genre__delete_NonexistentId__false() {
         Integer inputId = genreList.size() + 1;
-
-        Mockito.doReturn(genreList).when(genreServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-
+        Mockito.when(genreServiceImpl.readById(inputId)).thenReturn(null);
         Assertions.assertFalse(genreServiceImpl.delete(inputId));
     }
 
@@ -58,12 +55,8 @@ class GenreServiceImplDeleteTest {
     void genre__delete_ExistNonexistentId__false() {
         int countAffectedRows = 0;
         Integer inputId = genreList.size();
-
-        Mockito.doReturn(genreList).when(genreServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
+        Mockito.when(genreServiceImpl.readById(inputId)).thenReturn(genreList.get(0));
         Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(countAffectedRows);
-
         Assertions.assertFalse(genreServiceImpl.delete(inputId));
     }
 }

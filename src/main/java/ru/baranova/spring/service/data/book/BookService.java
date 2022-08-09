@@ -1,21 +1,24 @@
 package ru.baranova.spring.service.data.book;
 
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookEntity;
 
 import java.util.List;
 
 public interface BookService {
-    Book create(String title, Integer authorId, List<Integer> genreIdList);
+    BookEntity create(String title, Integer authorId, List<Integer> genreIdList);
 
-    Book readById(Integer id);
+    BookEntity readById(Integer id);
 
-    List<Book> readByTitle(String title);
+    List<BookEntity> readByTitle(String title);
 
 
-    List<Book> readAll();
+    List<BookEntity> readAll();
 
-    Book update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
+    BookEntity update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
 
     boolean delete(Integer id);
 
+    boolean checkExist(Integer id);
+
+    boolean checkExist(String title, Integer authorId);
 }

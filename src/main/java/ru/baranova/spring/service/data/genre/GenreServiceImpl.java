@@ -2,49 +2,41 @@ package ru.baranova.spring.service.data.genre;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.genre.GenreDao;
+import ru.baranova.spring.domain.BusinessConstants;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
+    private final static int MIN_INPUT = 3;
+    private final static int MAX_INPUT_NAME = 20;
+    private final static int MAX_INPUT_DESCRIPTION = 200;
     private final GenreDao genreDaoJdbc;
     private final CheckService checkServiceImpl;
-    private int minInput;
-    private int maxInputName;
-    private int maxInputDescription;
-
-    private void init() {
-        minInput = 3;
-        maxInputName = 20;
-        maxInputDescription = 200;
-    }
 
     @Nullable
     @Override
     public Genre create(@NonNull String name, String description) {
-        init();
         Genre genre = null;
-
-        Stream<String> nameStream = readAll().stream().map(Genre::getName);
-        if (!checkServiceImpl.isInputExist(name, nameStream, null)
-                && checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
-            if (!checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
-                description = null;
+        try {
+            if (!checkExist(name) && checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME)) {
+                description = checkServiceImpl.isCorrectSymbolsInInputString(description, MIN_INPUT, MAX_INPUT_DESCRIPTION) ?
+                        description : null;
+                genre = genreDaoJdbc.create(name, description);
             }
-            genre = Genre.builder().name(name).description(description).build();
-            Integer id = genreDaoJdbc.create(genre);
-            genre.setId(id);
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
         }
         return genre;
     }
@@ -52,61 +44,51 @@ public class GenreServiceImpl implements GenreService {
     @Nullable
     @Override
     public Genre readById(@NonNull Integer id) {
-        Genre genre = null;
-
-        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
         try {
-            if (checkServiceImpl.isInputExist(id, idStream, true)) {
-                genre = genreDaoJdbc.getById(id);
-            }
-        } catch (EmptyResultDataAccessException e) {
-            log.info(e.getMessage());
+            return genreDaoJdbc.getById(id);
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return null;
         }
-
-        return genre;
     }
 
     @Nullable
     @Override
     public Genre readByName(@NonNull String name) {
-        Genre genre = null;
-
-        Stream<String> nameStream = readAll().stream().map(Genre::getName);
         try {
-            if (checkServiceImpl.isInputExist(name, nameStream, true)) {
-                genre = genreDaoJdbc.getByName(name);
-            }
-        } catch (EmptyResultDataAccessException e) {
-            log.info(e.getMessage());
+            return genreDaoJdbc.getByName(name);
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return null;
         }
-        return genre;
     }
 
     @Override
     public List<Genre> readAll() {
-        return genreDaoJdbc.getAll();
+        try {
+            return genreDaoJdbc.getAll();
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return new ArrayList<>();
+        }
     }
 
     @Nullable
     @Override
     public Genre update(@NonNull Integer id, String name, String description) {
-        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
         Genre genre = null;
-
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            init();
-            genre = genreDaoJdbc.getById(id);
-
-            if (checkServiceImpl.isCorrectSymbolsInInputString(name, minInput, maxInputName)) {
-                genre.setName(name);
+        try {
+            if (checkExist(id) && !checkExist(name)) {
+                if (!checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME)) {
+                    name = genreDaoJdbc.getById(id).getName();
+                }
+                if (!checkServiceImpl.isCorrectSymbolsInInputString(description, MIN_INPUT, MAX_INPUT_DESCRIPTION)) {
+                    description = genreDaoJdbc.getById(id).getDescription();
+                }
+                genre = genreDaoJdbc.update(id, name, description);
             }
-            if (checkServiceImpl.isCorrectSymbolsInInputString(description, minInput, maxInputDescription)) {
-                genre.setDescription(description);
-            }
-
-            if (readByName(name) != null || genreDaoJdbc.update(genre) == 0) {
-                genre = null;
-            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
         }
         return genre;
     }
@@ -114,13 +96,41 @@ public class GenreServiceImpl implements GenreService {
     @Nullable
     @Override
     public boolean delete(@NonNull Integer id) {
-        boolean isComplete = false;
-        Stream<Integer> idStream = readAll().stream().map(Genre::getId);
-        if (checkServiceImpl.isInputExist(id, idStream, true)) {
-            if (genreDaoJdbc.delete(id) > 0) {
-                isComplete = true;
-            }
+        try {
+            return checkExist(id) && genreDaoJdbc.delete(id) > 0;
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return false;
         }
-        return isComplete;
+    }
+
+    @Override
+    public boolean checkExist(Integer id) {
+        boolean isExist = false;
+        try {
+            if (readById(id) == null) {
+                log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
+            } else {
+                isExist = true;
+            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+        }
+        return isExist;
+    }
+
+    @Override
+    public boolean checkExist(String name) {
+        boolean isExist = true;
+        try {
+            if (readByName(name) == null) {
+                isExist = false;
+            } else {
+                log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST);
+            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+        }
+        return isExist;
     }
 }

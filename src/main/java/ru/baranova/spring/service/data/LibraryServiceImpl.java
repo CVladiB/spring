@@ -6,16 +6,17 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.BusinessConstants;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,45 +28,33 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull String authorSurname, @NonNull String authorName, @NonNull List<String> genreNameList) {
+    public BookDTO create(@NonNull String title, @NonNull String authorSurname, @NonNull String authorName, @NonNull List<String> genreNameList) {
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
         List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
-        Book book = null;
         if (author != null && !genreList.isEmpty()) {
-            book = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
-        }
-
-        if (book == null) {
-            log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
-            return null;
+            BookEntity bookEntity = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
+            return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
-            book.setAuthor(author);
-            book.setGenreList(genreList);
+            log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
+            return null;
         }
-
-        return book;
     }
 
     @Nullable
     @Override
-    public Book create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
-        Book book = null;
+    public BookDTO create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         Author author = authorServiceImpl.readById(authorId);
         List<Genre> genreList = genreIdList.stream()
                 .map(genreServiceImpl::readById)
                 .filter(Objects::nonNull)
                 .toList();
         if (author != null && !genreList.isEmpty()) {
-            book = bookServiceImpl.create(title, authorId, genreIdList);
-        }
-
-        if (book == null) {
-            log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
+            BookEntity bookEntity = bookServiceImpl.create(title, authorId, genreIdList);
+            return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
-            book = checkAndSetFieldsToBook(book);
+            log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
+            return null;
         }
-
-        return book;
     }
 
     @Nullable
@@ -75,15 +64,11 @@ public class LibraryServiceImpl implements LibraryService {
         List<Author> authorList = authorServiceImpl.readBySurnameAndName(authorSurname, authorName);
         if (authorList.isEmpty()) {
             author = authorServiceImpl.create(authorSurname, authorName);
-            if (author == null) {
-                log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
-            }
         } else if (authorList.size() == 1) {
             author = authorList.get(0);
         } else {
-            log.info(BusinessConstants.LibraryServiceLog.WARNING_EXIST_MANY);
+            log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST_MANY);
         }
-
         return author;
     }
 
@@ -93,21 +78,18 @@ public class LibraryServiceImpl implements LibraryService {
                 .map(genreName -> genreServiceImpl.readByName(genreName) == null ?
                         genreServiceImpl.create(genreName, null) : genreServiceImpl.readByName(genreName))
                 .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Nullable
     @Override
-    public Book readById(Integer id) {
-        Book book = bookServiceImpl.readById(id);
-        if (book != null) {
-            book = checkAndSetFieldsToBook(book);
-        }
-        return book;
+    public BookDTO readById(Integer id) {
+        BookEntity bookEntity = bookServiceImpl.readById(id);
+        return bookEntity != null ? checkAndSetFieldsToBook(bookEntity) : null;
     }
 
     @Override
-    public List<Book> readByTitle(String title) {
+    public List<BookDTO> readByTitle(String title) {
         return bookServiceImpl.readByTitle(title)
                 .stream()
                 .map(this::checkAndSetFieldsToBook)
@@ -116,7 +98,7 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Override
-    public List<Book> readAll() {
+    public List<BookDTO> readAll() {
         return bookServiceImpl.readAll()
                 .stream()
                 .map(this::checkAndSetFieldsToBook)
@@ -126,75 +108,77 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book checkAndSetFieldsToBook(Book book) {
-        if (book.getAuthor() != null) {
-            Author author = authorServiceImpl.readById(book.getAuthor().getId());
+    public BookDTO checkAndSetFieldsToBook(@NonNull BookEntity bookEntity) {
+        Author author = null;
+        if (bookEntity.getAuthorId() != null) {
+            author = authorServiceImpl.readById(bookEntity.getAuthorId());
             if (author == null) {
                 return null;
-            } else {
-                book.setAuthor(author);
             }
         }
-
-        if (!book.getGenreList().isEmpty()) {
-            List<Genre> genreList = book.getGenreList().stream()
-                    .map(Genre::getId)
+        List<Genre> genreList = new ArrayList<>();
+        if (!bookEntity.getGenreListId().isEmpty()) {
+            genreList = bookEntity.getGenreListId().stream()
                     .map(genreServiceImpl::readById)
                     .toList();
             if (genreList.isEmpty() || genreList.contains(null)) {
                 return null;
-            } else {
-                book.setGenreList(genreList);
             }
         }
-        return book;
+        return bookEntityToBookDTO(bookEntity, author, genreList);
     }
 
     @Nullable
     @Override
-    public Book update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList) {
-        Book book = bookServiceImpl.readById(id);
+    public BookDTO update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList) {
+        BookEntity bookEntity = bookServiceImpl.readById(id);
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
         List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
 
-        if (book != null && author != null && !genreList.isEmpty()) {
-            book = bookServiceImpl.update(id, title, author.getId(), genreList.stream().map(Genre::getId).toList());
-
-            if (book == null) {
-                log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
-            } else {
-                book.setAuthor(author);
-                book.setGenreList(genreList);
-            }
+        if (bookEntity != null && author != null && !genreList.isEmpty()) {
+            bookEntity = bookServiceImpl.update(id, title, author.getId(), genreList.stream().map(Genre::getId).toList());
+            return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
-            book = null;
+            log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
+            return null;
         }
-        return book;
     }
 
     @Nullable
     @Override
-    public Book update(@NonNull Integer id, String title, Integer authorId, List<Integer> genreIdList) {
-        Book book = bookServiceImpl.readById(id);
+    public BookDTO update(@NonNull Integer id, String title, Integer authorId, List<Integer> genreIdList) {
+        BookEntity bookEntity = bookServiceImpl.readById(id);
         Author author = authorServiceImpl.readById(authorId);
         List<Genre> genreList = genreIdList.stream().map(genreServiceImpl::readById).toList();
-        if (book != null && author != null && !genreList.isEmpty()) {
-            book = bookServiceImpl.update(id, title, authorId, genreIdList);
 
-            if (book == null) {
-                log.info(BusinessConstants.LibraryServiceLog.WARNING_CREATE);
-            } else {
-                book = checkAndSetFieldsToBook(book);
-            }
+        if (bookEntity != null && author != null && !genreList.isEmpty()) {
+            bookEntity = bookServiceImpl.update(id, title, authorId, genreIdList);
+            return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
-            book = null;
+            log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
+            return null;
         }
-        return book;
     }
 
 
     @Override
     public boolean delete(Integer id) {
         return bookServiceImpl.delete(id);
+    }
+
+    private BookDTO bookEntityToBookDTO(BookEntity bookEntity, Author author, List<Genre> genreList) {
+        if (author.getId().equals(bookEntity.getAuthorId())
+                && Objects.equals(bookEntity.getGenreListId(), genreList.stream().map(Genre::getId).toList())) {
+            return BookDTO.builder()
+                    .id(bookEntity.getId())
+                    .title(bookEntity.getTitle())
+                    .author(author)
+                    .genreList(genreList)
+                    .build();
+        } else {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
+            return null;
+        }
+
     }
 }

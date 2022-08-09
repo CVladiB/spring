@@ -10,14 +10,15 @@ import org.springframework.dao.DataIntegrityViolationException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.book.BookDao;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
-class BookServiceImplCreateTest {
+class BookEntityServiceImplCreateTest {
     @Autowired
     private BookDao bookDaoJdbc;
     @Autowired
@@ -26,21 +27,24 @@ class BookServiceImplCreateTest {
     private BookService bookServiceImpl;
     private int minInput;
     private int maxInput;
-    private Book insertBook1;
-    private Book testBook;
-    private List<Book> bookList;
+    private BookEntity insertBook1;
+    private BookEntity testBook;
+    private List<BookEntity> bookList;
 
     @BeforeEach
     void setUp() {
         Author insertAuthor1 = new Author(1, null, null);
         Author insertAuthor2 = new Author(2, null, null);
+        Author testAuthor = new Author(1, null, null);
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
+        Genre testGenre = new Genre(1, null, null);
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        testBook = new Book(null, "TitleTest", insertAuthor2, List.of(insertGenre2));
-        bookList = List.of(insertBook1, insertBook2);
+        insertBook1 = new BookEntity(1, "Title1", insertAuthor1.getId(), List.of(insertGenre1.getId(), insertGenre2.getId()));
+        BookEntity insertBook2 = new BookEntity(2, "Title2", insertAuthor1.getId(), List.of(insertGenre2.getId()));
+        BookEntity insertBook3 = new BookEntity(3, "Title3", insertAuthor2.getId(), List.of(insertGenre1.getId()));
+        testBook = new BookEntity(null, "TitleTest", testAuthor.getId(), List.of(insertGenre2.getId()));
+        bookList = List.of(insertBook1, insertBook2, insertBook3);
 
         minInput = 3;
         maxInput = 40;
@@ -49,17 +53,17 @@ class BookServiceImplCreateTest {
     @Test
     void book__create__correctReturnNewObject() {
         String inputTitle = testBook.getTitle();
-        Integer inputAuthorId = testBook.getAuthor().getId();
-        List<Integer> inputGenreIdList = testBook.getGenreList().stream().map(Genre::getId).toList();
+        Integer inputAuthorId = testBook.getAuthorId();
+        List<Integer> inputGenreIdList = testBook.getGenreListId();
         Integer newId = bookList.size() + 1;
 
-        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
+        Mockito.when(bookServiceImpl.readByTitle(inputTitle)).thenReturn(new ArrayList<>());
         Mockito.when(checkServiceImpl.isCorrectInputString(inputTitle, minInput, maxInput)).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(newId);
-
         testBook.setId(newId);
-        Book expected = testBook;
-        Book actual = bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList);
+        Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(testBook);
+
+        BookEntity expected = testBook;
+        BookEntity actual = bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList);
 
         Assertions.assertEquals(expected, actual);
     }
@@ -67,12 +71,9 @@ class BookServiceImplCreateTest {
     @Test
     void book__create_IncorrectTitle__returnNull() {
         String inputTitle = "smth";
-        Integer inputAuthorId = testBook.getAuthor().getId();
-        List<Integer> inputGenreIdList = testBook.getGenreList().stream().map(Genre::getId).toList();
-
-        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
+        Integer inputAuthorId = testBook.getAuthorId();
+        List<Integer> inputGenreIdList = testBook.getGenreListId();
         Mockito.when(checkServiceImpl.isCorrectInputString(inputTitle, minInput, maxInput)).thenReturn(Boolean.FALSE);
-
         Assertions.assertNull(bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList));
     }
 
@@ -80,9 +81,8 @@ class BookServiceImplCreateTest {
     void book__create_IncorrectAuthorId__returnNull() {
         String inputTitle = testBook.getTitle();
         Integer inputAuthorId = 100;
-        List<Integer> inputGenreIdList = testBook.getGenreList().stream().map(Genre::getId).toList();
+        List<Integer> inputGenreIdList = testBook.getGenreListId();
 
-        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
         Mockito.when(checkServiceImpl.isCorrectInputString(inputTitle, minInput, maxInput)).thenReturn(Boolean.TRUE);
         Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenThrow(DataIntegrityViolationException.class);
 
@@ -92,10 +92,9 @@ class BookServiceImplCreateTest {
     @Test
     void book__create_IncorrectGenreId__returnNull() {
         String inputTitle = testBook.getTitle();
-        Integer inputAuthorId = testBook.getAuthor().getId();
+        Integer inputAuthorId = testBook.getAuthorId();
         List<Integer> inputGenreIdList = List.of(100);
 
-        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
         Mockito.when(checkServiceImpl.isCorrectInputString(inputTitle, minInput, maxInput)).thenReturn(Boolean.FALSE);
         Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenThrow(DataIntegrityViolationException.class);
 
@@ -105,11 +104,9 @@ class BookServiceImplCreateTest {
     @Test
     void book__create_IncorrectExistTitleAndAuthorId__returnNull() {
         String inputTitle = insertBook1.getTitle();
-        Integer inputAuthorId = insertBook1.getAuthor().getId();
-        List<Integer> inputGenreIdList = testBook.getGenreList().stream().map(Genre::getId).toList();
-
-        Mockito.doReturn(bookList).when(bookServiceImpl).readAll();
-
+        Integer inputAuthorId = insertBook1.getAuthorId();
+        List<Integer> inputGenreIdList = testBook.getGenreListId();
+        Mockito.when(bookServiceImpl.readByTitle(inputTitle)).thenReturn(List.of(insertBook1));
         Assertions.assertNull(bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList));
     }
 }

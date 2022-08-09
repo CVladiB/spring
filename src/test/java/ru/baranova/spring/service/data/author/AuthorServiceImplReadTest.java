@@ -6,11 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.author.AuthorDao;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 
 import java.util.ArrayList;
@@ -20,8 +20,6 @@ import java.util.List;
 class AuthorServiceImplReadTest {
     @Autowired
     private AuthorDao authorDaoJdbc;
-    @Autowired
-    private CheckService checkServiceImpl;
     @Autowired
     private ParseService parseServiceImpl;
     @Autowired
@@ -39,38 +37,23 @@ class AuthorServiceImplReadTest {
     void author__readById__correctReturnObject() {
         Integer inputId = authorList.size();
 
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
         Mockito.doReturn(authorList.get(inputId - 1)).when(authorDaoJdbc).getById(inputId);
 
         Author expected = authorList.get(inputId - 1);
         Author actual = authorServiceImpl.readById(inputId);
-
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__readById_NonexistentId__returnNull() {
         Integer inputId = authorList.size() + 1;
-
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.FALSE);
-
-
         Assertions.assertNull(authorServiceImpl.readById(inputId));
     }
 
     @Test
     void author__readById_Exception__returnNull() {
         Integer inputId = authorList.size();
-
-        Mockito.doReturn(authorList).when(authorServiceImpl).readAll();
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputId), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
         Mockito.when(authorDaoJdbc.getById(inputId)).thenThrow(EmptyResultDataAccessException.class);
-
         Assertions.assertNull(authorServiceImpl.readById(inputId));
     }
 
@@ -81,18 +64,11 @@ class AuthorServiceImplReadTest {
 
         Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
         Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-
         Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
@@ -103,16 +79,11 @@ class AuthorServiceImplReadTest {
 
         Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(null);
         Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-
         Mockito.when(authorDaoJdbc.getBySurnameAndName(null, inputName))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
@@ -123,16 +94,11 @@ class AuthorServiceImplReadTest {
 
         Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
         Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(null);
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-
         Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, null))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
@@ -146,7 +112,6 @@ class AuthorServiceImplReadTest {
 
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
@@ -157,18 +122,11 @@ class AuthorServiceImplReadTest {
 
         Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
         Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-
         Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
                 .thenReturn(new ArrayList<>());
 
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
@@ -179,28 +137,27 @@ class AuthorServiceImplReadTest {
 
         Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
         Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputSurname), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.isInputExist(Mockito.eq(inputName), Mockito.any(), Mockito.any()))
-                .thenReturn(Boolean.TRUE);
-
         Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
                 .thenThrow(EmptyResultDataAccessException.class);
 
         List<Author> expected = new ArrayList<>();
         List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
-
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__readAll__correctReturnListObject() {
         Mockito.doReturn(authorList).when(authorDaoJdbc).getAll();
-
         List<Author> expected = authorList;
         List<Author> actual = authorServiceImpl.readAll();
+        Assertions.assertEquals(expected, actual);
+    }
 
+    @Test
+    void author__readAll_Exception__EmptyList() {
+        Mockito.doThrow(DataIntegrityViolationException.class).when(authorDaoJdbc).getAll();
+        List<Author> expected = new ArrayList<>();
+        List<Author> actual = authorServiceImpl.readAll();
         Assertions.assertEquals(expected, actual);
     }
 }
