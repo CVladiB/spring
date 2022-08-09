@@ -63,7 +63,7 @@ class AuthorShellControllerTest {
         Integer id = author.getId();
         Mockito.when(authorServiceImpl.readById(id)).thenReturn(author);
         Mockito.doThrow(NullPointerException.class).when(printer).print(author);
-        String expected = config.getWARNING_AUTHOR_NULL();
+        String expected = config.getWARNING();
         String actual = authorShellController.readById(id);
         Assertions.assertEquals(expected, actual);
     }
@@ -100,7 +100,7 @@ class AuthorShellControllerTest {
         Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName))
                 .thenReturn(List.of(author1, author2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((Author) Mockito.any());
-        String expected = config.getWARNING_AUTHOR_NULL();
+        String expected = config.getWARNING();
         String actual = authorShellController.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
@@ -126,14 +126,14 @@ class AuthorShellControllerTest {
         String actual = authorShellController.readAll();
         Assertions.assertEquals(expected, actual);
     }
-    
+
     @Test
     void readAll_incorrectRead() {
         Author author1 = author;
         Author author2 = new Author(8, "surname", "name2");
         Mockito.when(authorServiceImpl.readAll()).thenReturn(List.of(author1, author2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((Author) Mockito.any());
-        String expected = config.getWARNING_AUTHOR_NULL();
+        String expected = config.getWARNING();
         String actual = authorShellController.readAll();
         Assertions.assertEquals(expected, actual);
     }

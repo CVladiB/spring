@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.LibraryShellController;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
@@ -32,14 +32,14 @@ class LibraryShellControllerTest {
     private LibraryShellControllerTestConfig config;
     private Genre genre1;
     private Genre genre2;
-    private Book book;
+    private BookDTO book;
 
     @BeforeEach
     void setUp() {
         Author author = new Author(7, "surname", "name");
         genre1 = new Genre(7, "name1", "description");
         genre2 = new Genre(8, "name2", "description");
-        book = new Book(7, "title", author, List.of(genre1, genre2));
+        book = new BookDTO(7, "title", author, List.of(genre1, genre2));
     }
 
     @Test
@@ -133,7 +133,7 @@ class LibraryShellControllerTest {
         Integer id = book.getId();
         Mockito.when(libraryServiceImpl.readById(id)).thenReturn(book);
         Mockito.doThrow(NullPointerException.class).when(printer).print(book);
-        String expected = config.getWARNING_BOOK_NULL();
+        String expected = config.getWARNING();
         String actual = libraryShellController.readById(id);
         Assertions.assertEquals(expected, actual);
     }
@@ -149,11 +149,11 @@ class LibraryShellControllerTest {
 
     @Test
     void readByTitle_correct() {
-        Book book1 = book;
-        Book book2 = new Book(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
+        BookDTO book1 = book;
+        BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         String inputTitle = book.getTitle();
         Mockito.when(libraryServiceImpl.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
-        Mockito.doNothing().when(printer).print((Book) Mockito.any());
+        Mockito.doNothing().when(printer).print((BookDTO) Mockito.any());
         String expected = config.getCOMPLETE_OUTPUT();
         String actual = libraryShellController.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
@@ -161,12 +161,12 @@ class LibraryShellControllerTest {
 
     @Test
     void readByTitle_incorrectRead() {
-        Book book1 = book;
-        Book book2 = new Book(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
+        BookDTO book1 = book;
+        BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         String inputTitle = book.getTitle();
         Mockito.when(libraryServiceImpl.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
-        Mockito.doThrow(NullPointerException.class).when(printer).print((Book) Mockito.any());
-        String expected = config.getWARNING_BOOK_NULL();
+        Mockito.doThrow(NullPointerException.class).when(printer).print((BookDTO) Mockito.any());
+        String expected = config.getWARNING();
         String actual = libraryShellController.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
     }
@@ -182,10 +182,10 @@ class LibraryShellControllerTest {
 
     @Test
     void readAll_correct() {
-        Book book1 = book;
-        Book book2 = new Book(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
+        BookDTO book1 = book;
+        BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         Mockito.when(libraryServiceImpl.readAll()).thenReturn(List.of(book1, book2));
-        Mockito.doNothing().when(printer).print((Book) Mockito.any());
+        Mockito.doNothing().when(printer).print((BookDTO) Mockito.any());
         String expected = config.getCOMPLETE_OUTPUT();
         String actual = libraryShellController.readAll();
         Assertions.assertEquals(expected, actual);
@@ -193,11 +193,11 @@ class LibraryShellControllerTest {
 
     @Test
     void readAll_incorrectRead() {
-        Book book1 = book;
-        Book book2 = new Book(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
+        BookDTO book1 = book;
+        BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         Mockito.when(libraryServiceImpl.readAll()).thenReturn(List.of(book1, book2));
-        Mockito.doThrow(NullPointerException.class).when(printer).print((Book) Mockito.any());
-        String expected = config.getWARNING_BOOK_NULL();
+        Mockito.doThrow(NullPointerException.class).when(printer).print((BookDTO) Mockito.any());
+        String expected = config.getWARNING();
         String actual = libraryShellController.readAll();
         Assertions.assertEquals(expected, actual);
     }

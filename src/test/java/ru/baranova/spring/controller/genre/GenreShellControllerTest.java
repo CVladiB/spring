@@ -64,7 +64,7 @@ class GenreShellControllerTest {
         Integer id = genre.getId();
         Mockito.when(genreServiceImpl.readById(id)).thenReturn(genre);
         Mockito.doThrow(NullPointerException.class).when(printer).print(genre);
-        String expected = config.getWARNING_GENRE_NULL();
+        String expected = config.getWARNING();
         String actual = genreShellController.readById(id);
         Assertions.assertEquals(expected, actual);
     }
@@ -94,7 +94,7 @@ class GenreShellControllerTest {
         String inputName = genre.getName();
         Mockito.when(genreServiceImpl.readByName(inputName)).thenReturn(genre);
         Mockito.doThrow(NullPointerException.class).when(printer).print((Genre) Mockito.any());
-        String expected = config.getWARNING_GENRE_NULL();
+        String expected = config.getWARNING();
         String actual = genreShellController.readByName(inputName);
         Assertions.assertEquals(expected, actual);
     }
@@ -126,7 +126,7 @@ class GenreShellControllerTest {
         Genre genre2 = new Genre(8, "surname", "name2");
         Mockito.when(genreServiceImpl.readAll()).thenReturn(List.of(genre1, genre2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((Genre) Mockito.any());
-        String expected = config.getWARNING_GENRE_NULL();
+        String expected = config.getWARNING();
         String actual = genreShellController.readAll();
         Assertions.assertEquals(expected, actual);
     }

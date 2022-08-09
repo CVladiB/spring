@@ -35,7 +35,7 @@ public class GenreShellController {
                 printer.print(genre);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
@@ -50,7 +50,7 @@ public class GenreShellController {
                 printer.print(genre);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
@@ -65,7 +65,7 @@ public class GenreShellController {
                 genreList.forEach(printer::print);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_GENRE_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;

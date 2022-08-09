@@ -34,7 +34,7 @@ public class AuthorShellController {
                 printer.print(author);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
@@ -49,7 +49,7 @@ public class AuthorShellController {
                 authorList.forEach(printer::print);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
@@ -64,7 +64,7 @@ public class AuthorShellController {
                 authorList.forEach(printer::print);
                 return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
             } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING_AUTHOR_NULL;
+                return BusinessConstants.ShellEntityServiceLog.WARNING;
             }
         } else {
             return BusinessConstants.ShellEntityServiceLog.WARNING;

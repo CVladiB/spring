@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.Shell;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.LibraryService;
 
@@ -23,14 +23,14 @@ class LibraryShellControllerKeyTest {
     private LibraryService libraryServiceImpl;
     @Autowired
     private LibraryShellControllerTestConfig config;
-    private Book book;
+    private BookDTO book;
 
     @BeforeEach
     void setUp() {
         Author author = new Author(7, "surname", "name");
         Genre genre1 = new Genre(7, "name1", "description");
         Genre genre2 = new Genre(8, "name2", "description");
-        book = new Book(7, "title", author, List.of(genre1, genre2));
+        book = new BookDTO(7, "title", author, List.of(genre1, genre2));
     }
 
     @Test
