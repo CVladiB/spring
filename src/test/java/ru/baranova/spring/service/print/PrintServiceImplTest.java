@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
@@ -25,14 +25,14 @@ class PrintServiceImplTest {
     private PrintServiceImplTestConfig config;
     private Author testAuthor;
     private Genre testGenre;
-    private Book testBook;
+    private BookEntity testBookEntity;
 
 
     @BeforeEach
     void setUp() {
         testAuthor = new Author(1, "SurnameTest", "NameTest");
         testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        testBookEntity = new BookEntity(1, "TitleTest", testAuthor.getId(), List.of(testGenre.getId()));
     }
 
     @AfterEach
@@ -71,8 +71,8 @@ class PrintServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             config.getWriter().println("Print author");
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook);
-        printServiceImpl.printEntity(testBook);
+        }).when(entityPrintVisitorImpl).print(testBookEntity);
+        printServiceImpl.printEntity(testBookEntity);
 
         String expected = "Print author\r\n";
         String actual = config.getOut().toString();

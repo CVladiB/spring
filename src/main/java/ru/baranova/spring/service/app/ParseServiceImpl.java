@@ -11,18 +11,21 @@ import java.util.regex.Pattern;
 @Slf4j
 @Service
 public class ParseServiceImpl implements ParseService {
+    private static final String comma = ",";
+    public static final Pattern separator = Pattern.compile(comma);
+    private static final String dash = "-";
+
     @Nullable
     @Override
     public String parseDashToNull(String str) {
-        return str != null && str.equals("-") ? null : str;
+        return dash.equals(str) ? null : str;
     }
 
     @Nullable
     @Override
     public List<String> parseLinesToListByComma(@NonNull String str) {
-        Pattern separator = Pattern.compile(",");
         return separator.splitAsStream(str)
-                .filter(i -> i.length() > 0)
+                .filter(i -> !i.isBlank())
                 .toList();
     }
 

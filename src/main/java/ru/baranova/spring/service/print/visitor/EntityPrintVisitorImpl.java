@@ -5,7 +5,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.dao.output.OutputDao;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.Book;
+import ru.baranova.spring.domain.BookDTO;
+import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.BusinessConstants;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.app.CheckService;
@@ -21,12 +22,29 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             String str = String.format("%d. %s %s", author.getId(), author.getSurname(), author.getName());
             outputDaoConsole.output(str);
         } else {
-            throw new NullPointerException();
+            throw new NullPointerException(BusinessConstants.PrintService.WARNING_AUTHOR_NULL);
         }
     }
 
     @Override
-    public void print(@NonNull Book book) {
+    public void print(BookEntity bookEntity) {
+        if (bookEntity.getId() != null && bookEntity.getTitle() != null) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(bookEntity.getId()).append(". \"")
+                    .append(bookEntity.getTitle()).append("\"").append(", ")
+                    .append("authorId ").append(bookEntity.getAuthorId());
+            if (!bookEntity.getGenreListId().isEmpty()) {
+                sb.append(", genreId: ");
+                bookEntity.getGenreListId().forEach(g -> sb.append(g).append(", "));
+            }
+            outputDaoConsole.output(sb.toString());
+        } else {
+            throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
+        }
+    }
+
+    @Override
+    public void print(@NonNull BookDTO book) {
         if (book.getId() != null && book.getTitle() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\"");
@@ -44,7 +62,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
                 book.getGenreList().forEach(this::print);
             }
         } else {
-            throw new NullPointerException();
+            throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
         }
     }
 
@@ -57,7 +75,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             String str = String.format("%d. %s - %s", genre.getId(), genre.getName(), genre.getDescription());
             outputDaoConsole.output(str);
         } else {
-            throw new NullPointerException();
+            throw new NullPointerException(BusinessConstants.PrintService.WARNING_GENRE_NULL);
         }
     }
 }

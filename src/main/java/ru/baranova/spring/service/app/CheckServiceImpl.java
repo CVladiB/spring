@@ -1,14 +1,12 @@
 package ru.baranova.spring.service.app;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
 
 import java.lang.reflect.Field;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -53,19 +51,6 @@ public class CheckServiceImpl implements CheckService {
             log.info(BusinessConstants.CheckServiceLog.NOTHING_INPUT);
         }
         return isCorrect;
-    }
-
-    @Override
-    public <T> boolean isInputExist(@NonNull T inputStr, @NonNull Stream<T> existStr, Boolean shouldExist) {
-        boolean isExist = existStr.anyMatch(inputStr::equals);
-
-        if (shouldExist != null && !shouldExist && isExist) {
-            log.info(BusinessConstants.CheckServiceLog.WARNING_EXIST);
-        } else if (shouldExist != null && shouldExist && !isExist) {
-            log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
-        }
-
-        return isExist;
     }
 
     @Override
