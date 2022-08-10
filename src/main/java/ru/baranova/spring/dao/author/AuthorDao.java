@@ -15,5 +15,5 @@ public interface AuthorDao {
 
     Author update(Integer id, String surname, String name);
 
-    int delete(Integer id);
+    boolean delete(Integer id);
 }

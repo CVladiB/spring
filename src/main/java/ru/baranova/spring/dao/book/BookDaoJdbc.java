@@ -190,13 +190,16 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public int delete(@NonNull Integer id) {
+    public boolean delete(@NonNull Integer id) {
         String sql = """
                 delete from book
                 where book_id = :id
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
-
-        return jdbc.update(sql, params);
+        int countAffectedRows = jdbc.update(sql, params);
+        if (countAffectedRows == 0) {
+            throw new DataIntegrityViolationException("");
+        }
+        return countAffectedRows > 0;
     }
 }

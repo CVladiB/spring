@@ -16,8 +16,4 @@ public interface GenreService {
     Genre update(Integer id, String name, String description);
 
     boolean delete(Integer id);
-
-    boolean checkExist(Integer id);
-
-    boolean checkExist(String name);
 }

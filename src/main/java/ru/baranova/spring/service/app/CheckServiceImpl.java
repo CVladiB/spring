@@ -1,22 +1,28 @@
 package ru.baranova.spring.service.app;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
 
 import java.lang.reflect.Field;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
+    private static final String correctSymbols = "[a-zA-Zа-яА-ЯёЁ\\-]+";
+    public static final Pattern checkSymbols = Pattern.compile(correctSymbols);
+    private final AppService appServiceImpl;
+
     @Override
     public boolean isCorrectSymbolsInInputString(String str, int min, int max) {
         boolean isCorrect = false;
         if (isCorrectInputString(str, min, max)) {
-            Pattern pattern = Pattern.compile("[a-zA-Zа-яА-ЯёЁ\\-]+");
-            Matcher matcher = pattern.matcher(str);
+            Matcher matcher = checkSymbols.matcher(str);
             isCorrect = matcher.matches();
             if (!isCorrect) {
                 log.info(String.format(BusinessConstants.CheckServiceLog.CHAR_OR_NUMBER_INPUT));
@@ -71,6 +77,22 @@ public class CheckServiceImpl implements CheckService {
             }
         }
         return true;
+    }
+
+    public boolean checkExist(Supplier<Boolean> supplier) {
+        boolean isExist = appServiceImpl.evaluate(supplier);
+        if (!isExist) {
+            log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
+        }
+        return isExist;
+    }
+
+    public boolean checkIfNotExist(Supplier<Boolean> supplier) {
+        boolean isExist = appServiceImpl.evaluate(supplier);
+        if (!isExist) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST);
+        }
+        return isExist;
     }
 
 }

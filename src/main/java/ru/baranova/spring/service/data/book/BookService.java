@@ -17,8 +17,4 @@ public interface BookService {
     BookEntity update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
 
     boolean delete(Integer id);
-
-    boolean checkExist(Integer id);
-
-    boolean checkExist(String title, Integer authorId);
 }

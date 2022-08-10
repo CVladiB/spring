@@ -17,5 +17,5 @@ public interface BookDao {
 
     BookEntity update(Integer id, String title, Integer authorId, List<Integer> genreId);
 
-    int delete(Integer id);
+    boolean delete(Integer id);
 }
