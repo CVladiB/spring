@@ -14,80 +14,45 @@ import java.util.List;
 @ShellComponent
 public class GenreShellController {
 
+    private static BusinessConstants.ShellEntityServiceLog bc;
     private final GenreService genreServiceImpl;
     private final EntityPrintVisitor printer;
 
     @ShellMethod(group = "Genre", value = "Create genre", key = {"gc"})
     public String create(String name, String description) {
         Genre genre = genreServiceImpl.create(name, description);
-        if (genre != null) {
-            return String.format(BusinessConstants.ShellEntityServiceLog.COMPLETE_CREATE, genre.getId());
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        return genre == null ? bc.WARNING : String.format(bc.COMPLETE_CREATE, genre.getId());
     }
 
     @ShellMethod(group = "Genre", value = "Read genre by Id", key = {"gr-id"})
     public String readById(Integer id) {
         Genre genre = genreServiceImpl.readById(id);
-        if (genre != null) {
-            try {
-                printer.print(genre);
-                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
-            } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING;
-            }
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        printer.print(genre);
+        return genre == null ? bc.WARNING : bc.COMPLETE_OUTPUT;
     }
 
     @ShellMethod(group = "Genre", value = "Read genre by name", key = {"gr"})
     public String readByName(String name) {
         Genre genre = genreServiceImpl.readByName(name);
-        if (genre != null) {
-            try {
-                printer.print(genre);
-                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
-            } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING;
-            }
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        printer.print(genre);
+        return genre == null ? bc.WARNING : bc.COMPLETE_OUTPUT;
     }
 
     @ShellMethod(group = "Genre", value = "Read all genres", key = {"gr-all"})
     public String readAll() {
         List<Genre> genreList = genreServiceImpl.readAll();
-        if (!genreList.isEmpty()) {
-            try {
-                genreList.forEach(printer::print);
-                return BusinessConstants.ShellEntityServiceLog.COMPLETE_OUTPUT;
-            } catch (NullPointerException e) {
-                return BusinessConstants.ShellEntityServiceLog.WARNING;
-            }
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        genreList.forEach(printer::print);
+        return genreList.isEmpty() ? bc.WARNING : bc.COMPLETE_OUTPUT;
+
     }
 
     @ShellMethod(group = "Genre", value = "Update genre", key = {"gu"})
     public String update(Integer id, String name, String description) {
-        Genre genre = genreServiceImpl.update(id, name, description);
-        if (genre != null) {
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_UPDATE;
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        return genreServiceImpl.update(id, name, description) == null ? bc.WARNING : bc.COMPLETE_UPDATE;
     }
 
     @ShellMethod(group = "Genre", value = "Delete genre", key = {"gd"})
     public String delete(Integer id) {
-        if (genreServiceImpl.delete(id)) {
-            return BusinessConstants.ShellEntityServiceLog.COMPLETE_DELETE;
-        } else {
-            return BusinessConstants.ShellEntityServiceLog.WARNING;
-        }
+        return genreServiceImpl.delete(id) ? bc.COMPLETE_DELETE : bc.WARNING;
     }
 }

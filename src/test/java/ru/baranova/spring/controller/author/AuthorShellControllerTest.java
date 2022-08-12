@@ -6,16 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.baranova.spring.aspect.AfterThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class})
+@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
 class AuthorShellControllerTest {
     @Autowired
     private AuthorService authorServiceImpl;
@@ -109,7 +110,7 @@ class AuthorShellControllerTest {
     void readBySurnameAndName_incorrect() {
         String inputSurname = author.getSurname();
         String inputName = "-";
-        Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName)).thenReturn(new ArrayList<>());
+        Mockito.when(authorServiceImpl.readBySurnameAndName(inputSurname, inputName)).thenReturn(Collections.emptyList());
         String expected = config.getWARNING();
         String actual = authorShellController.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
@@ -140,7 +141,7 @@ class AuthorShellControllerTest {
 
     @Test
     void readAll_incorrect() {
-        Mockito.when(authorServiceImpl.readAll()).thenReturn(new ArrayList<>());
+        Mockito.when(authorServiceImpl.readAll()).thenReturn(Collections.emptyList());
         String expected = config.getWARNING();
         String actual = authorShellController.readAll();
         Assertions.assertEquals(expected, actual);

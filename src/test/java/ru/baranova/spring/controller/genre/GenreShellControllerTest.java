@@ -6,17 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.baranova.spring.aspect.AfterThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.GenreShellController;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.genre.GenreService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
-@SpringBootTest(classes = {GenreShellControllerTestConfig.class, StopSearchConfig.class})
+@SpringBootTest(classes = {GenreShellControllerTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
 class GenreShellControllerTest {
     @Autowired
     private GenreService genreServiceImpl;
@@ -133,7 +134,7 @@ class GenreShellControllerTest {
 
     @Test
     void readAll_incorrect() {
-        Mockito.when(genreServiceImpl.readAll()).thenReturn(new ArrayList<>());
+        Mockito.when(genreServiceImpl.readAll()).thenReturn(Collections.emptyList());
         String expected = config.getWARNING();
         String actual = genreShellController.readAll();
         Assertions.assertEquals(expected, actual);
