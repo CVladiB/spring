@@ -12,6 +12,7 @@ sourceCompatibility = '17'
 ext{
     versionLombok = '1.18.24'
     versionSpringShell = '2.0.1.RELEASE'
+    versionAspectJ = '1.9.1'
 }
 
 dependencies {
@@ -19,6 +20,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.shell:spring-shell-starter:2.1.0'
+    implementation 'org.springframework:spring-aop'
+
+    // AspectJ
+    implementation "org.aspectj:aspectjrt:$versionAspectJ"
+    implementation "org.aspectj:aspectjweaver:$versionAspectJ"
 
     // Fix warning unknown enum constant When.MAYBE
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
