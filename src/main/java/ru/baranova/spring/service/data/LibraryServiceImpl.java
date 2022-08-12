@@ -14,7 +14,6 @@ import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ public class LibraryServiceImpl implements LibraryService {
         List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
         if (author != null && !genreList.isEmpty()) {
             BookEntity bookEntity = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
-            return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
+            return bookEntity == null ? null : bookEntityToBookDTO(bookEntity, author, genreList);
         } else {
             log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
             return null;
@@ -116,15 +115,10 @@ public class LibraryServiceImpl implements LibraryService {
                 return null;
             }
         }
-        List<Genre> genreList = new ArrayList<>();
-        if (!bookEntity.getGenreListId().isEmpty()) {
-            genreList = bookEntity.getGenreListId().stream()
-                    .map(genreServiceImpl::readById)
-                    .toList();
-            if (genreList.isEmpty() || genreList.contains(null)) {
-                return null;
-            }
-        }
+        List<Genre> genreList = bookEntity.getGenreListId().stream()
+                .map(genreServiceImpl::readById)
+                .filter(Objects::nonNull)
+                .toList();
         return bookEntityToBookDTO(bookEntity, author, genreList);
     }
 
@@ -166,6 +160,7 @@ public class LibraryServiceImpl implements LibraryService {
         return bookServiceImpl.delete(id);
     }
 
+    @Nullable
     private BookDTO bookEntityToBookDTO(BookEntity bookEntity, Author author, List<Genre> genreList) {
         if (author.getId().equals(bookEntity.getAuthorId())
                 && Objects.equals(bookEntity.getGenreListId(), genreList.stream().map(Genre::getId).toList())) {

@@ -4,10 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.domain.BusinessConstants;
+import ru.baranova.spring.domain.Entity;
 
 import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -15,84 +18,65 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
     private static final String correctSymbols = "[a-zA-Zа-яА-ЯёЁ\\-]+";
-    public static final Pattern checkSymbols = Pattern.compile(correctSymbols);
-    private final AppService appServiceImpl;
+    private static final Pattern checkSymbols = Pattern.compile(correctSymbols);
+    private static BusinessConstants.CheckServiceLog bc;
 
     @Override
-    public boolean isCorrectSymbolsInInputString(String str, int min, int max) {
-        boolean isCorrect = false;
-        if (isCorrectInputString(str, min, max)) {
-            Matcher matcher = checkSymbols.matcher(str);
-            isCorrect = matcher.matches();
-            if (!isCorrect) {
-                log.info(String.format(BusinessConstants.CheckServiceLog.CHAR_OR_NUMBER_INPUT));
-            }
-        }
-        return isCorrect;
+    public Consumer<String> getLogger() {
+        return log::info;
     }
 
     @Override
-    public boolean isCorrectInputString(String str, int min, int max) {
-        boolean isCorrect = false;
-        if (str != null && !str.isEmpty()) {
-            if (str.length() >= min) {
-                if (str.length() < max) {
-                    isCorrect = true;
-                } else {
-                    log.info(String.format(BusinessConstants.CheckServiceLog.LONG_INPUT, max));
-                }
-            } else {
-                log.info(String.format(BusinessConstants.CheckServiceLog.SHORT_INPUT, min));
-            }
-        } else {
-            log.info(BusinessConstants.CheckServiceLog.NOTHING_INPUT);
+    public List<String> checkCorrectInputStrLengthAndSymbols(String str, int min, int max) {
+        List<String> logList = checkCorrectInputStrLength(str, min, max);
+        if (!logList.isEmpty()) {
+            return logList;
+        } else if (!checkSymbols.matcher(str).matches()) {
+            return List.of(bc.CHAR_OR_NUMBER_INPUT);
         }
-        return isCorrect;
+        return Collections.emptyList();
     }
 
     @Override
-    public boolean isCorrectInputInt(Integer i) {
-        boolean isCorrect = i != null;
-        if (!isCorrect) {
-            log.info(BusinessConstants.CheckServiceLog.NOTHING_INPUT);
+    public List<String> checkCorrectInputStrLength(String str, int min, int max) {
+        if (str == null || str.isEmpty()) {
+            return List.of(bc.NOTHING_INPUT);
+        } else if (str.length() < min) {
+            return List.of(String.format(bc.SHORT_INPUT, min));
+        } else if (str.length() >= max) {
+            return List.of(String.format(bc.LONG_INPUT, max));
         }
-        return isCorrect;
+        return Collections.emptyList();
     }
 
     @Override
-    public boolean isAllFieldsNotNull(Object obj) {
+    public List<String> checkCorrectInputInt(Integer i) {
+        return i == null ? List.of(bc.NOTHING_INPUT) : Collections.emptyList();
+    }
+
+    @Override
+    public List<String> checkAllFieldsAreNotNull(Object obj) {
         if (obj == null) {
-            return false;
+            return List.of(bc.NOTHING_INPUT);
         }
         for (Field field : obj.getClass().getDeclaredFields()) {
             try {
                 field.setAccessible(true);
                 if (field.get(obj) == null) {
-                    log.info("{} {}", BusinessConstants.CheckServiceLog.NOTHING_INPUT, field);
-                    return false;
+                    return List.of(String.format(bc.NOTHING_INPUT, field));
                 }
             } catch (IllegalAccessException e) {
-                log.error(e.getMessage());
-                return false;
+                return List.of(e.getMessage());
             }
         }
-        return true;
+        return Collections.emptyList();
     }
 
-    public boolean checkExist(Supplier<Boolean> supplier) {
-        boolean isExist = appServiceImpl.evaluate(supplier);
-        if (!isExist) {
-            log.info(BusinessConstants.CheckServiceLog.SHOULD_EXIST_INPUT);
-        }
-        return isExist;
+    public List<String> checkExist(Entity entity) {
+        return entity == null ? Collections.emptyList() : List.of(bc.SHOULD_EXIST_INPUT);
     }
 
-    public boolean checkIfNotExist(Supplier<Boolean> supplier) {
-        boolean isExist = appServiceImpl.evaluate(supplier);
-        if (!isExist) {
-            log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST);
-        }
-        return isExist;
+    public List<String> checkIfNotExist(Supplier<List<? extends Entity>> supplier) {
+        return supplier.get().isEmpty() ? Collections.emptyList() : List.of(bc.WARNING_EXIST);
     }
-
 }

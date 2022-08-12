@@ -14,7 +14,7 @@ import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -59,7 +59,7 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorName = insertAuthor2.getName();
 
         Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         testAuthor.setId(authorList.size() + 1);
         testAuthor.setName(inputAuthorSurname);
         testAuthor.setName(inputAuthorName);
@@ -77,7 +77,7 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorName = insertAuthor2.getName();
 
         Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
-                .thenReturn(new ArrayList<>());
+                .thenReturn(Collections.emptyList());
         testAuthor.setId(authorList.size() + 1);
         testAuthor.setName(inputAuthorSurname);
         testAuthor.setName(inputAuthorName);
@@ -135,7 +135,7 @@ class LibraryServiceImplOtherMethodsTest {
         Mockito.when(genreServiceImpl.create(testGenre1.getName(), null)).thenReturn(null);
         Mockito.when(genreServiceImpl.create(testGenre2.getName(), null)).thenReturn(null);
 
-        List<Genre> expected = new ArrayList<>();
+        List<Genre> expected = Collections.emptyList();
         List<Genre> actual = libraryServiceImpl.checkAndCreateGenreForBook(inputGenreNameList);
         Assertions.assertEquals(expected, actual);
     }

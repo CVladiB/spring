@@ -7,7 +7,7 @@ import ru.baranova.spring.domain.Genre;
 
 import java.util.List;
 
-public interface LibraryService {
+public interface LibraryService extends BaseService {
     BookDTO create(String title, String authorSurname, String authorName, List<String> genreNameList);
 
     BookDTO create(String title, Integer authorId, List<Integer> genreIdList);

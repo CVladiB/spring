@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.service.app.config.ParseServiceImplTestConfig;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {ParseServiceImplTestConfig.class, StopSearchConfig.class})
@@ -43,15 +43,15 @@ class ParseServiceImplTest {
     @ValueSource(strings = {"a,b,c", "a,,,,,,b,c,"})
     void string__parseLinesToListByComma__correctParse(String inputStr) {
         List<String> expected = List.of("a", "b", "c");
-        List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
+        List<String> actual = parseServiceImpl.parseLinesToListStrByComma(inputStr);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void string__parseLinesToListByComma_Separator__correctParse_EmptyList() {
         String inputStr = ",,,,,,";
-        List<String> expected = new ArrayList<>();
-        List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
+        List<String> expected = Collections.emptyList();
+        List<String> actual = parseServiceImpl.parseLinesToListStrByComma(inputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -59,7 +59,7 @@ class ParseServiceImplTest {
     void string__parseLinesToListByCommaByComma_StrWithoutSeparator__correctParse_Echo() {
         String inputStr = "a";
         List<String> expected = List.of("a");
-        List<String> actual = parseServiceImpl.parseLinesToListByComma(inputStr);
+        List<String> actual = parseServiceImpl.parseLinesToListStrByComma(inputStr);
         Assertions.assertEquals(expected, actual);
     }
 

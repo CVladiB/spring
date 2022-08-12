@@ -15,7 +15,7 @@ import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class})
@@ -116,7 +116,7 @@ class LibraryServiceImplUpdateTest {
         testBook.getAuthor().setId(authorList.size() + 1);
         Mockito.doReturn(testAuthor)
                 .when(libraryServiceImpl).checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName);
-        Mockito.doReturn(new ArrayList<>())
+        Mockito.doReturn(Collections.emptyList())
                 .when(libraryServiceImpl).checkAndCreateGenreForBook(inputGenreNameList);
 
         Assertions.assertNull(libraryServiceImpl.update(inputId, inputTitle, inputAuthorSurname, inputAuthorName, inputGenreNameList));

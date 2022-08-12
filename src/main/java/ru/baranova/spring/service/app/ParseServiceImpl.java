@@ -6,7 +6,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -23,10 +25,19 @@ public class ParseServiceImpl implements ParseService {
 
     @Nullable
     @Override
-    public List<String> parseLinesToListByComma(@NonNull String str) {
+    public List<String> parseLinesToListStrByComma(@NonNull String str) {
         return separator.splitAsStream(str)
                 .filter(i -> !i.isBlank())
                 .toList();
+    }
+
+    @Nullable
+    @Override
+    public List<Integer> parseLinesToListIntByComma(@NonNull String str) {
+        return Objects.requireNonNull(parseLinesToListStrByComma(str))
+                .stream()
+                .map(this::parseStringToInt)
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -13,7 +13,7 @@ import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.book.BookService;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class})
@@ -94,10 +94,10 @@ class LibraryServiceImplReadTest {
     @Test
     void book__readByTitle_NonexistentTitle__correctReturnEmptyList() {
         String title = "smth";
-        Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(new ArrayList<>());
+        Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(Collections.emptyList());
         Mockito.doReturn(insertBook1).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> expected = Collections.emptyList();
         List<BookDTO> actual = libraryServiceImpl.readByTitle(title);
 
         Assertions.assertEquals(expected, actual);
@@ -109,7 +109,7 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookServiceImpl.readByTitle(title)).thenReturn(List.of(emptyInsertBook1));
         Mockito.doReturn(null).when(libraryServiceImpl).checkAndSetFieldsToBook(emptyInsertBook1);
 
-        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> expected = Collections.emptyList();
         List<BookDTO> actual = libraryServiceImpl.readByTitle(title);
 
         Assertions.assertEquals(expected, actual);
@@ -143,9 +143,9 @@ class LibraryServiceImplReadTest {
 
     @Test
     void book__readAll_NotFields__correctReturnEmptyList() {
-        Mockito.when(bookServiceImpl.readAll()).thenReturn(new ArrayList<>());
+        Mockito.when(bookServiceImpl.readAll()).thenReturn(Collections.emptyList());
 
-        List<BookDTO> expected = new ArrayList<>();
+        List<BookDTO> expected = Collections.emptyList();
         List<BookDTO> actual = libraryServiceImpl.readAll();
 
         Assertions.assertEquals(expected, actual);

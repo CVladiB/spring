@@ -6,14 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.book.BookDao;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
@@ -64,7 +63,7 @@ class BookEntityServiceImplReadTest {
     @Test
     void book__readById_Exception__returnNull() {
         Integer inputId = bookEntityList.size();
-        Mockito.when(bookDaoJdbc.getById(inputId)).thenThrow(EmptyResultDataAccessException.class);
+        Mockito.when(bookDaoJdbc.getById(inputId)).thenReturn(null);
         Assertions.assertNull(bookServiceImpl.readById(inputId));
     }
 
@@ -84,7 +83,7 @@ class BookEntityServiceImplReadTest {
     void book__readByTitle_NonexistentTitle__returnNull() {
         String inputTitle = testBookEntity.getTitle();
 
-        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> expected = Collections.emptyList();
         List<BookEntity> actual = bookServiceImpl.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
     }
@@ -93,10 +92,55 @@ class BookEntityServiceImplReadTest {
     void book__readByTitle_Exception__returnNull() {
         String inputTitle = testBookEntity.getTitle();
 
-        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenThrow(EmptyResultDataAccessException.class);
+        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenReturn(Collections.emptyList());
 
-        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> expected = Collections.emptyList();
         List<BookEntity> actual = bookServiceImpl.readByTitle(inputTitle);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__readByTitleAndAuthor__correctReturnListObject() {
+        insertBook2Entity.setTitle(insertBook1Entity.getTitle());
+        String inputTitle = insertBook1Entity.getTitle();
+        Integer inputAuthorId = insertBook1Entity.getAuthorId();
+        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(List.of(insertBook1Entity));
+
+        List<BookEntity> expected = List.of(insertBook1Entity);
+        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__readByTitleAndAuthor_NonexistentTitle__returnNull() {
+        String inputTitle = testBookEntity.getTitle();
+        Integer inputAuthorId = insertBook1Entity.getAuthorId();
+        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+
+        List<BookEntity> expected = Collections.emptyList();
+        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__readByTitleAndAuthor_NonexistentAuthorId__returnNull() {
+        String inputTitle = insertBook1Entity.getTitle();
+        Integer inputAuthorId = testBookEntity.getAuthorId();
+        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+
+        List<BookEntity> expected = Collections.emptyList();
+        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__readByTitleAndAuthor_IncorrectTitleAuthorId__returnNull() {
+        String inputTitle = insertBook1Entity.getTitle();
+        Integer inputAuthorId = insertBook2Entity.getAuthorId();
+        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+
+        List<BookEntity> expected = Collections.emptyList();
+        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -110,8 +154,8 @@ class BookEntityServiceImplReadTest {
 
     @Test
     void book__readAll_Exception__EmptyList() {
-        Mockito.doThrow(EmptyResultDataAccessException.class).when(bookDaoJdbc).getAll();
-        List<BookEntity> expected = new ArrayList<>();
+        Mockito.when(bookDaoJdbc.getAll()).thenReturn(Collections.emptyList());
+        List<BookEntity> expected = Collections.emptyList();
         List<BookEntity> actual = bookServiceImpl.readAll();
         Assertions.assertEquals(expected, actual);
     }

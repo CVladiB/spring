@@ -27,47 +27,50 @@ class EntityPrintVisitorImplGenreTest {
     @Test
     void genre__print__correctOutput() {
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        Mockito.when(checkServiceImpl.isAllFieldsNotNull(testGenre)).thenReturn(true);
+
+        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
         String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
         entityPrintVisitorImpl.print(testGenre);
         String actual = config.getOut().toString();
-
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__print_NullId__incorrectNPE() {
         Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
-        Mockito.when(checkServiceImpl.isAllFieldsNotNull(testGenre)).thenReturn(false);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+
         Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
     }
 
     @Test
     void genre__print_NullName__incorrectNPE() {
         Genre testGenre = new Genre(1, null, "DescriptionTest");
-        Mockito.when(checkServiceImpl.isAllFieldsNotNull(testGenre)).thenReturn(false);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+
         Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
     }
 
     @Test
     void genre__print_NullDescription__correctOutput() {
         Genre testGenre = new Genre(1, "NameTest", "описание жанра пока отсутствует");
-        Mockito.when(checkServiceImpl.isAllFieldsNotNull(testGenre)).thenReturn(true);
+
+        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
         String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
 
         testGenre.setDescription(null);
         entityPrintVisitorImpl.print(testGenre);
         String actual = config.getOut().toString();
-
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__print_NullGenre__incorrectNPE() {
         Genre testGenre = null;
-        Mockito.when(checkServiceImpl.isAllFieldsNotNull(testGenre)).thenReturn(false);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+
         Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
     }
 }

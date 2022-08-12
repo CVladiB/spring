@@ -1,40 +1,48 @@
 package ru.baranova.spring.service.data.genre;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.genre.GenreDao;
 import ru.baranova.spring.domain.Genre;
-import ru.baranova.spring.service.app.AppService;
 import ru.baranova.spring.service.app.CheckService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
 
     private final static int MIN_INPUT = 3;
     private final static int MAX_INPUT_NAME = 20;
     private final static int MAX_INPUT_DESCRIPTION = 200;
     private final GenreDao genreDaoJdbc;
-    private final CheckService checkServiceImpl;
-    private final AppService appServiceImpl;
+    private final CheckService checkService;
+    private final Function<String, List<String>> nonexistentNameFn;
+    private final BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn;
+    private final Function<String, List<String>> nameMinMaxFn;
+    private final Function<String, List<String>> descriptionMinMaxFn;
+
+    public GenreServiceImpl(GenreDao genreDaoJdbc, CheckService checkService) {
+        this.genreDaoJdbc = genreDaoJdbc;
+        this.checkService = checkService;
+        nonexistentNameFn = name -> checkService.checkIfNotExist(() -> getOrEmptyList(List.of(readByName(name))));
+        correctInputStrFn =
+                (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
+        nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
+        descriptionMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_DESCRIPTION);
+    }
 
     @Nullable
     @Override
     public Genre create(@NonNull String name, String description) {
         Genre genre = null;
-        if (checkServiceImpl.checkIfNotExist(() -> readByName(name) == null)
-                && checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME)) {
-            String finalDescription = checkServiceImpl.isCorrectSymbolsInInputString(description, MIN_INPUT, MAX_INPUT_DESCRIPTION) ?
-                    description : null;
-
-            genre = appServiceImpl.evaluate(() -> genreDaoJdbc.create(name, finalDescription));
+        if (checkService.doCheck(name, nonexistentNameFn, nameMinMaxFn)) {
+            genre = genreDaoJdbc.create(name
+                    , checkService.correctOrDefault(description, descriptionMinMaxFn, null));
         }
         return genre;
     }
@@ -42,33 +50,30 @@ public class GenreServiceImpl implements GenreService {
     @Nullable
     @Override
     public Genre readById(@NonNull Integer id) {
-        return appServiceImpl.evaluate(() -> genreDaoJdbc.getById(id));
+        return genreDaoJdbc.getById(id);
     }
 
     @Nullable
     @Override
     public Genre readByName(@NonNull String name) {
-        return appServiceImpl.evaluate(() -> genreDaoJdbc.getByName(name));
+        return genreDaoJdbc.getByName(name);
     }
 
     @Override
     public List<Genre> readAll() {
-        List<Genre> genreList = appServiceImpl.evaluate(genreDaoJdbc::getAll);
-        return genreList == null ? new ArrayList<>() : genreList;
+        return getOrEmptyList(genreDaoJdbc.getAll());
     }
 
     @Nullable
     @Override
     public Genre update(@NonNull Integer id, String name, String description) {
         Genre genre = null;
-        if (checkServiceImpl.checkExist(() -> readById(id) != null)
-                && checkServiceImpl.checkIfNotExist(() -> readByName(name) == null)) {
-            String finalName = checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME) ?
-                    name : genreDaoJdbc.getById(id).getName();
-            String finalDescription = checkServiceImpl.isCorrectSymbolsInInputString(description, MIN_INPUT, MAX_INPUT_DESCRIPTION) ?
-                    description : genreDaoJdbc.getById(id).getDescription();
-
-            genre = appServiceImpl.evaluate(() -> genreDaoJdbc.update(id, finalName, finalDescription));
+        Genre genreById = genreDaoJdbc.getById(id);
+        if (checkService.doCheck(genreById, checkService::checkExist)
+                && checkService.doCheck(name, nonexistentNameFn)) {
+            genre = genreDaoJdbc.update(id
+                    , checkService.correctOrDefault(name, nameMinMaxFn, genreById::getName)
+                    , checkService.correctOrDefault(description, descriptionMinMaxFn, genreById::getDescription));
         }
         return genre;
     }
@@ -76,7 +81,7 @@ public class GenreServiceImpl implements GenreService {
     @Nullable
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkServiceImpl.checkExist(() -> readById(id) != null)
-                && appServiceImpl.evaluate(() -> genreDaoJdbc.delete(id));
+        return checkService.doCheck(genreDaoJdbc.getById(id), checkService::checkExist)
+                && genreDaoJdbc.delete(id);
     }
 }

@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.book.BookDao;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
 
@@ -21,6 +21,8 @@ class BookEntityServiceImplDeleteTest {
     private BookDao bookDaoJdbc;
     @Autowired
     private BookService bookServiceImpl;
+    @Autowired
+    private CheckService checkServiceImpl;
     private List<BookEntity> bookList;
 
     @BeforeEach
@@ -36,34 +38,32 @@ class BookEntityServiceImplDeleteTest {
 
     @Test
     void book__delete__true() {
-        int countAffectedRows = 1;
         Integer inputId = bookList.size();
-        Mockito.when(bookServiceImpl.readById(inputId)).thenReturn(bookList.get(1));
-        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(countAffectedRows);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(Boolean.TRUE);
         Assertions.assertTrue(bookServiceImpl.delete(inputId));
     }
 
     @Test
     void book__delete_Exception__false() {
         Integer inputId = bookList.size();
-        Mockito.when(bookServiceImpl.readById(inputId)).thenReturn(bookList.get(1));
-        Mockito.doThrow(EmptyResultDataAccessException.class).when(bookDaoJdbc).delete(inputId);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(false);
         Assertions.assertFalse(bookServiceImpl.delete(inputId));
     }
 
     @Test
     void book__delete_NonexistentId__false() {
         Integer inputId = bookList.size() + 1;
-        Mockito.when(bookServiceImpl.readById(inputId)).thenReturn(null);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
         Assertions.assertFalse(bookServiceImpl.delete(inputId));
     }
 
     @Test
     void book__delete_ExistNonexistentId__false() {
-        int countAffectedRows = 0;
         Integer inputId = bookList.size();
-        Mockito.when(bookServiceImpl.readById(inputId)).thenReturn(bookList.get(1));
-        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(countAffectedRows);
+        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(Boolean.FALSE);
         Assertions.assertFalse(bookServiceImpl.delete(inputId));
     }
 }

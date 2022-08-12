@@ -1,40 +1,51 @@
 package ru.baranova.spring.service.data.author;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import ru.baranova.spring.dao.author.AuthorDao;
 import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.service.app.AppService;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class AuthorServiceImpl implements AuthorService {
 
     private final static int MIN_INPUT = 3;
     private final static int MAX_INPUT_SURNAME = 20;
     private final static int MAX_INPUT_NAME = 15;
-    private final AuthorDao authorDaoJdbc;
-    private final CheckService checkServiceImpl;
-    private final ParseService parseServiceImpl;
-    private final AppService appServiceImpl;
+    private final AuthorDao authorDao;
+    private final CheckService checkService;
+    private final ParseService parseService;
+    private final BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn;
+    private final Function<String, List<String>> surnameMinMaxFn;
+    private final Function<String, List<String>> nameMinMaxFn;
+    private final BiFunction<String, String, Function<String, List<String>>> nonexistentSurnameNameFn;
+
+    public AuthorServiceImpl(AuthorDao authorDao, CheckService checkService, ParseService parseService) {
+        this.authorDao = authorDao;
+        this.checkService = checkService;
+        this.parseService = parseService;
+        correctInputStrFn = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
+        surnameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_SURNAME);
+        nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
+        nonexistentSurnameNameFn = (surname, name) -> t -> checkService.checkIfNotExist(() -> readBySurnameAndName(surname, name));
+    }
 
     @Nullable
     @Override
     public Author create(@NonNull String surname, @NonNull String name) {
         Author author = null;
-        if (checkServiceImpl.checkIfNotExist(() -> readBySurnameAndName(surname, name).isEmpty())
-                && checkServiceImpl.isCorrectSymbolsInInputString(surname, MIN_INPUT, MAX_INPUT_SURNAME)
-                && checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME)) {
-            author = appServiceImpl.evaluate(() -> authorDaoJdbc.create(surname, name));
+        if (checkService.doCheck(null, nonexistentSurnameNameFn.apply(surname, name))
+                && checkService.doCheck(surname, surnameMinMaxFn)
+                && checkService.doCheck(name, nameMinMaxFn)) {
+            author = authorDao.create(surname, name);
         }
         return author;
     }
@@ -42,37 +53,30 @@ public class AuthorServiceImpl implements AuthorService {
     @Nullable
     @Override
     public Author readById(@NonNull Integer id) {
-        return appServiceImpl.evaluate(() -> authorDaoJdbc.getById(id));
+        return authorDao.getById(id);
     }
 
     @Override
     public List<Author> readBySurnameAndName(String surname, String name) {
-        String finalSurname = parseServiceImpl.parseDashToNull(surname);
-        String finalName = parseServiceImpl.parseDashToNull(name);
-
-        List<Author> authorList = appServiceImpl.evaluate(() -> authorDaoJdbc.getBySurnameAndName(finalSurname, finalName));
-
-        return authorList == null ? new ArrayList<>() : authorList;
+        return getOrEmptyList(authorDao.getBySurnameAndName(parseService.parseDashToNull(surname),
+                parseService.parseDashToNull(name))
+        );
     }
 
     @Override
     public List<Author> readAll() {
-        List<Author> authorList = appServiceImpl.evaluate(authorDaoJdbc::getAll);
-        return authorList == null ? new ArrayList<>() : authorList;
+        return getOrEmptyList(authorDao.getAll());
     }
 
     @Nullable
     @Override
     public Author update(@NonNull Integer id, String surname, String name) {
         Author author = null;
-        if (checkServiceImpl.checkExist(() -> readById(id) != null)
-                && checkServiceImpl.checkIfNotExist(() -> readBySurnameAndName(surname, name).isEmpty())) {
-            String finalSurname2 = checkServiceImpl.isCorrectSymbolsInInputString(surname, MIN_INPUT, MAX_INPUT_SURNAME) ?
-                    surname : authorDaoJdbc.getById(id).getSurname();
-            String finalName2 = checkServiceImpl.isCorrectSymbolsInInputString(name, MIN_INPUT, MAX_INPUT_NAME) ?
-                    name : authorDaoJdbc.getById(id).getName();
-
-            author = appServiceImpl.evaluate(() -> authorDaoJdbc.update(id, finalSurname2, finalName2));
+        Author authorById = authorDao.getById(id);
+        if (checkService.doCheck(authorById, checkService::checkExist, t -> nonexistentSurnameNameFn.apply(surname, name).apply(null))) {
+            author = authorDao.update(id,
+                    checkService.correctOrDefault(surname, surnameMinMaxFn, authorById::getSurname),
+                    checkService.correctOrDefault(name, nameMinMaxFn, authorById::getName));
         }
         return author;
     }
@@ -80,8 +84,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Nullable
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkServiceImpl.checkExist(() -> readById(id) != null)
-                && appServiceImpl.evaluate(() -> authorDaoJdbc.delete(id));
+        return checkService.doCheck(authorDao.getById(id), checkService::checkExist)
+                && authorDao.delete(id);
     }
-
 }

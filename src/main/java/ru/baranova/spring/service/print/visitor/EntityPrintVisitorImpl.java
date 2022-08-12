@@ -18,7 +18,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
     private final CheckService checkServiceImpl;
 
     public void print(@NonNull Author author) {
-        if (checkServiceImpl.isAllFieldsNotNull(author)) {
+        if (checkServiceImpl.doCheck(author, checkServiceImpl::checkAllFieldsAreNotNull)) {
             String str = String.format("%d. %s %s", author.getId(), author.getSurname(), author.getName());
             outputDaoConsole.output(str);
         } else {
@@ -27,12 +27,14 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
     }
 
     @Override
-    public void print(BookEntity bookEntity) {
+    public void print(@NonNull BookEntity bookEntity) {
         if (bookEntity.getId() != null && bookEntity.getTitle() != null) {
             StringBuilder sb = new StringBuilder();
             sb.append(bookEntity.getId()).append(". \"")
-                    .append(bookEntity.getTitle()).append("\"").append(", ")
-                    .append("authorId ").append(bookEntity.getAuthorId());
+                    .append(bookEntity.getTitle()).append("\"");
+            if (bookEntity.getAuthorId() != null) {
+                sb.append(", authorId: ").append(bookEntity.getAuthorId());
+            }
             if (!bookEntity.getGenreListId().isEmpty()) {
                 sb.append(", genreId: ");
                 bookEntity.getGenreListId().forEach(g -> sb.append(g).append(", "));
@@ -50,7 +52,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\"");
 
             if (book.getAuthor() != null) {
-                if (checkServiceImpl.isAllFieldsNotNull(book.getAuthor())) {
+                if (checkServiceImpl.doCheck(book.getAuthor(), checkServiceImpl::checkAllFieldsAreNotNull)) {
                     sb.append(", ").append(book.getAuthor().getSurname())
                             .append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
                 }
@@ -71,7 +73,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
         genre.setDescription(genre.getDescription() == null ?
                 BusinessConstants.PrintService.GENRE_DESCRIPTION_NULL : genre.getDescription());
 
-        if (checkServiceImpl.isAllFieldsNotNull(genre)) {
+        if (checkServiceImpl.doCheck(genre, checkServiceImpl::checkAllFieldsAreNotNull)) {
             String str = String.format("%d. %s - %s", genre.getId(), genre.getName(), genre.getDescription());
             outputDaoConsole.output(str);
         } else {

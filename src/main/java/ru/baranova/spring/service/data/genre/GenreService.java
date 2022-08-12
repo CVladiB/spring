@@ -1,10 +1,11 @@
 package ru.baranova.spring.service.data.genre;
 
 import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.service.data.BaseService;
 
 import java.util.List;
 
-public interface GenreService {
+public interface GenreService extends BaseService {
     Genre create(String name, String description);
 
     Genre readById(Integer id);
