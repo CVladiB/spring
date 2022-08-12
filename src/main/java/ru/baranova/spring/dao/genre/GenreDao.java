@@ -15,5 +15,5 @@ public interface GenreDao {
 
     Genre update(Integer id, String name, String description);
 
-    boolean delete(Integer id);
+    Boolean delete(Integer id);
 }

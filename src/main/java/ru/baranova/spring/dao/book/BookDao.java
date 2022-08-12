@@ -13,9 +13,11 @@ public interface BookDao {
 
     List<BookEntity> getByTitle(String title);
 
+    List<BookEntity> getByTitleAndAuthor(String title, Integer authorId);
+
     List<BookEntity> getAll();
 
     BookEntity update(Integer id, String title, Integer authorId, List<Integer> genreId);
 
-    boolean delete(Integer id);
+    Boolean delete(Integer id);
 }

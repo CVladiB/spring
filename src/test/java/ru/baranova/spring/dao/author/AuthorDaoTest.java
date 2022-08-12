@@ -8,14 +8,15 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
+import ru.baranova.spring.aspect.AfterThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @JdbcTest
-@ContextConfiguration(classes = {AuthorDaoTestConfig.class, StopSearchConfig.class})
+@ContextConfiguration(classes = {AuthorDaoTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
 class AuthorDaoTest {
     @Autowired
     private AuthorDao authorDaoJdbc;
@@ -100,7 +101,7 @@ class AuthorDaoTest {
     @Test
     void author__getBySurnameAndName_NonexistentSurname__correctReturnListAuthors() {
         String nonexistentSurname = "Smth";
-        List<Author> expected = new ArrayList<>();
+        List<Author> expected = Collections.emptyList();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName());
         Assertions.assertEquals(expected, actual);
     }
@@ -108,21 +109,21 @@ class AuthorDaoTest {
     @Test
     void author__getBySurnameAndName_NonexistentName__correctReturnListAuthors() {
         String nonexistentName = "Smth";
-        List<Author> expected = new ArrayList<>();
+        List<Author> expected = Collections.emptyList();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_NullSurnameAndName__correctReturnEmptyListAuthors() {
-        List<Author> expected = new ArrayList<>();
+        List<Author> expected = Collections.emptyList();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(null, null);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getBySurnameAndName_DifferentSurnameAndName__correctReturnEmptyListAuthors() {
-        List<Author> expected = new ArrayList<>();
+        List<Author> expected = Collections.emptyList();
         List<Author> actual = authorDaoJdbc.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName());
         Assertions.assertEquals(expected, actual);
     }
@@ -166,35 +167,28 @@ class AuthorDaoTest {
 
     @Test
     void author__delete__correctDelete() {
-        int countAffectedRowsExpected = 2;
-        int countAffectedRowsActual;
-
         List<Author> actualBeforeDelete = authorDaoJdbc.getAll();
-        countAffectedRowsActual = authorDaoJdbc.delete(insertAuthor1.getId());
-        countAffectedRowsActual += authorDaoJdbc.delete(insertAuthor2.getId());
-
-        List<Author> expected = new ArrayList<>();
-        List<Author> actual = authorDaoJdbc.getAll();
+        Integer inputId = actualBeforeDelete.get(0).getId();
+        Integer inputId2 = actualBeforeDelete.get(1).getId();
 
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+        Assertions.assertTrue(authorDaoJdbc.delete(inputId));
+        Assertions.assertTrue(authorDaoJdbc.delete(inputId2));
+
     }
 
     @Test
     void author__delete_NonexistentId__notDelete() {
-        int countAffectedRowsExpected = 0;
-        int countAffectedRowsActual;
-
         List<Author> actualBeforeDelete = authorDaoJdbc.getAll();
-        countAffectedRowsActual = authorDaoJdbc.delete(actualBeforeDelete.size() + 1);
-        countAffectedRowsActual += authorDaoJdbc.delete(actualBeforeDelete.size() + 2);
+        Integer inputId = actualBeforeDelete.size() + 1;
+        Integer inputId2 = actualBeforeDelete.size() + 2;
 
         List<Author> expected = actualBeforeDelete;
         List<Author> actual = authorDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.delete(inputId));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> authorDaoJdbc.delete(inputId2));
         Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 }

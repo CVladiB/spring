@@ -43,7 +43,9 @@ public class GenreDaoJdbc implements GenreDao {
 
         KeyHolder holder = new GeneratedKeyHolder();
 
-        jdbc.update(sql, params, holder, new String[]{"genre_id"});
+        if (jdbc.update(sql, params, holder, new String[]{"genre_id"}) == 0) {
+            throw new DataIntegrityViolationException("");
+        }
 
         return Genre.builder()
                 .id((Integer) holder.getKey())
@@ -112,7 +114,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) {
         String sql = """
                 delete from genre
                 where genre_id = :id

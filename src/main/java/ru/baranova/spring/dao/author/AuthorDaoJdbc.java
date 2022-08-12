@@ -127,7 +127,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) {
         String sql = """
                 delete from author
                 where author_id = :id

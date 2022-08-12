@@ -141,6 +141,21 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
+    public List<BookEntity> getByTitleAndAuthor(String title, Integer authorId) {
+        String sql = """
+                select book_id, book_title, author_id
+                from book
+                where book_title = :title and author_id = :author_id
+                """;
+
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("title", title);
+        params.addValue("author_id", authorId);
+
+        return jdbc.query(sql, params, BookDaoJdbc::bookMapper);
+    }
+
+    @Override
     public List<BookEntity> getAll() {
         String sql = """
                 select book_id, book_title, author_id
@@ -190,7 +205,7 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    public boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) {
         String sql = """
                 delete from book
                 where book_id = :id

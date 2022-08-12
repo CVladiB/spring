@@ -8,16 +8,17 @@ import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
+import ru.baranova.spring.aspect.AfterThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @JdbcTest
-@ContextConfiguration(classes = {BookDaoTestConfig.class, StopSearchConfig.class})
+@ContextConfiguration(classes = {BookDaoTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
 public class BookDaoTest {
     @Autowired
     private BookDao bookDaoJdbc;
@@ -127,7 +128,7 @@ public class BookDaoTest {
 
     @Test
     void book__getByTitle_NullTitle__correctReturnEmptyListBooks() {
-        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> expected = Collections.emptyList();
         List<BookEntity> actual = bookDaoJdbc.getByTitle(null);
         Assertions.assertEquals(expected, actual);
     }
@@ -135,8 +136,30 @@ public class BookDaoTest {
     @Test
     void book__getByTitle_NonexistentTitle__correctReturnEmptyListBooks() {
         String nonexistentTitle = "Smth";
-        List<BookEntity> expected = new ArrayList<>();
+        List<BookEntity> expected = Collections.emptyList();
         List<BookEntity> actual = bookDaoJdbc.getByTitle(nonexistentTitle);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__getByTitleAndAuthor__correctReturnListBooks() {
+        insertBook1.setGenreListId(null);
+        List<BookEntity> expected = List.of(insertBook1);
+        List<BookEntity> actual = bookDaoJdbc.getByTitleAndAuthor(insertBook1.getTitle(), insertBook1.getAuthorId());
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__getByTitleAndAuthor_NullTitle__correctReturnEmptyListBooks() {
+        List<BookEntity> expected = Collections.emptyList();
+        List<BookEntity> actual = bookDaoJdbc.getByTitleAndAuthor(null, insertBook1.getAuthorId());
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__getByTitleAndAuthor_NullAuthorId__correctReturnEmptyListBooks() {
+        List<BookEntity> expected = Collections.emptyList();
+        List<BookEntity> actual = bookDaoJdbc.getByTitleAndAuthor(insertBook1.getTitle(), null);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -178,38 +201,32 @@ public class BookDaoTest {
 
     @Test
     void book__delete__correctDelete() {
-        int countAffectedRowsExpected = 3;
-        int countAffectedRowsActual;
-
         List<BookEntity> actualBeforeDelete = bookDaoJdbc.getAll();
-        countAffectedRowsActual = bookDaoJdbc.delete(insertBook1.getId());
-        countAffectedRowsActual += bookDaoJdbc.delete(insertBook2.getId());
-        countAffectedRowsActual += bookDaoJdbc.delete(insertBook3.getId());
-
-        List<BookEntity> expected = new ArrayList<>();
-        List<BookEntity> actual = bookDaoJdbc.getAll();
+        Integer inputId = insertBook1.getId();
+        Integer inputId2 = insertBook2.getId();
+        Integer inputId3 = insertBook3.getId();
 
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
+        Assertions.assertTrue(bookDaoJdbc.delete(inputId));
+        Assertions.assertTrue(bookDaoJdbc.delete(inputId2));
+        Assertions.assertTrue(bookDaoJdbc.delete(inputId3));
     }
 
     @Test
     void book__delete_NonexistentId__notDelete() {
-        int countAffectedRowsExpected = 0;
-        int countAffectedRowsActual;
-
         List<BookEntity> actualBeforeDelete = bookDaoJdbc.getAll();
-        countAffectedRowsActual = bookDaoJdbc.delete(actualBeforeDelete.size() + 1);
-        countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 2);
-        countAffectedRowsActual += bookDaoJdbc.delete(actualBeforeDelete.size() + 3);
+        Integer inputId = actualBeforeDelete.size() + 1;
+        Integer inputId2 = actualBeforeDelete.size() + 2;
+        Integer inputId3 = actualBeforeDelete.size() + 3;
 
         List<BookEntity> expected = actualBeforeDelete;
         List<BookEntity> actual = bookDaoJdbc.getAll();
 
         Assertions.assertNotNull(actualBeforeDelete);
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> bookDaoJdbc.delete(inputId));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> bookDaoJdbc.delete(inputId2));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> bookDaoJdbc.delete(inputId3));
         Assertions.assertEquals(expected, actual);
-        Assertions.assertEquals(countAffectedRowsExpected, countAffectedRowsActual);
     }
 
 }

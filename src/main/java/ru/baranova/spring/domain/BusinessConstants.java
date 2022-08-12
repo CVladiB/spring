@@ -16,7 +16,7 @@ public abstract class BusinessConstants {
         String LONG_INPUT = "Слишком длинный ввод, максимум %d символов";
         String CHAR_OR_NUMBER_INPUT = "Недопустимый ввод, исключите символы";
         String SHOULD_EXIST_INPUT = "Нужнно ввести существующее значение";
-
+        String WARNING_EXIST = "Указанное поле уже существует";
     }
 
     public interface PrintService {
@@ -24,10 +24,10 @@ public abstract class BusinessConstants {
         String WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
         String WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
         String WARNING_BOOK_NULL = "Ошибка печати книги, поля не заполнены";
+
     }
 
     public interface EntityServiceLog {
-        String WARNING_EXIST = "Указанное поле уже существует";
         String WARNING_EXIST_MANY = "Существует несколько полей с указанными значениями, перепроверьте ввод или укажите Id";
         String WARNING_CREATE = "Ошибка добавления поля, перепроверьте ввод или добавьте автора и жанры отдельно";
         String WARNING_NEED_ADMINISTRATOR = "Ошибка, обратитесь к администратору";
