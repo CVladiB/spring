@@ -73,7 +73,7 @@ public class CheckServiceImpl implements CheckService {
     }
 
     public List<String> checkExist(Entity entity) {
-        return entity == null ? Collections.emptyList() : List.of(bc.SHOULD_EXIST_INPUT);
+        return entity == null ? List.of(bc.SHOULD_EXIST_INPUT) : Collections.emptyList();
     }
 
     public List<String> checkIfNotExist(Supplier<List<? extends Entity>> supplier) {

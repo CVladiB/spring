@@ -15,6 +15,8 @@ public class AuthorShellControllerTestConfig {
     private AuthorService authorService;
     @MockBean
     private EntityPrintVisitor printer;
+    //    @MockBean
+//    private ThrowingAspect aspect;
     private String create;
     private String readById;
     private String readBySurnameAndName;
@@ -44,7 +46,7 @@ public class AuthorShellControllerTestConfig {
         WARNING = "Ошибка";
         WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
 
-
+        //aspect = new ThrowingAspect();
         return new AuthorShellController(authorService, printer);
     }
 

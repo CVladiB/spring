@@ -13,7 +13,7 @@ public interface CheckService extends BaseService {
 
     default <T> boolean doCheck(T t, Function<T, List<String>>... checkFn) {
         List<String> checkResult = Arrays.stream(checkFn).flatMap(f -> f.apply(t).stream()).toList();
-        checkResult.stream().forEachOrdered(getLogger());
+        checkResult.forEach(getLogger());
         return checkResult.isEmpty();
     }
 

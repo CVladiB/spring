@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.baranova.spring.aspect.AfterThrowingAspect;
+import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.GenreShellController;
 import ru.baranova.spring.domain.Genre;
@@ -17,7 +17,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-@SpringBootTest(classes = {GenreShellControllerTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
+@SpringBootTest(classes = {GenreShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class GenreShellControllerTest {
     @Autowired
     private GenreService genreService;

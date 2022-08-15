@@ -17,10 +17,10 @@ public class LibraryServiceImplTestConfig {
     @MockBean
     private GenreService genreService;
     @SpyBean
-    private LibraryService libraryService;
+    private LibraryServiceImpl libraryService;
 
     @Bean
-    public LibraryService libraryService(BookService bookService
+    public LibraryServiceImpl libraryService(BookService bookService
             , AuthorService authorService
             , GenreService genreService) {
         return new LibraryServiceImpl(bookService, authorService, genreService);

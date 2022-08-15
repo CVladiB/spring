@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.baranova.spring.aspect.AfterThrowingAspect;
+import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
 import ru.baranova.spring.domain.Author;
@@ -16,12 +16,16 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 import java.util.Collections;
 import java.util.List;
 
-@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
+@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class
+        , ThrowingAspect.class
+})
 class AuthorShellControllerTest {
     @Autowired
     private AuthorService authorService;
     @Autowired
     private EntityPrintVisitor printer;
+    //    @Autowired
+//    private ThrowingAspect aspect;
     @Autowired
     private AuthorShellController authorShellController;
     @Autowired
@@ -166,7 +170,7 @@ class AuthorShellControllerTest {
     @Test
     void delete_correct() {
         Integer id = author.getId();
-        Mockito.when(authorService.delete(id)).thenReturn(true);
+        Mockito.when(authorService.delete(id)).thenReturn(Boolean.TRUE);
         String expected = config.getCOMPLETE_DELETE();
         String actual = authorShellController.delete(id);
         Assertions.assertEquals(expected, actual);
@@ -175,7 +179,7 @@ class AuthorShellControllerTest {
     @Test
     void delete_incorrect() {
         Integer id = author.getId();
-        Mockito.when(authorService.delete(id)).thenReturn(false);
+        Mockito.when(authorService.delete(id)).thenReturn(Boolean.FALSE);
         String expected = config.getWARNING();
         String actual = authorShellController.delete(id);
         Assertions.assertEquals(expected, actual);

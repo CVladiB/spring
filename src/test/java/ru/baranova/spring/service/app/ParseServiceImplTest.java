@@ -77,4 +77,29 @@ class ParseServiceImplTest {
     void string__parseStringToInt_IncorrectInput__returnNull(String inputStr) {
         Assertions.assertNull(parseService.parseStringToInt(inputStr));
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"1,2,3", "1,,,,,,2,3,"})
+    void string__parseLinesToListIntByComma__correctParse(String inputStr) {
+        List<Integer> expected = List.of(1, 2, 3);
+        List<Integer> actual = parseService.parseLinesToListIntByComma(inputStr);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void string__parseLinesToListIntByComma_Separator__correctParse_EmptyList() {
+        String inputStr = ",,,,,,";
+        List<Integer> expected = Collections.emptyList();
+        List<Integer> actual = parseService.parseLinesToListIntByComma(inputStr);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void string__parseLinesToListIntByComma_IntWithoutSeparator__correctParse_Echo() {
+        String inputStr = "1";
+        List<Integer> expected = List.of(1);
+        List<Integer> actual = parseService.parseLinesToListIntByComma(inputStr);
+        Assertions.assertEquals(expected, actual);
+    }
+
 }

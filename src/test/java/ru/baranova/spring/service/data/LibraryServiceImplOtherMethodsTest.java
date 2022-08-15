@@ -6,26 +6,30 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookDTO;
 import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
+import ru.baranova.spring.service.data.book.BookService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-@SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class})
+@SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class LibraryServiceImplOtherMethodsTest {
+    @Autowired
+    private BookService bookService;
     @Autowired
     private AuthorService authorService;
     @Autowired
     private GenreService genreService;
     @Autowired
-    private LibraryService libraryService;
+    private LibraryServiceImpl libraryService;
     private Author insertAuthor1;
     private Author insertAuthor2;
     private Genre testGenre1;
@@ -83,7 +87,8 @@ class LibraryServiceImplOtherMethodsTest {
         testAuthor.setName(inputAuthorName);
         Mockito.when(authorService.create(inputAuthorSurname, inputAuthorName)).thenReturn(null);
 
-        Assertions.assertNull(libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
     }
 
     @Test
@@ -109,7 +114,8 @@ class LibraryServiceImplOtherMethodsTest {
         Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
                 .thenReturn(List.of(insertAuthor1, testAuthor));
 
-        Assertions.assertNull(libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
     }
 
     @Test
@@ -135,9 +141,8 @@ class LibraryServiceImplOtherMethodsTest {
         Mockito.when(genreService.create(testGenre1.getName(), null)).thenReturn(null);
         Mockito.when(genreService.create(testGenre2.getName(), null)).thenReturn(null);
 
-        List<Genre> expected = Collections.emptyList();
-        List<Genre> actual = libraryService.checkAndCreateGenreForBook(inputGenreNameList);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndCreateGenreForBook(inputGenreNameList));
     }
 
     @Test
@@ -171,7 +176,8 @@ class LibraryServiceImplOtherMethodsTest {
         emptyInsertBook1.setAuthorId(100);
         BookEntity inputBookEntity = emptyInsertBook1;
         Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(null);
-        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
 
     }
 
@@ -183,7 +189,8 @@ class LibraryServiceImplOtherMethodsTest {
         Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
         Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(0))).thenReturn(null);
 
-        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
     }
 
     @Test
@@ -196,6 +203,54 @@ class LibraryServiceImplOtherMethodsTest {
                     .thenReturn(insertBook1.getGenreList().get(0));
         }
 
-        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
+    }
+
+    @Test
+    void bookEntityToBookDTO__correctReturnNewObject() {
+        BookEntity inputBookEntity = emptyInsertBook1;
+        Author inputAuthor = insertBook1.getAuthor();
+        List<Genre> inputGenreList = insertBook1.getGenreList();
+
+        BookDTO expected = insertBook1;
+        BookDTO actual = libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void bookEntityToBookDTO_AuthorNull__returnNull() {
+        BookEntity inputBookEntity = emptyInsertBook1;
+        Author inputAuthor = null;
+        List<Genre> inputGenreList = insertBook1.getGenreList();
+
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList));
+    }
+
+    @Test
+    void bookEntityToBookDTO_GenreNull__returnNull() {
+        BookEntity inputBookEntity = emptyInsertBook1;
+        Author inputAuthor = insertBook1.getAuthor();
+        List<Genre> inputGenreList = Collections.emptyList();
+
+        Assertions.assertThrows(NullPointerException.class
+                , () -> libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList));
+    }
+
+    @Test
+    void getBookDTOIfAuthorAndGenreNotNull__correctReturnNewObject() {
+        Author inputAuthor = insertBook1.getAuthor();
+        List<Genre> inputGenreList = insertBook1.getGenreList();
+
+        Mockito.when(bookService.create(Mockito.eq(emptyInsertBook1.getTitle()), Mockito.any(), Mockito.any())).thenReturn(emptyInsertBook1);
+
+        BookDTO expected = insertBook1;
+        BookDTO actual = libraryService.getBookDTOIfAuthorAndGenreNotNull(inputAuthor
+                , inputGenreList
+                , Author::getId
+                , u -> u.stream().map(Genre::getId).toList()
+                , (t, u) -> bookService.create(emptyInsertBook1.getTitle(), t, u));
+        Assertions.assertEquals(expected, actual);
     }
 }
