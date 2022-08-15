@@ -13,9 +13,9 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 @TestConfiguration
 public class LibraryShellControllerTestConfig {
     @MockBean
-    private LibraryService libraryServiceImpl;
+    private LibraryService libraryService;
     @MockBean
-    private ParseService parseServiceImpl;
+    private ParseService parseService;
     @MockBean
     private EntityPrintVisitor printer;
     private String create;

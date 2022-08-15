@@ -8,7 +8,7 @@ import ru.baranova.spring.service.app.AppServiceImpl;
 @TestConfiguration
 public class AppServiceImplTestConfig {
     @Bean
-    public AppService appServiceImpl() {
+    public AppService appService() {
         return new AppServiceImpl();
     }
 }

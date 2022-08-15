@@ -18,10 +18,9 @@ import java.util.List;
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
 class BookEntityServiceImplReadTest {
     @Autowired
-    private BookDao bookDaoJdbc;
-
+    private BookDao bookDao;
     @Autowired
-    private BookService bookServiceImpl;
+    private BookService bookService;
     private BookEntity insertBook1Entity;
     private BookEntity insertBook2Entity;
     private BookEntity testBookEntity;
@@ -47,24 +46,24 @@ class BookEntityServiceImplReadTest {
     void book__readById__correctReturnObject() {
         Integer inputId = bookEntityList.size();
 
-        Mockito.when(bookDaoJdbc.getById(inputId)).thenReturn(bookEntityList.get(inputId - 1));
+        Mockito.when(bookDao.getById(inputId)).thenReturn(bookEntityList.get(inputId - 1));
 
         BookEntity expected = bookEntityList.get(inputId - 1);
-        BookEntity actual = bookServiceImpl.readById(inputId);
+        BookEntity actual = bookService.readById(inputId);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__readById_NonexistentId__returnNull() {
         Integer inputId = bookEntityList.size() + 1;
-        Assertions.assertNull(bookServiceImpl.readById(inputId));
+        Assertions.assertNull(bookService.readById(inputId));
     }
 
     @Test
     void book__readById_Exception__returnNull() {
         Integer inputId = bookEntityList.size();
-        Mockito.when(bookDaoJdbc.getById(inputId)).thenReturn(null);
-        Assertions.assertNull(bookServiceImpl.readById(inputId));
+        Mockito.when(bookDao.getById(inputId)).thenReturn(null);
+        Assertions.assertNull(bookService.readById(inputId));
     }
 
     @Test
@@ -72,10 +71,10 @@ class BookEntityServiceImplReadTest {
         insertBook2Entity.setTitle(insertBook1Entity.getTitle());
         String inputTitle = insertBook1Entity.getTitle();
 
-        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenReturn(List.of(insertBook1Entity, insertBook2Entity));
+        Mockito.when(bookDao.getByTitle(inputTitle)).thenReturn(List.of(insertBook1Entity, insertBook2Entity));
 
         List<BookEntity> expected = List.of(insertBook1Entity, insertBook2Entity);
-        List<BookEntity> actual = bookServiceImpl.readByTitle(inputTitle);
+        List<BookEntity> actual = bookService.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -84,7 +83,7 @@ class BookEntityServiceImplReadTest {
         String inputTitle = testBookEntity.getTitle();
 
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readByTitle(inputTitle);
+        List<BookEntity> actual = bookService.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -92,10 +91,10 @@ class BookEntityServiceImplReadTest {
     void book__readByTitle_Exception__returnNull() {
         String inputTitle = testBookEntity.getTitle();
 
-        Mockito.when(bookDaoJdbc.getByTitle(inputTitle)).thenReturn(Collections.emptyList());
+        Mockito.when(bookDao.getByTitle(inputTitle)).thenReturn(Collections.emptyList());
 
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readByTitle(inputTitle);
+        List<BookEntity> actual = bookService.readByTitle(inputTitle);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -104,10 +103,10 @@ class BookEntityServiceImplReadTest {
         insertBook2Entity.setTitle(insertBook1Entity.getTitle());
         String inputTitle = insertBook1Entity.getTitle();
         Integer inputAuthorId = insertBook1Entity.getAuthorId();
-        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(List.of(insertBook1Entity));
+        Mockito.when(bookDao.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(List.of(insertBook1Entity));
 
         List<BookEntity> expected = List.of(insertBook1Entity);
-        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        List<BookEntity> actual = bookService.readByTitleAndAuthorId(inputTitle, inputAuthorId);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -115,10 +114,10 @@ class BookEntityServiceImplReadTest {
     void book__readByTitleAndAuthor_NonexistentTitle__returnNull() {
         String inputTitle = testBookEntity.getTitle();
         Integer inputAuthorId = insertBook1Entity.getAuthorId();
-        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+        Mockito.when(bookDao.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
 
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        List<BookEntity> actual = bookService.readByTitleAndAuthorId(inputTitle, inputAuthorId);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -126,10 +125,10 @@ class BookEntityServiceImplReadTest {
     void book__readByTitleAndAuthor_NonexistentAuthorId__returnNull() {
         String inputTitle = insertBook1Entity.getTitle();
         Integer inputAuthorId = testBookEntity.getAuthorId();
-        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+        Mockito.when(bookDao.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
 
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        List<BookEntity> actual = bookService.readByTitleAndAuthorId(inputTitle, inputAuthorId);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -137,26 +136,26 @@ class BookEntityServiceImplReadTest {
     void book__readByTitleAndAuthor_IncorrectTitleAuthorId__returnNull() {
         String inputTitle = insertBook1Entity.getTitle();
         Integer inputAuthorId = insertBook2Entity.getAuthorId();
-        Mockito.when(bookDaoJdbc.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
+        Mockito.when(bookDao.getByTitleAndAuthor(inputTitle, inputAuthorId)).thenReturn(Collections.emptyList());
 
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readByTitleAndAuthorId(inputTitle, inputAuthorId);
+        List<BookEntity> actual = bookService.readByTitleAndAuthorId(inputTitle, inputAuthorId);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__readAll__correctReturnListObject() {
-        Mockito.doReturn(bookEntityList).when(bookDaoJdbc).getAll();
+        Mockito.doReturn(bookEntityList).when(bookDao).getAll();
         List<BookEntity> expected = bookEntityList;
-        List<BookEntity> actual = bookServiceImpl.readAll();
+        List<BookEntity> actual = bookService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void book__readAll_Exception__EmptyList() {
-        Mockito.when(bookDaoJdbc.getAll()).thenReturn(Collections.emptyList());
+        Mockito.when(bookDao.getAll()).thenReturn(Collections.emptyList());
         List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookServiceImpl.readAll();
+        List<BookEntity> actual = bookService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 }

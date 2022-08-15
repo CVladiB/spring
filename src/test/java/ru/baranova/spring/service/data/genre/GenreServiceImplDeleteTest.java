@@ -16,11 +16,11 @@ import java.util.List;
 @SpringBootTest(classes = {GenreServiceImplTestConfig.class, StopSearchConfig.class})
 class GenreServiceImplDeleteTest {
     @Autowired
-    private GenreDao genreDaoJdbc;
+    private GenreDao genreDao;
     @Autowired
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     private List<Genre> genreList;
 
     @BeforeEach
@@ -33,31 +33,31 @@ class GenreServiceImplDeleteTest {
     @Test
     void genre__delete__true() {
         Integer inputId = genreList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(true);
-        Assertions.assertTrue(genreServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(genreDao.delete(inputId)).thenReturn(true);
+        Assertions.assertTrue(genreService.delete(inputId));
     }
 
     @Test
     void genre__delete_Exception__false() {
         Integer inputId = genreList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(false);
-        Assertions.assertFalse(genreServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(genreDao.delete(inputId)).thenReturn(false);
+        Assertions.assertFalse(genreService.delete(inputId));
     }
 
     @Test
     void genre__delete_NonexistentId__false() {
         Integer inputId = genreList.size() + 1;
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertFalse(genreServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertFalse(genreService.delete(inputId));
     }
 
     @Test
     void genre__delete_ExistNonexistentId__false() {
         Integer inputId = genreList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(genreDaoJdbc.delete(inputId)).thenReturn(false);
-        Assertions.assertFalse(genreServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(genreDao.delete(inputId)).thenReturn(false);
+        Assertions.assertFalse(genreService.delete(inputId));
     }
 }

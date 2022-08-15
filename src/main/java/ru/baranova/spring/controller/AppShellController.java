@@ -10,12 +10,12 @@ import ru.baranova.spring.service.app.AppService;
 @ShellComponent
 public class AppShellController {
 
-    private final AppService appServiceImpl;
-    private final OutputDao outputDaoConsole;
+    private final AppService appService;
+    private final OutputDao outputDao;
 
     @ShellMethod(group = "App", value = "Exit the shell. Stop application", key = {"sa"})
     public String stopApplication() {
-        return appServiceImpl.stopApplication() == 0 ? "Correct exit" : "Error";
+        return appService.stopApplication() == 0 ? "Correct exit" : "Error";
     }
 
     @ShellMethod(group = "App", value = "Return input", key = {"echo"})
@@ -25,6 +25,6 @@ public class AppShellController {
 
     @ShellMethod(group = "App", value = "Output", key = {"out"})
     public void output(String str) {
-        outputDaoConsole.output(str);
+        outputDao.output(str);
     }
 }

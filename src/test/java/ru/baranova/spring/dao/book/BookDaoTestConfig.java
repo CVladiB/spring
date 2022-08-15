@@ -8,10 +8,10 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @TestConfiguration
 public class BookDaoTestConfig {
     @SpyBean
-    public BookDao bookDaoJdbc;
+    public BookDao bookDao;
 
     @Bean
-    public BookDao bookDaoJdbc(NamedParameterJdbcOperations jdbc) {
+    public BookDao bookDao(NamedParameterJdbcOperations jdbc) {
         return new BookDaoJdbc(jdbc);
     }
 

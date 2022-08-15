@@ -18,11 +18,11 @@ import java.util.List;
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})
 class EntityPrintVisitorImpBookDTOTest {
     @Autowired
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @Autowired
     private EntityPrintVisitorImplTestConfig config;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     private BookDTO testBook;
 
 
@@ -46,15 +46,15 @@ class EntityPrintVisitorImpBookDTOTest {
                 , testBook.getGenreList().get(0).getName()
                 , testBook.getGenreList().get(0).getDescription());
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.doAnswer(invocation -> {
             config.getWriter().printf(expectedGenre);
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook.getGenreList().get(0));
+        }).when(printer).print(testBook.getGenreList().get(0));
 
         String expected = String.format("%d. \"%s\", %s, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
                 , expectedAuthor, expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -62,19 +62,19 @@ class EntityPrintVisitorImpBookDTOTest {
     @Test
     void book__print_NullId__incorrectNPE() {
         testBook.setId(null);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testBook));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testBook));
     }
 
     @Test
     void book__print_NullTitle__incorrectNPE() {
         testBook.setId(null);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testBook));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testBook));
     }
 
     @Test
     void book__print_NullAuthorId__correctOutput() {
         testBook.getAuthor().setId(null);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
 
         String expectedGenre = String.format("%d. %s - %s", testBook.getGenreList().get(0).getId()
                 , testBook.getGenreList().get(0).getName()
@@ -82,11 +82,11 @@ class EntityPrintVisitorImpBookDTOTest {
         Mockito.doAnswer(invocation -> {
             config.getWriter().printf(expectedGenre);
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook.getGenreList().get(0));
+        }).when(printer).print(testBook.getGenreList().get(0));
 
         String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -94,7 +94,7 @@ class EntityPrintVisitorImpBookDTOTest {
     @Test
     void book__print_NullAuthorSurname__correctOutput() {
         testBook.getAuthor().setSurname(null);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
 
         String expectedGenre = String.format("%d. %s - %s", testBook.getGenreList().get(0).getId()
                 , testBook.getGenreList().get(0).getName()
@@ -102,11 +102,11 @@ class EntityPrintVisitorImpBookDTOTest {
         Mockito.doAnswer(invocation -> {
             config.getWriter().printf(expectedGenre);
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook.getGenreList().get(0));
+        }).when(printer).print(testBook.getGenreList().get(0));
 
         String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -114,7 +114,7 @@ class EntityPrintVisitorImpBookDTOTest {
     @Test
     void book__print_NullAuthorName__correctOutput() {
         testBook.getAuthor().setName(null);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
 
         String expectedGenre = String.format("%d. %s - %s", testBook.getGenreList().get(0).getId()
                 , testBook.getGenreList().get(0).getName()
@@ -122,11 +122,11 @@ class EntityPrintVisitorImpBookDTOTest {
         Mockito.doAnswer(invocation -> {
             config.getWriter().printf(expectedGenre);
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook.getGenreList().get(0));
+        }).when(printer).print(testBook.getGenreList().get(0));
 
         String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -134,7 +134,7 @@ class EntityPrintVisitorImpBookDTOTest {
     @Test
     void book__print_NullAuthor__correctOutput() {
         testBook.setAuthor(null);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
 
         String expectedGenre = String.format("%d. %s - %s", testBook.getGenreList().get(0).getId()
                 , testBook.getGenreList().get(0).getName()
@@ -142,11 +142,11 @@ class EntityPrintVisitorImpBookDTOTest {
         Mockito.doAnswer(invocation -> {
             config.getWriter().printf(expectedGenre);
             return null;
-        }).when(entityPrintVisitorImpl).print(testBook.getGenreList().get(0));
+        }).when(printer).print(testBook.getGenreList().get(0));
 
         String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -157,12 +157,12 @@ class EntityPrintVisitorImpBookDTOTest {
         String expectedAuthor = String.format("%s %s.\r\n", testBook.getAuthor().getSurname()
                 , testBook.getAuthor().getName().charAt(0));
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
 
 
         String expected = String.format("%d. \"%s\", %s", testBook.getId(), testBook.getTitle()
                 , expectedAuthor);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }

@@ -8,11 +8,11 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 @Service
 @RequiredArgsConstructor
 public class PrintServiceImpl implements PrintService {
-    private final EntityPrintVisitor entityPrintVisitorImpl;
+    private final EntityPrintVisitor entityPrintVisitor;
 
 
     @Override
     public void printEntity(Entity entity) {
-        entity.print(entityPrintVisitorImpl);
+        entity.print(entityPrintVisitor);
     }
 }

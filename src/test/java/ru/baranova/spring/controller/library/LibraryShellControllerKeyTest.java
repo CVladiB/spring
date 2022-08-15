@@ -20,7 +20,7 @@ class LibraryShellControllerKeyTest {
     @Autowired
     private Shell shell;
     @Autowired
-    private LibraryService libraryServiceImpl;
+    private LibraryService libraryService;
     @Autowired
     private LibraryShellControllerTestConfig config;
     private BookDTO book;
@@ -52,7 +52,7 @@ class LibraryShellControllerKeyTest {
                 + " " + book.getAuthor().getSurname()
                 + " " + book.getAuthor().getName()
                 + " " + book.getGenreList().toString());
-        Mockito.verify(libraryServiceImpl, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -72,45 +72,45 @@ class LibraryShellControllerKeyTest {
                 + " " + book.getTitle()
                 + " " + book.getAuthor().getId()
                 + " " + book.getGenreList().toString());
-        Mockito.verify(libraryServiceImpl, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
     void readById_correctKey() {
         Integer id = book.getId();
         shell.evaluate(() -> config.getReadById() + " " + id);
-        Mockito.verify(libraryServiceImpl).readById(id);
+        Mockito.verify(libraryService).readById(id);
     }
 
     @Test
     void readById_incorrectKey() {
         Integer id = book.getId();
         shell.evaluate(() -> "smthWrong" + " " + id);
-        Mockito.verify(libraryServiceImpl, Mockito.never()).readById(Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).readById(Mockito.any());
     }
 
     @Test
     void readByTitle_correctKey() {
         shell.evaluate(() -> config.getReadByTitle() + " " + book.getTitle());
-        Mockito.verify(libraryServiceImpl).readByTitle(book.getTitle());
+        Mockito.verify(libraryService).readByTitle(book.getTitle());
     }
 
     @Test
     void readByTitle_incorrectKey() {
         shell.evaluate(() -> "smthWrong" + " " + book.getTitle());
-        Mockito.verify(libraryServiceImpl, Mockito.never()).readByTitle(Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).readByTitle(Mockito.any());
     }
 
     @Test
     void readAll_correctKey() {
         shell.evaluate(() -> config.getReadAll());
-        Mockito.verify(libraryServiceImpl).readAll();
+        Mockito.verify(libraryService).readAll();
     }
 
     @Test
     void readAll_incorrectKey() {
         shell.evaluate(() -> "smthWrong");
-        Mockito.verify(libraryServiceImpl, Mockito.never()).readAll();
+        Mockito.verify(libraryService, Mockito.never()).readAll();
     }
 
     @Test
@@ -134,7 +134,7 @@ class LibraryShellControllerKeyTest {
                 + " " + book.getAuthor().getSurname()
                 + " " + book.getAuthor().getName()
                 + " " + book.getGenreList().toString());
-        Mockito.verify(libraryServiceImpl, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
@@ -156,20 +156,20 @@ class LibraryShellControllerKeyTest {
                 + " " + book.getTitle()
                 + " " + book.getAuthor().getId()
                 + " " + book.getGenreList().toString());
-        Mockito.verify(libraryServiceImpl, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
     void delete_correctKey() {
         Integer id = book.getId();
         shell.evaluate(() -> config.getDelete() + " " + id);
-        Mockito.verify(libraryServiceImpl).delete(id);
+        Mockito.verify(libraryService).delete(id);
     }
 
     @Test
     void delete_incorrectKey() {
         Integer id = book.getId();
         shell.evaluate(() -> "smthWrong" + " " + id);
-        Mockito.verify(libraryServiceImpl, Mockito.never()).delete(Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).delete(Mockito.any());
     }
 }

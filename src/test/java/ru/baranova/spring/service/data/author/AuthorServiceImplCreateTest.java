@@ -16,9 +16,9 @@ import java.util.List;
 @SpringBootTest(classes = {AuthorServiceImplTestConfig.class, StopSearchConfig.class})
 class AuthorServiceImplCreateTest {
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @Autowired
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     @Autowired
     private AuthorDao authorDao;
     private int minInput;
@@ -45,14 +45,14 @@ class AuthorServiceImplCreateTest {
         String inputName = testAuthor.getName();
         Integer newId = authorList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
         Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.create(inputSurname, inputName);
+        Author actual = authorService.create(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -61,20 +61,20 @@ class AuthorServiceImplCreateTest {
         String inputSurname = testAuthor.getSurname();
         String inputName = testAuthor.getName();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(null);
 
-        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+        Assertions.assertNull(authorService.create(inputSurname, inputName));
     }
 
     @Test
     void author__create_ExistNameSurnameException__returnNull() {
         String inputSurname = insertAuthor1.getSurname();
         String inputName = insertAuthor1.getName();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertNull(authorService.create(inputSurname, inputName));
     }
 
     @Test
@@ -84,14 +84,14 @@ class AuthorServiceImplCreateTest {
         String inputName = testAuthor.getName();
         Integer newId = authorList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
         Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.create(inputSurname, inputName);
+        Author actual = authorService.create(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -102,14 +102,14 @@ class AuthorServiceImplCreateTest {
         String inputName = testAuthor.getName();
         Integer newId = authorList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
         Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.create(inputSurname, inputName);
+        Author actual = authorService.create(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -118,10 +118,10 @@ class AuthorServiceImplCreateTest {
         String inputSurname = "smth";
         String inputName = testAuthor.getName();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+        Assertions.assertNull(authorService.create(inputSurname, inputName));
     }
 
     @Test
@@ -129,10 +129,10 @@ class AuthorServiceImplCreateTest {
         String inputSurname = testAuthor.getSurname();
         String inputName = "smth";
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertNull(authorServiceImpl.create(inputSurname, inputName));
+        Assertions.assertNull(authorService.create(inputSurname, inputName));
     }
 }

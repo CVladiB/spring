@@ -16,11 +16,11 @@ import java.util.List;
 @SpringBootTest(classes = {GenreServiceImplTestConfig.class, StopSearchConfig.class})
 class GenreServiceImplCreateTest {
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @Autowired
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @Autowired
-    private GenreDao genreDaoJdbc;
+    private GenreDao genreDao;
     private int minInput;
     private int maxInputName;
     private int maxInputDescription;
@@ -45,14 +45,14 @@ class GenreServiceImplCreateTest {
         String inputDescription = testGenre.getDescription();
         Integer newId = genreList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
         testGenre.setId(newId);
-        Mockito.when(genreDaoJdbc.create(inputName, inputDescription)).thenReturn(testGenre);
+        Mockito.when(genreDao.create(inputName, inputDescription)).thenReturn(testGenre);
 
         Genre expected = testGenre;
-        Genre actual = genreServiceImpl.create(inputName, inputDescription);
+        Genre actual = genreService.create(inputName, inputDescription);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -62,13 +62,13 @@ class GenreServiceImplCreateTest {
         String inputDescription = testGenre.getDescription();
         Integer newId = genreList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
         testGenre.setId(newId);
-        Mockito.when(genreDaoJdbc.create(inputName, inputDescription)).thenReturn(null);
+        Mockito.when(genreDao.create(inputName, inputDescription)).thenReturn(null);
 
-        Assertions.assertNull(genreServiceImpl.create(inputName, inputDescription));
+        Assertions.assertNull(genreService.create(inputName, inputDescription));
     }
 
     @Test
@@ -76,9 +76,9 @@ class GenreServiceImplCreateTest {
         String inputName = insertGenre1.getName();
         String inputDescription = testGenre.getDescription();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertNull(genreServiceImpl.create(inputName, inputDescription));
+        Assertions.assertNull(genreService.create(inputName, inputDescription));
     }
 
     @Test
@@ -86,10 +86,10 @@ class GenreServiceImplCreateTest {
         String inputName = "smth";
         String inputDescription = testGenre.getDescription();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertNull(genreServiceImpl.create(inputName, inputDescription));
+        Assertions.assertNull(genreService.create(inputName, inputDescription));
     }
 
     @Test
@@ -98,15 +98,15 @@ class GenreServiceImplCreateTest {
         String inputDescription = "smth";
         Integer newId = genreList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(null);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(null);
         testGenre.setId(newId);
         testGenre.setDescription(null);
-        Mockito.when(genreDaoJdbc.create(inputName, null)).thenReturn(testGenre);
+        Mockito.when(genreDao.create(inputName, null)).thenReturn(testGenre);
 
         Genre expected = testGenre;
-        Genre actual = genreServiceImpl.create(inputName, inputDescription);
+        Genre actual = genreService.create(inputName, inputDescription);
         Assertions.assertEquals(expected, actual);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @TestConfiguration
 public class GenreDaoTestConfig {
     @Bean
-    public GenreDao authorDaoJdbc(NamedParameterJdbcOperations jdbc) {
+    public GenreDao genreDao(NamedParameterJdbcOperations jdbc) {
         return new GenreDaoJdbc(jdbc);
     }
 

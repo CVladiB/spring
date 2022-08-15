@@ -20,7 +20,7 @@ import java.util.List;
 @SpringBootTest(classes = {CheckServiceImplTestConfig.class, StopSearchConfig.class})
 class CheckServiceImplTest {
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @Autowired
     private CheckServiceImplTestConfig config;
 
@@ -31,7 +31,7 @@ class CheckServiceImplTest {
         int maxSizeInputStr = 20;
 
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -42,7 +42,7 @@ class CheckServiceImplTest {
         int maxSizeInputStr = 20;
 
         List<String> expected = List.of(config.getCHAR_OR_NUMBER_INPUT());
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -53,7 +53,7 @@ class CheckServiceImplTest {
         int maxSizeInputStr = 20;
 
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -64,7 +64,7 @@ class CheckServiceImplTest {
     })
     void string_Min_Max__isCorrectInputString__true(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -76,7 +76,7 @@ class CheckServiceImplTest {
     })
     void string_Min_Max__isCorrectInputString_MaxInput__false(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         List<String> expected = List.of(String.format(config.getLONG_INPUT(), maxSizeInputStr));
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -86,7 +86,7 @@ class CheckServiceImplTest {
     })
     void string_Min_Max__isCorrectInputString_MinInput__false(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         List<String> expected = List.of(String.format(config.getSHORT_INPUT(), minSizeInputStr));
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -98,7 +98,7 @@ class CheckServiceImplTest {
     })
     void string_Min_Max__isCorrectInputString_CorrectLengthInput__true(String inputStr, int minSizeInputStr, int maxSizeInputStr) {
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLength(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -108,7 +108,7 @@ class CheckServiceImplTest {
         int minSizeInputStr = 0;
         int maxSizeInputStr = 20;
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkServiceImpl.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
+        List<String> actual = checkService.checkCorrectInputStrLengthAndSymbols(inputStr, minSizeInputStr, maxSizeInputStr);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -116,7 +116,7 @@ class CheckServiceImplTest {
     void Integer__isCorrectInputInt__true() {
         Integer number = 1;
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkCorrectInputInt(number);
+        List<String> actual = checkService.checkCorrectInputInt(number);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -124,7 +124,7 @@ class CheckServiceImplTest {
     void Integer__isCorrectInputInt_NullInput__false() {
         Integer number = null;
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkServiceImpl.checkCorrectInputInt(number);
+        List<String> actual = checkService.checkCorrectInputInt(number);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -135,7 +135,7 @@ class CheckServiceImplTest {
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
         BookEntity testBookEntity = new BookEntity(1, "TitleTest", testAuthor.getId(), List.of(testGenre.getId()));
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkAllFieldsAreNotNull(testBookEntity);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBookEntity);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -145,7 +145,7 @@ class CheckServiceImplTest {
         Genre testGenre = new Genre(1, "NameTest", null);
         BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkAllFieldsAreNotNull(testBook);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -155,7 +155,7 @@ class CheckServiceImplTest {
         Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
         BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkServiceImpl.checkAllFieldsAreNotNull(testBook);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -165,7 +165,7 @@ class CheckServiceImplTest {
         Genre testGenre = new Genre(1, "NameTest", null);
         BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkServiceImpl.checkAllFieldsAreNotNull(testBook);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -173,7 +173,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullObject__false() {
         BookEntity testBookEntity = null;
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkServiceImpl.checkAllFieldsAreNotNull(testBookEntity);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBookEntity);
         Assertions.assertEquals(expected, actual);
     }
 }

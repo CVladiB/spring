@@ -15,7 +15,7 @@ import java.util.List;
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})
 class EntityPrintVisitorImpBookEntityTest {
     @Autowired
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @Autowired
     private EntityPrintVisitorImplTestConfig config;
 
@@ -39,7 +39,7 @@ class EntityPrintVisitorImpBookEntityTest {
 
         String expected = String.format("%d. \"%s\", %s, %s \r\n", testBook.getId(), testBook.getTitle()
                 , expectedAuthor, expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -47,13 +47,13 @@ class EntityPrintVisitorImpBookEntityTest {
     @Test
     void book__print_NullId__incorrectNPE() {
         testBook.setId(null);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testBook));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testBook));
     }
 
     @Test
     void book__print_NullTitle__incorrectNPE() {
         testBook.setTitle(null);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testBook));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testBook));
     }
 
     @Test
@@ -63,7 +63,7 @@ class EntityPrintVisitorImpBookEntityTest {
 
         String expected = String.format("%d. \"%s\", %s \r\n", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -75,7 +75,7 @@ class EntityPrintVisitorImpBookEntityTest {
 
         String expected = String.format("%d. \"%s\", %s\r\n", testBook.getId(), testBook.getTitle()
                 , expectedAuthor);
-        entityPrintVisitorImpl.print(testBook);
+        printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }

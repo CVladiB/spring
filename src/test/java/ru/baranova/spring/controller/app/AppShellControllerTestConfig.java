@@ -15,9 +15,9 @@ import java.io.PrintWriter;
 @TestConfiguration
 public class AppShellControllerTestConfig {
     @MockBean
-    private AppService appServiceImpl;
+    private AppService appService;
     @MockBean
-    private OutputDao outputDaoConsole;
+    private OutputDao outputDao;
     private ByteArrayOutputStream out;
     private PrintWriter writer;
     private String output;
@@ -25,13 +25,13 @@ public class AppShellControllerTestConfig {
     private String stopApplication;
 
     @Bean
-    public AppShellController appShellController(AppService appServiceImpl, OutputDao outputDaoConsole) {
+    public AppShellController appShellController(AppService appService, OutputDao outputDao) {
         out = new ByteArrayOutputStream();
         writer = new PrintWriter(out, true);
         output = "out";
         echo = "echo";
         stopApplication = "sa";
-        return new AppShellController(appServiceImpl, outputDaoConsole);
+        return new AppShellController(appService, outputDao);
     }
 
 }

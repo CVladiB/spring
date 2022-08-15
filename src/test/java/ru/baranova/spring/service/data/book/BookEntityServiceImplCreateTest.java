@@ -18,11 +18,11 @@ import java.util.List;
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
 class BookEntityServiceImplCreateTest {
     @Autowired
-    private BookDao bookDaoJdbc;
+    private BookDao bookDao;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @Autowired
-    private BookService bookServiceImpl;
+    private BookService bookService;
     private int minInput;
     private int maxInput;
     private BookEntity insertBook1;
@@ -55,13 +55,13 @@ class BookEntityServiceImplCreateTest {
         List<Integer> inputGenreIdList = testBook.getGenreListId();
         Integer newId = bookList.size() + 1;
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
         testBook.setId(newId);
-        Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(testBook);
+        Mockito.when(bookDao.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(testBook);
 
         BookEntity expected = testBook;
-        BookEntity actual = bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList);
+        BookEntity actual = bookService.create(inputTitle, inputAuthorId, inputGenreIdList);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -71,9 +71,9 @@ class BookEntityServiceImplCreateTest {
         Integer inputAuthorId = testBook.getAuthorId();
         List<Integer> inputGenreIdList = testBook.getGenreListId();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertNull(bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList));
+        Assertions.assertNull(bookService.create(inputTitle, inputAuthorId, inputGenreIdList));
     }
 
     @Test
@@ -82,11 +82,11 @@ class BookEntityServiceImplCreateTest {
         Integer inputAuthorId = 100;
         List<Integer> inputGenreIdList = testBook.getGenreListId();
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(null);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDao.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(null);
 
-        Assertions.assertNull(bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList));
+        Assertions.assertNull(bookService.create(inputTitle, inputAuthorId, inputGenreIdList));
     }
 
     @Test
@@ -95,10 +95,10 @@ class BookEntityServiceImplCreateTest {
         Integer inputAuthorId = testBook.getAuthorId();
         List<Integer> inputGenreIdList = List.of(100);
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(null);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(inputTitle), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDao.create(inputTitle, inputAuthorId, inputGenreIdList)).thenReturn(null);
 
-        Assertions.assertNull(bookServiceImpl.create(inputTitle, inputAuthorId, inputGenreIdList));
+        Assertions.assertNull(bookService.create(inputTitle, inputAuthorId, inputGenreIdList));
     }
 }

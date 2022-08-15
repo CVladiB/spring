@@ -10,20 +10,17 @@ import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.dao.author.AuthorDao;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.app.CheckService;
-import ru.baranova.spring.service.app.ParseService;
 
 import java.util.List;
 
 @SpringBootTest(classes = {AuthorServiceImplTestConfig.class, StopSearchConfig.class})
 class AuthorServiceImplUpdateTest {
     @Autowired
-    private AuthorDao authorDaoJdbc;
+    private AuthorDao authorDao;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @Autowired
-    private ParseService parseServiceImpl;
-    @Autowired
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     private int minInput;
     private int maxInputSurname;
     private int maxInputName;
@@ -48,16 +45,16 @@ class AuthorServiceImplUpdateTest {
         String inputName = testAuthor.getName();
         Integer inputId = insertAuthor1.getId();
 
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(insertAuthor1);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
+        Mockito.when(authorDao.getById(inputId)).thenReturn(insertAuthor1);
+        Mockito.when(checkService.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
         testAuthor.setId(inputId);
-        Mockito.when(authorDaoJdbc.update(inputId, inputSurname, inputName)).thenReturn(testAuthor);
+        Mockito.when(authorDao.update(inputId, inputSurname, inputName)).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.update(inputId, inputSurname, inputName);
+        Author actual = authorService.update(inputId, inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -67,15 +64,15 @@ class AuthorServiceImplUpdateTest {
         String inputName = testAuthor.getName();
         Integer inputId = insertAuthor1.getId();
 
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(insertAuthor1);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
+        Mockito.when(authorDao.getById(inputId)).thenReturn(insertAuthor1);
+        Mockito.when(checkService.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
         testAuthor.setId(inputId);
-        Mockito.when(authorDaoJdbc.update(inputId, inputSurname, inputName)).thenReturn(null);
+        Mockito.when(authorDao.update(inputId, inputSurname, inputName)).thenReturn(null);
 
-        Assertions.assertNull(authorServiceImpl.update(inputId, inputSurname, inputName));
+        Assertions.assertNull(authorService.update(inputId, inputSurname, inputName));
     }
 
     @Test
@@ -84,17 +81,17 @@ class AuthorServiceImplUpdateTest {
         String inputName = testAuthor.getName();
         Integer inputId = insertAuthor1.getId();
 
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(insertAuthor1);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(insertAuthor1.getSurname());
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
+        Mockito.when(authorDao.getById(inputId)).thenReturn(insertAuthor1);
+        Mockito.when(checkService.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(insertAuthor1.getSurname());
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputName);
         testAuthor.setSurname(insertAuthor1.getSurname());
         testAuthor.setId(inputId);
-        Mockito.when(authorDaoJdbc.update(inputId, insertAuthor1.getSurname(), inputName)).thenReturn(testAuthor);
+        Mockito.when(authorDao.update(inputId, insertAuthor1.getSurname(), inputName)).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.update(inputId, inputSurname, inputName);
+        Author actual = authorService.update(inputId, inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -104,17 +101,17 @@ class AuthorServiceImplUpdateTest {
         String inputName = "smth";
         Integer inputId = insertAuthor1.getId();
 
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(insertAuthor1);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(insertAuthor1.getName());
+        Mockito.when(authorDao.getById(inputId)).thenReturn(insertAuthor1);
+        Mockito.when(checkService.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(insertAuthor1.getName());
         testAuthor.setName(insertAuthor1.getName());
         testAuthor.setId(inputId);
-        Mockito.when(authorDaoJdbc.update(inputId, inputSurname, insertAuthor1.getName())).thenReturn(testAuthor);
+        Mockito.when(authorDao.update(inputId, inputSurname, insertAuthor1.getName())).thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = authorServiceImpl.update(inputId, inputSurname, inputName);
+        Author actual = authorService.update(inputId, inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -123,8 +120,8 @@ class AuthorServiceImplUpdateTest {
         String inputSurname = testAuthor.getSurname();
         String inputName = testAuthor.getName();
         Integer inputId = authorList.size() + 1;
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(null);
-        Assertions.assertNull(authorServiceImpl.update(inputId, inputSurname, inputName));
+        Mockito.when(authorDao.getById(inputId)).thenReturn(null);
+        Assertions.assertNull(authorService.update(inputId, inputSurname, inputName));
     }
 
     @Test
@@ -133,13 +130,13 @@ class AuthorServiceImplUpdateTest {
         String inputName = testAuthor.getName();
         Integer inputId = insertAuthor1.getId();
 
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(insertAuthor1);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
-        Mockito.when(checkServiceImpl.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
-        Mockito.when(authorDaoJdbc.update(inputId, inputSurname, inputName)).thenReturn(null);
+        Mockito.when(authorDao.getById(inputId)).thenReturn(insertAuthor1);
+        Mockito.when(checkService.doCheck(Mockito.eq(insertAuthor1), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputSurname), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
+        Mockito.when(checkService.correctOrDefault(Mockito.eq(inputName), Mockito.any(), Mockito.any())).thenReturn(inputSurname);
+        Mockito.when(authorDao.update(inputId, inputSurname, inputName)).thenReturn(null);
 
-        Assertions.assertNull(authorServiceImpl.update(inputId, inputSurname, inputName));
+        Assertions.assertNull(authorService.update(inputId, inputSurname, inputName));
     }
 }

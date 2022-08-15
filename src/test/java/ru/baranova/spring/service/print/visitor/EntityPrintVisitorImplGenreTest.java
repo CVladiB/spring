@@ -13,11 +13,11 @@ import ru.baranova.spring.service.app.CheckService;
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})
 class EntityPrintVisitorImplGenreTest {
     @Autowired
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @Autowired
     private EntityPrintVisitorImplTestConfig config;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
 
     @AfterEach
     void tearDown() {
@@ -28,10 +28,10 @@ class EntityPrintVisitorImplGenreTest {
     void genre__print__correctOutput() {
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
         String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
-        entityPrintVisitorImpl.print(testGenre);
+        printer.print(testGenre);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -39,29 +39,29 @@ class EntityPrintVisitorImplGenreTest {
     @Test
     void genre__print_NullId__incorrectNPE() {
         Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testGenre));
     }
 
     @Test
     void genre__print_NullName__incorrectNPE() {
         Genre testGenre = new Genre(1, null, "DescriptionTest");
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testGenre));
     }
 
     @Test
     void genre__print_NullDescription__correctOutput() {
         Genre testGenre = new Genre(1, "NameTest", "описание жанра пока отсутствует");
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
         String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
 
         testGenre.setDescription(null);
-        entityPrintVisitorImpl.print(testGenre);
+        printer.print(testGenre);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -69,8 +69,8 @@ class EntityPrintVisitorImplGenreTest {
     @Test
     void genre__print_NullGenre__incorrectNPE() {
         Genre testGenre = null;
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testGenre));
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testGenre));
     }
 }

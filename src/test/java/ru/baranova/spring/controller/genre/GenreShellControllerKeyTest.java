@@ -15,7 +15,7 @@ class GenreShellControllerKeyTest {
     @Autowired
     private Shell shell;
     @Autowired
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @Autowired
     private GenreShellControllerTestConfig config;
     private Genre genre;
@@ -28,76 +28,76 @@ class GenreShellControllerKeyTest {
     @Test
     void create_correctKey() {
         shell.evaluate(() -> config.getCreate() + " " + genre.getName() + " " + genre.getDescription());
-        Mockito.verify(genreServiceImpl).create(genre.getName(), genre.getDescription());
+        Mockito.verify(genreService).create(genre.getName(), genre.getDescription());
     }
 
     @Test
     void create_incorrectKey() {
         shell.evaluate(() -> "smthWrong" + " " + genre.getName() + " " + genre.getDescription());
-        Mockito.verify(genreServiceImpl, Mockito.never()).create(Mockito.any(), Mockito.any());
+        Mockito.verify(genreService, Mockito.never()).create(Mockito.any(), Mockito.any());
     }
 
     @Test
     void readById_correctKey() {
         Integer id = genre.getId();
         shell.evaluate(() -> config.getReadById() + " " + id);
-        Mockito.verify(genreServiceImpl).readById(id);
+        Mockito.verify(genreService).readById(id);
     }
 
     @Test
     void readById_incorrectKey() {
         Integer id = genre.getId();
         shell.evaluate(() -> "smthWrong" + " " + id);
-        Mockito.verify(genreServiceImpl, Mockito.never()).readById(Mockito.any());
+        Mockito.verify(genreService, Mockito.never()).readById(Mockito.any());
     }
 
     @Test
     void readBySurnameAndName_correctKey() {
         shell.evaluate(() -> config.getReadByName() + " " + genre.getName());
-        Mockito.verify(genreServiceImpl).readByName(genre.getName());
+        Mockito.verify(genreService).readByName(genre.getName());
     }
 
     @Test
     void readBySurnameAndName_incorrectKey() {
         shell.evaluate(() -> "smthWrong" + " " + genre.getName());
-        Mockito.verify(genreServiceImpl, Mockito.never()).readByName(Mockito.any());
+        Mockito.verify(genreService, Mockito.never()).readByName(Mockito.any());
     }
 
     @Test
     void readAll_correctKey() {
         shell.evaluate(() -> config.getReadAll());
-        Mockito.verify(genreServiceImpl).readAll();
+        Mockito.verify(genreService).readAll();
     }
 
     @Test
     void readAll_incorrectKey() {
         shell.evaluate(() -> "smthWrong");
-        Mockito.verify(genreServiceImpl, Mockito.never()).readAll();
+        Mockito.verify(genreService, Mockito.never()).readAll();
     }
 
     @Test
     void update_correctKey() {
         shell.evaluate(() -> config.getUpdate() + " " + genre.getId() + " " + genre.getName() + " " + genre.getDescription());
-        Mockito.verify(genreServiceImpl).update(genre.getId(), genre.getName(), genre.getDescription());
+        Mockito.verify(genreService).update(genre.getId(), genre.getName(), genre.getDescription());
     }
 
     @Test
     void update_incorrectKey() {
         shell.evaluate(() -> "smthWrong" + " " + genre.getId() + " " + genre.getName() + " " + genre.getDescription());
-        Mockito.verify(genreServiceImpl, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(genreService, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test
     void delete_correctKey() {
         Integer id = genre.getId();
         shell.evaluate(() -> config.getDelete() + " " + id);
-        Mockito.verify(genreServiceImpl).delete(id);
+        Mockito.verify(genreService).delete(id);
     }
 
     @Test
     void delete_incorrectKey() {
         Integer id = genre.getId();
         shell.evaluate(() -> "smthWrong" + " " + id);
-        Mockito.verify(genreServiceImpl, Mockito.never()).delete(Mockito.any());
+        Mockito.verify(genreService, Mockito.never()).delete(Mockito.any());
     }
 }

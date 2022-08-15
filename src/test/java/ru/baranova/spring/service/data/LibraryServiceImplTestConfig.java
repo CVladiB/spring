@@ -11,18 +11,18 @@ import ru.baranova.spring.service.data.genre.GenreService;
 @TestConfiguration
 public class LibraryServiceImplTestConfig {
     @MockBean
-    private BookService bookServiceImpl;
+    private BookService bookService;
     @MockBean
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     @MockBean
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @SpyBean
-    private LibraryService libraryServiceImpl;
+    private LibraryService libraryService;
 
     @Bean
-    public LibraryService libraryServiceImpl(BookService bookServiceImpl
-            , AuthorService authorServiceImpl
-            , GenreService genreServiceImpl) {
-        return new LibraryServiceImpl(bookServiceImpl, authorServiceImpl, genreServiceImpl);
+    public LibraryService libraryService(BookService bookService
+            , AuthorService authorService
+            , GenreService genreService) {
+        return new LibraryServiceImpl(bookService, authorService, genreService);
     }
 }

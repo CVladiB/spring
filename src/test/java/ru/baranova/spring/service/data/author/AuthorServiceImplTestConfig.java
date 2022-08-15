@@ -10,17 +10,16 @@ import ru.baranova.spring.service.app.ParseService;
 @TestConfiguration
 public class AuthorServiceImplTestConfig {
     @MockBean
-    private AuthorDao authorDaoJdbc;
+    private AuthorDao authorDao;
     @MockBean
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @MockBean
-    private ParseService parseServiceImpl;
-
+    private ParseService parseService;
 
     @Bean
-    public AuthorService authorServiceImpl(AuthorDao authorDaoJdbc
-            , CheckService checkServiceImpl
-            , ParseService parseServiceImpl) {
-        return new AuthorServiceImpl(authorDaoJdbc, checkServiceImpl, parseServiceImpl);
+    public AuthorService authorService(AuthorDao authorDao
+            , CheckService checkService
+            , ParseService parseService) {
+        return new AuthorServiceImpl(authorDao, checkService, parseService);
     }
 }

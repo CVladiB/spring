@@ -18,9 +18,9 @@ import java.util.List;
 @SpringBootTest(classes = {PrintServiceImplTestConfig.class, StopSearchConfig.class})
 class PrintServiceImplTest {
     @Autowired
-    private PrintService printServiceImpl;
+    private PrintService printService;
     @Autowired
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @Autowired
     private PrintServiceImplTestConfig config;
     private Author testAuthor;
@@ -45,8 +45,8 @@ class PrintServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             config.getWriter().println("Print author");
             return null;
-        }).when(entityPrintVisitorImpl).print(testAuthor);
-        printServiceImpl.printEntity(testAuthor);
+        }).when(printer).print(testAuthor);
+        printService.printEntity(testAuthor);
 
         String expected = "Print author\r\n";
         String actual = config.getOut().toString();
@@ -58,8 +58,8 @@ class PrintServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             config.getWriter().println("Print genre");
             return null;
-        }).when(entityPrintVisitorImpl).print(testGenre);
-        printServiceImpl.printEntity(testGenre);
+        }).when(printer).print(testGenre);
+        printService.printEntity(testGenre);
 
         String expected = "Print genre\r\n";
         String actual = config.getOut().toString();
@@ -71,8 +71,8 @@ class PrintServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             config.getWriter().println("Print author");
             return null;
-        }).when(entityPrintVisitorImpl).print(testBookEntity);
-        printServiceImpl.printEntity(testBookEntity);
+        }).when(printer).print(testBookEntity);
+        printService.printEntity(testBookEntity);
 
         String expected = "Print author\r\n";
         String actual = config.getOut().toString();

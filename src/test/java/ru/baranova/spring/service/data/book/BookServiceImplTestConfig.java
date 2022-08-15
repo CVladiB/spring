@@ -10,13 +10,13 @@ import ru.baranova.spring.service.app.CheckService;
 @TestConfiguration
 public class BookServiceImplTestConfig {
     @MockBean
-    private BookDao bookDaoJdbc;
+    private BookDao bookDao;
     @MockBean
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
 
     @Bean
-    public BookService bookServiceImpl(BookDao bookDaoJdbc
-            , CheckService checkServiceImpl) {
-        return new BookServiceImpl(bookDaoJdbc, checkServiceImpl);
+    public BookService bookService(BookDao bookDao
+            , CheckService checkService) {
+        return new BookServiceImpl(bookDao, checkService);
     }
 }

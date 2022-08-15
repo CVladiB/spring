@@ -12,7 +12,7 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 @TestConfiguration
 public class AuthorShellControllerTestConfig {
     @MockBean
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     @MockBean
     private EntityPrintVisitor printer;
     private String create;
@@ -29,7 +29,7 @@ public class AuthorShellControllerTestConfig {
     private String WARNING_AUTHOR_NULL;
 
     @Bean
-    public AuthorShellController authorShellController(AuthorService authorServiceImpl, EntityPrintVisitor printer) {
+    public AuthorShellController authorShellController(AuthorService authorService, EntityPrintVisitor printer) {
         create = "ac";
         readById = "ar-id";
         readBySurnameAndName = "ar";
@@ -45,7 +45,7 @@ public class AuthorShellControllerTestConfig {
         WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
 
 
-        return new AuthorShellController(authorServiceImpl, printer);
+        return new AuthorShellController(authorService, printer);
     }
 
 }

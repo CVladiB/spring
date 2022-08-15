@@ -2,8 +2,10 @@ package ru.baranova.spring.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.domain.BusinessConstants;
@@ -17,10 +19,22 @@ import java.util.Map;
 @Slf4j
 @Aspect
 @Component
-public class AfterThrowingAspect {
+public class ThrowingAspect {
 
-    @Around("execution(* ru.baranova.spring.*..*(..))")
-    public Object DataAccessExceptionHandler(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Pointcut("execution(* ru.baranova.spring.dao..*(..))")
+    public void allMethodsDaoApp() {
+    }
+
+    @Pointcut("execution(* ru.baranova.spring.controller..*(..))")
+    public void allMethodsControllers() {
+    }
+
+    @Pointcut("execution(* ru.baranova.spring.service..*(..))")
+    public void allMethodsService() {
+    }
+
+    @Around("allMethodsDaoApp()")
+    public Object appDataAccessExceptionHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
         } catch (DataAccessException e) {
@@ -52,12 +66,21 @@ public class AfterThrowingAspect {
         }
     }
 
-    @Around("execution(* ru.baranova.spring.controller..*(..))")
-    public Object NPEPrintHandler(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("allMethodsControllers()")
+    public Object controllersNPEHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
         } catch (NullPointerException e) {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
+        }
+    }
+
+    @AfterReturning(pointcut = "allMethodsService()", returning = "result")
+    public void serviceNPEMaker(Object result) {
+        if (result == null
+                || result.equals(Collections.emptyList())
+                || result.equals(Boolean.FALSE)) {
+            throw new NullPointerException(BusinessConstants.ShellEntityServiceLog.WARNING);
         }
     }
 }

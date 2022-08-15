@@ -16,9 +16,9 @@ import java.util.List;
 @SpringBootTest(classes = {GenreServiceImplTestConfig.class, StopSearchConfig.class})
 class GenreServiceImplReadTest {
     @Autowired
-    private GenreDao genreDaoJdbc;
+    private GenreDao genreDao;
     @Autowired
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     private Genre insertGenre1;
     private List<Genre> genreList;
 
@@ -34,24 +34,24 @@ class GenreServiceImplReadTest {
     void genre__readById__correctReturnObject() {
         Integer inputId = genreList.size();
 
-        Mockito.when(genreDaoJdbc.getById(inputId)).thenReturn(genreList.get(inputId - 1));
+        Mockito.when(genreDao.getById(inputId)).thenReturn(genreList.get(inputId - 1));
 
         Genre expected = genreList.get(inputId - 1);
-        Genre actual = genreServiceImpl.readById(inputId);
+        Genre actual = genreService.readById(inputId);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__readById_NonexistentId__returnNull() {
         Integer inputId = genreList.size() + 1;
-        Assertions.assertNull(genreServiceImpl.readById(inputId));
+        Assertions.assertNull(genreService.readById(inputId));
     }
 
     @Test
     void genre__readById_Exception__returnNull() {
         Integer inputId = genreList.size();
-        Mockito.when(genreDaoJdbc.getById(inputId)).thenReturn(null);
-        Assertions.assertNull(genreServiceImpl.readById(inputId));
+        Mockito.when(genreDao.getById(inputId)).thenReturn(null);
+        Assertions.assertNull(genreService.readById(inputId));
     }
 
 
@@ -59,40 +59,40 @@ class GenreServiceImplReadTest {
     void genre__readByName__correctReturnObject() {
         String inputName = insertGenre1.getName();
 
-        Mockito.when(genreDaoJdbc.getByName(inputName)).thenReturn(genreList.get(0));
+        Mockito.when(genreDao.getByName(inputName)).thenReturn(genreList.get(0));
 
         Genre expected = genreList.get(0);
-        Genre actual = genreServiceImpl.readByName(inputName);
+        Genre actual = genreService.readByName(inputName);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__readByName_NonexistentName__returnNull() {
         String inputName = "smth";
-        Assertions.assertNull(genreServiceImpl.readByName(inputName));
+        Assertions.assertNull(genreService.readByName(inputName));
     }
 
     @Test
     void genre__readByName_Exception__returnNull() {
         String inputName = insertGenre1.getName();
-        Mockito.when(genreDaoJdbc.getByName(inputName)).thenReturn(null);
-        Assertions.assertNull(genreServiceImpl.readByName(inputName));
+        Mockito.when(genreDao.getByName(inputName)).thenReturn(null);
+        Assertions.assertNull(genreService.readByName(inputName));
     }
 
 
     @Test
     void genre__readAll__correctReturnLstObject() {
-        Mockito.doReturn(genreList).when(genreDaoJdbc).getAll();
+        Mockito.doReturn(genreList).when(genreDao).getAll();
         List<Genre> expected = genreList;
-        List<Genre> actual = genreServiceImpl.readAll();
+        List<Genre> actual = genreService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__readAll_Exception__EmptyList() {
-        Mockito.when(genreDaoJdbc.getAll()).thenReturn(Collections.emptyList());
+        Mockito.when(genreDao.getAll()).thenReturn(Collections.emptyList());
         List<Genre> expected = Collections.emptyList();
-        List<Genre> actual = genreServiceImpl.readAll();
+        List<Genre> actual = genreService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 }

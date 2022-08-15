@@ -10,14 +10,14 @@ import ru.baranova.spring.service.app.CheckService;
 @TestConfiguration
 public class GenreServiceImplTestConfig {
     @MockBean
-    private GenreDao genreDaoJdbc;
+    private GenreDao genreDao;
     @MockBean
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
 
     @Bean
-    public GenreService genreServiceImpl(GenreDao genreDaoJdbc
-            , CheckService checkServiceImpl) {
-        return new GenreServiceImpl(genreDaoJdbc, checkServiceImpl);
+    public GenreService genreService(GenreDao genreDao
+            , CheckService checkService) {
+        return new GenreServiceImpl(genreDao, checkService);
     }
 
 }

@@ -11,14 +11,14 @@ import ru.baranova.spring.service.app.config.AppServiceImplTestConfig;
 @SpringBootTest(classes = {AppServiceImplTestConfig.class, StopSearchConfig.class})
 class AppServiceImplTest {
     @Autowired
-    private AppService appServiceImpl;
+    private AppService appService;
 
 
     @Test
     void stopApplication() {
-        appServiceImpl.setContext(new StaticApplicationContext());
+        appService.setContext(new StaticApplicationContext());
         int expected = 0;
-        int actual = appServiceImpl.stopApplication();
+        int actual = appService.stopApplication();
         Assertions.assertEquals(expected, actual);
     }
 }

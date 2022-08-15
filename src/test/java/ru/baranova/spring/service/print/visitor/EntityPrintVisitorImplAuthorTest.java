@@ -14,11 +14,11 @@ import ru.baranova.spring.service.app.CheckService;
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})
 class EntityPrintVisitorImplAuthorTest {
     @Autowired
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @Autowired
     private EntityPrintVisitorImplTestConfig config;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
 
     @AfterEach
     void tearDown() {
@@ -29,10 +29,10 @@ class EntityPrintVisitorImplAuthorTest {
     void author__print__correctOutput() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
 
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.TRUE);
 
         String expected = String.format("%d. %s %s\r\n", testAuthor.getId(), testAuthor.getSurname(), testAuthor.getName());
-        entityPrintVisitorImpl.print(testAuthor);
+        printer.print(testAuthor);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -40,28 +40,28 @@ class EntityPrintVisitorImplAuthorTest {
     @Test
     void author__print_NullId__incorrectNPE() {
         Author testAuthor = new Author(null, "SurnameTest", "NameTest");
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testAuthor));
+        Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testAuthor));
     }
 
     @Test
     void author__print_NullSurname__incorrectNPE() {
         Author testAuthor = new Author(1, null, "NameTest");
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testAuthor));
+        Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testAuthor));
     }
 
     @Test
     void author__print_NullName__incorrectNPE() {
         Author testAuthor = new Author(1, "SurnameTest", null);
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testAuthor));
+        Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testAuthor));
     }
 
     @Test
     void author__print_NullAuthor__incorrectNPE() {
         Author testAuthor = null;
-        Mockito.when(checkServiceImpl.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertThrows(NullPointerException.class, () -> entityPrintVisitorImpl.print(testAuthor));
+        Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertThrows(NullPointerException.class, () -> printer.print(testAuthor));
     }
 }

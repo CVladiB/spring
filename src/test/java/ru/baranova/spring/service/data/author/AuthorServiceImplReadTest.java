@@ -17,11 +17,11 @@ import java.util.List;
 @SpringBootTest(classes = {AuthorServiceImplTestConfig.class, StopSearchConfig.class})
 class AuthorServiceImplReadTest {
     @Autowired
-    private AuthorDao authorDaoJdbc;
+    private AuthorDao authorDao;
     @Autowired
-    private ParseService parseServiceImpl;
+    private ParseService parseService;
     @Autowired
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     private List<Author> authorList;
 
     @BeforeEach
@@ -35,24 +35,24 @@ class AuthorServiceImplReadTest {
     void author__readById__correctReturnObject() {
         Integer inputId = authorList.size();
 
-        Mockito.doReturn(authorList.get(inputId - 1)).when(authorDaoJdbc).getById(inputId);
+        Mockito.doReturn(authorList.get(inputId - 1)).when(authorDao).getById(inputId);
 
         Author expected = authorList.get(inputId - 1);
-        Author actual = authorServiceImpl.readById(inputId);
+        Author actual = authorService.readById(inputId);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__readById_NonexistentId__returnNull() {
         Integer inputId = authorList.size() + 1;
-        Assertions.assertNull(authorServiceImpl.readById(inputId));
+        Assertions.assertNull(authorService.readById(inputId));
     }
 
     @Test
     void author__readById_Exception__returnNull() {
         Integer inputId = authorList.size();
-        Mockito.when(authorDaoJdbc.getById(inputId)).thenReturn(null);
-        Assertions.assertNull(authorServiceImpl.readById(inputId));
+        Mockito.when(authorDao.getById(inputId)).thenReturn(null);
+        Assertions.assertNull(authorService.readById(inputId));
     }
 
     @Test
@@ -60,13 +60,13 @@ class AuthorServiceImplReadTest {
         String inputSurname = authorList.get(0).getSurname();
         String inputName = authorList.get(0).getName();
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-        Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(inputSurname);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(inputName);
+        Mockito.when(authorDao.getBySurnameAndName(inputSurname, inputName))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -75,13 +75,13 @@ class AuthorServiceImplReadTest {
         String inputSurname = "-";
         String inputName = authorList.get(0).getName();
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(null);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-        Mockito.when(authorDaoJdbc.getBySurnameAndName(null, inputName))
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(null);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(inputName);
+        Mockito.when(authorDao.getBySurnameAndName(null, inputName))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -90,13 +90,13 @@ class AuthorServiceImplReadTest {
         String inputSurname = authorList.get(0).getSurname();
         String inputName = "-";
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(null);
-        Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, null))
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(inputSurname);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(null);
+        Mockito.when(authorDao.getBySurnameAndName(inputSurname, null))
                 .thenReturn(List.of(authorList.get(0)));
 
         List<Author> expected = List.of(authorList.get(0));
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -105,11 +105,11 @@ class AuthorServiceImplReadTest {
         String inputSurname = "-";
         String inputName = "-";
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(null);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(null);
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(null);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(null);
 
         List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -118,13 +118,13 @@ class AuthorServiceImplReadTest {
         String inputSurname = authorList.get(0).getSurname();
         String inputName = authorList.get(1).getName();
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-        Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(inputSurname);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(inputName);
+        Mockito.when(authorDao.getBySurnameAndName(inputSurname, inputName))
                 .thenReturn(Collections.emptyList());
 
         List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -133,29 +133,29 @@ class AuthorServiceImplReadTest {
         String inputSurname = authorList.get(0).getSurname();
         String inputName = authorList.get(1).getName();
 
-        Mockito.when(parseServiceImpl.parseDashToNull(inputSurname)).thenReturn(inputSurname);
-        Mockito.when(parseServiceImpl.parseDashToNull(inputName)).thenReturn(inputName);
-        Mockito.when(authorDaoJdbc.getBySurnameAndName(inputSurname, inputName))
+        Mockito.when(parseService.parseDashToNull(inputSurname)).thenReturn(inputSurname);
+        Mockito.when(parseService.parseDashToNull(inputName)).thenReturn(inputName);
+        Mockito.when(authorDao.getBySurnameAndName(inputSurname, inputName))
                 .thenReturn(Collections.emptyList());
 
         List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorServiceImpl.readBySurnameAndName(inputSurname, inputName);
+        List<Author> actual = authorService.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__readAll__correctReturnListObject() {
-        Mockito.doReturn(authorList).when(authorDaoJdbc).getAll();
+        Mockito.doReturn(authorList).when(authorDao).getAll();
         List<Author> expected = authorList;
-        List<Author> actual = authorServiceImpl.readAll();
+        List<Author> actual = authorService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__readAll_Exception__EmptyList() {
-        Mockito.when(authorDaoJdbc.getAll()).thenReturn(Collections.emptyList());
+        Mockito.when(authorDao.getAll()).thenReturn(Collections.emptyList());
         List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorServiceImpl.readAll();
+        List<Author> actual = authorService.readAll();
         Assertions.assertEquals(expected, actual);
     }
 }

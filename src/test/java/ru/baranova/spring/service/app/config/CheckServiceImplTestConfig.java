@@ -17,7 +17,7 @@ public class CheckServiceImplTestConfig {
     private String WARNING_EXIST = "Указанное поле уже существует";
 
     @Bean
-    public CheckService CheckServiceImpl() {
+    public CheckService checkService() {
         NOTHING_INPUT = "Ничего не введено";
         SHORT_INPUT = "Слишком короткий ввод, минимум %d символов";
         LONG_INPUT = "Слишком длинный ввод, максимум %d символов";

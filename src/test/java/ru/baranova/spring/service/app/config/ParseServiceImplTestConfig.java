@@ -8,7 +8,7 @@ import ru.baranova.spring.service.app.ParseServiceImpl;
 @TestConfiguration
 public class ParseServiceImplTestConfig {
     @Bean
-    public ParseService parseServiceImpl() {
+    public ParseService parseService() {
         return new ParseServiceImpl();
     }
 }

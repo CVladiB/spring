@@ -14,9 +14,9 @@ import ru.baranova.spring.service.app.AppService;
 @SpringBootTest(classes = {AppShellControllerTestConfig.class, StopSearchConfig.class})
 class AppShellControllerTest {
     @Autowired
-    private AppService appServiceImpl;
+    private AppService appService;
     @Autowired
-    private OutputDao outputDaoConsole;
+    private OutputDao outputDao;
     @Autowired
     private AppShellController appShellController;
     @Autowired
@@ -29,7 +29,7 @@ class AppShellControllerTest {
 
     @Test
     void stopApplication_correctStopApp() {
-        Mockito.when(appServiceImpl.stopApplication()).thenReturn(0);
+        Mockito.when(appService.stopApplication()).thenReturn(0);
         String expected = "Correct exit";
         String actual = appShellController.stopApplication();
         Assertions.assertEquals(expected, actual);
@@ -37,7 +37,7 @@ class AppShellControllerTest {
 
     @Test
     void stopApplication_correctErrorStopApp() {
-        Mockito.when(appServiceImpl.stopApplication()).thenReturn(1);
+        Mockito.when(appService.stopApplication()).thenReturn(1);
         String expected = "Error";
         String actual = appShellController.stopApplication();
         Assertions.assertEquals(expected, actual);
@@ -57,7 +57,7 @@ class AppShellControllerTest {
         Mockito.doAnswer(invocation -> {
             config.getWriter().println(test);
             return null;
-        }).when(outputDaoConsole).output(test);
+        }).when(outputDao).output(test);
         String expected = test + "\r\n";
         appShellController.output(test);
         String actual = config.getOut().toString();

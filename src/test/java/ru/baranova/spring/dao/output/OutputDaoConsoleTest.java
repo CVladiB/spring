@@ -16,13 +16,13 @@ import java.util.List;
 @Slf4j
 class OutputDaoConsoleTest {
     private Path testFile;
-    private OutputDao outputDaoConsole;
+    private OutputDao outputDao;
 
     @BeforeEach
     void beforeEach() {
         try {
             testFile = Paths.get("output_test_file.txt");
-            outputDaoConsole = new OutputDaoConsole(Files.newOutputStream(testFile));
+            outputDao = new OutputDaoConsole(Files.newOutputStream(testFile));
         } catch (IOException e) {
             log.error("Ошибка создания OutputStream");
         }
@@ -34,7 +34,7 @@ class OutputDaoConsoleTest {
 
         String expected = test;
         List<String> actual = null;
-        outputDaoConsole.output(test);
+        outputDao.output(test);
         try {
             actual = Files.readAllLines(testFile);
         } catch (IOException e) {

@@ -19,19 +19,19 @@ public class EntityPrintVisitorImplTestConfig {
     @Getter
     private PrintWriter writer;
     @MockBean
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     @SpyBean
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor entityPrintVisitor;
 
     @Bean
-    public OutputDao outputDaoConsole() {
+    public OutputDao outputDao() {
         out = new ByteArrayOutputStream();
         writer = new PrintWriter(out, true);
         return new OutputDaoConsole(out);
     }
 
     @Bean
-    public EntityPrintVisitor entityPrintVisitorImpl(OutputDao outputDaoConsole, CheckService checkServiceImpl) {
-        return new EntityPrintVisitorImpl(outputDaoConsole, checkServiceImpl);
+    public EntityPrintVisitor printer(OutputDao outputDao, CheckService checkService) {
+        return new EntityPrintVisitorImpl(outputDao, checkService);
     }
 }

@@ -22,9 +22,9 @@ import java.util.List;
 @SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, AfterThrowingAspect.class})
 class LibraryShellControllerTest {
     @Autowired
-    private LibraryService libraryServiceImpl;
+    private LibraryService libraryService;
     @Autowired
-    private ParseService parseServiceImpl;
+    private ParseService parseService;
     @Autowired
     private EntityPrintVisitor printer;
     @Autowired
@@ -46,9 +46,9 @@ class LibraryShellControllerTest {
     @Test
     void create_correct() {
         String inputGenreNames = "name1,name2";
-        Mockito.when(parseServiceImpl.parseLinesToListStrByComma(inputGenreNames))
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreNames))
                 .thenReturn(List.of(genre1.getName(), genre2.getName()));
-        Mockito.when(libraryServiceImpl.create(book.getTitle()
+        Mockito.when(libraryService.create(book.getTitle()
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
                         , List.of(genre1.getName(), genre2.getName())))
@@ -65,9 +65,9 @@ class LibraryShellControllerTest {
     @Test
     void create_incorrect() {
         String inputGenreNames = "name1,name2";
-        Mockito.when(parseServiceImpl.parseLinesToListStrByComma(inputGenreNames))
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreNames))
                 .thenReturn(List.of(genre1.getName(), genre2.getName()));
-        Mockito.when(libraryServiceImpl.create(book.getTitle()
+        Mockito.when(libraryService.create(book.getTitle()
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
                         , List.of(genre1.getName(), genre2.getName())))
@@ -84,9 +84,9 @@ class LibraryShellControllerTest {
     @Test
     void createById_correct() {
         String inputGenreIds = "7,8";
-        Mockito.when(parseServiceImpl.parseLinesToListIntByComma(inputGenreIds))
+        Mockito.when(parseService.parseLinesToListIntByComma(inputGenreIds))
                 .thenReturn(List.of(genre1.getId(), genre2.getId()));
-        Mockito.when(libraryServiceImpl.create(book.getTitle()
+        Mockito.when(libraryService.create(book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
                 .thenReturn(book);
@@ -101,13 +101,13 @@ class LibraryShellControllerTest {
     @Test
     void createById_incorrect() {
         String inputGenreIds = "7,8";
-        Mockito.when(parseServiceImpl.parseLinesToListStrByComma(inputGenreIds))
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreIds))
                 .thenReturn(List.of(genre1.getId().toString(), genre2.getId().toString()));
-        Mockito.when(parseServiceImpl.parseStringToInt(genre1.getId().toString()))
+        Mockito.when(parseService.parseStringToInt(genre1.getId().toString()))
                 .thenReturn(genre1.getId());
-        Mockito.when(parseServiceImpl.parseStringToInt(genre2.getId().toString()))
+        Mockito.when(parseService.parseStringToInt(genre2.getId().toString()))
                 .thenReturn(genre2.getId());
-        Mockito.when(libraryServiceImpl.create(book.getTitle()
+        Mockito.when(libraryService.create(book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
                 .thenReturn(null);
@@ -122,7 +122,7 @@ class LibraryShellControllerTest {
     @Test
     void readById_correct() {
         Integer id = book.getId();
-        Mockito.when(libraryServiceImpl.readById(id)).thenReturn(book);
+        Mockito.when(libraryService.readById(id)).thenReturn(book);
         Mockito.doNothing().when(printer).print(book);
         String expected = config.getCOMPLETE_OUTPUT();
         String actual = libraryShellController.readById(id);
@@ -132,7 +132,7 @@ class LibraryShellControllerTest {
     @Test
     void readById_incorrectRead() {
         Integer id = book.getId();
-        Mockito.when(libraryServiceImpl.readById(id)).thenReturn(book);
+        Mockito.when(libraryService.readById(id)).thenReturn(book);
         Mockito.doThrow(NullPointerException.class).when(printer).print(book);
         String expected = config.getWARNING();
         String actual = libraryShellController.readById(id);
@@ -142,7 +142,7 @@ class LibraryShellControllerTest {
     @Test
     void readById_incorrect() {
         Integer id = book.getId();
-        Mockito.when(libraryServiceImpl.readById(id)).thenReturn(null);
+        Mockito.when(libraryService.readById(id)).thenReturn(null);
         String expected = config.getWARNING();
         String actual = libraryShellController.readById(id);
         Assertions.assertEquals(expected, actual);
@@ -153,7 +153,7 @@ class LibraryShellControllerTest {
         BookDTO book1 = book;
         BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         String inputTitle = book.getTitle();
-        Mockito.when(libraryServiceImpl.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
+        Mockito.when(libraryService.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
         Mockito.doNothing().when(printer).print((BookDTO) Mockito.any());
 
         String expected = config.getCOMPLETE_OUTPUT();
@@ -166,7 +166,7 @@ class LibraryShellControllerTest {
         BookDTO book1 = book;
         BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
         String inputTitle = book.getTitle();
-        Mockito.when(libraryServiceImpl.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
+        Mockito.when(libraryService.readByTitle(inputTitle)).thenReturn(List.of(book1, book2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((BookDTO) Mockito.any());
 
         String expected = config.getWARNING();
@@ -177,7 +177,7 @@ class LibraryShellControllerTest {
     @Test
     void readByTitle_incorrect() {
         String inputTitle = book.getTitle();
-        Mockito.when(libraryServiceImpl.readByTitle(inputTitle)).thenReturn(Collections.emptyList());
+        Mockito.when(libraryService.readByTitle(inputTitle)).thenReturn(Collections.emptyList());
 
         String expected = config.getWARNING();
         String actual = libraryShellController.readByTitle(inputTitle);
@@ -188,7 +188,7 @@ class LibraryShellControllerTest {
     void readAll_correct() {
         BookDTO book1 = book;
         BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
-        Mockito.when(libraryServiceImpl.readAll()).thenReturn(List.of(book1, book2));
+        Mockito.when(libraryService.readAll()).thenReturn(List.of(book1, book2));
         Mockito.doNothing().when(printer).print((BookDTO) Mockito.any());
 
         String expected = config.getCOMPLETE_OUTPUT();
@@ -200,7 +200,7 @@ class LibraryShellControllerTest {
     void readAll_incorrectRead() {
         BookDTO book1 = book;
         BookDTO book2 = new BookDTO(8, "title", new Author(8, "surname1", "name1"), List.of(genre1));
-        Mockito.when(libraryServiceImpl.readAll()).thenReturn(List.of(book1, book2));
+        Mockito.when(libraryService.readAll()).thenReturn(List.of(book1, book2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((BookDTO) Mockito.any());
 
         String expected = config.getWARNING();
@@ -210,7 +210,7 @@ class LibraryShellControllerTest {
 
     @Test
     void readAll_incorrect() {
-        Mockito.when(libraryServiceImpl.readAll()).thenReturn(Collections.emptyList());
+        Mockito.when(libraryService.readAll()).thenReturn(Collections.emptyList());
         String expected = config.getWARNING();
         String actual = libraryShellController.readAll();
         Assertions.assertEquals(expected, actual);
@@ -219,9 +219,9 @@ class LibraryShellControllerTest {
     @Test
     void update_correct() {
         String inputGenreNames = "name1,name2";
-        Mockito.when(parseServiceImpl.parseLinesToListStrByComma(inputGenreNames))
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreNames))
                 .thenReturn(List.of(genre1.getName(), genre2.getName()));
-        Mockito.when(libraryServiceImpl.update(book.getId()
+        Mockito.when(libraryService.update(book.getId()
                         , book.getTitle()
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
@@ -240,9 +240,9 @@ class LibraryShellControllerTest {
     @Test
     void update_incorrect() {
         String inputGenreNames = "name1,name2";
-        Mockito.when(parseServiceImpl.parseLinesToListStrByComma(inputGenreNames))
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreNames))
                 .thenReturn(List.of(genre1.getName(), genre2.getName()));
-        Mockito.when(libraryServiceImpl.update(book.getId()
+        Mockito.when(libraryService.update(book.getId()
                         , book.getTitle()
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
@@ -261,9 +261,9 @@ class LibraryShellControllerTest {
     @Test
     void updateById_correct() {
         String inputGenreIds = "7,8";
-        Mockito.when(parseServiceImpl.parseLinesToListIntByComma(inputGenreIds))
+        Mockito.when(parseService.parseLinesToListIntByComma(inputGenreIds))
                 .thenReturn(List.of(genre1.getId(), genre2.getId()));
-        Mockito.when(libraryServiceImpl.update(book.getId()
+        Mockito.when(libraryService.update(book.getId()
                         , book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
@@ -280,9 +280,9 @@ class LibraryShellControllerTest {
     @Test
     void updateById_incorrect() {
         String inputGenreIds = "7,8";
-        Mockito.when(parseServiceImpl.parseLinesToListIntByComma(inputGenreIds))
+        Mockito.when(parseService.parseLinesToListIntByComma(inputGenreIds))
                 .thenReturn(List.of(genre1.getId(), genre2.getId()));
-        Mockito.when(libraryServiceImpl.update(book.getId()
+        Mockito.when(libraryService.update(book.getId()
                         , book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
@@ -299,7 +299,7 @@ class LibraryShellControllerTest {
     @Test
     void delete_correct() {
         Integer id = book.getId();
-        Mockito.when(libraryServiceImpl.delete(id)).thenReturn(true);
+        Mockito.when(libraryService.delete(id)).thenReturn(true);
         String expected = config.getCOMPLETE_DELETE();
         String actual = libraryShellController.delete(id);
         Assertions.assertEquals(expected, actual);
@@ -308,7 +308,7 @@ class LibraryShellControllerTest {
     @Test
     void delete_incorrect() {
         Integer id = book.getId();
-        Mockito.when(libraryServiceImpl.delete(id)).thenReturn(false);
+        Mockito.when(libraryService.delete(id)).thenReturn(false);
         String expected = config.getWARNING();
         String actual = libraryShellController.delete(id);
         Assertions.assertEquals(expected, actual);

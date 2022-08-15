@@ -14,13 +14,13 @@ import ru.baranova.spring.service.app.CheckService;
 @Component
 @RequiredArgsConstructor
 public class EntityPrintVisitorImpl implements EntityPrintVisitor {
-    private final OutputDao outputDaoConsole;
-    private final CheckService checkServiceImpl;
+    private final OutputDao outputDao;
+    private final CheckService checkService;
 
     public void print(@NonNull Author author) {
-        if (checkServiceImpl.doCheck(author, checkServiceImpl::checkAllFieldsAreNotNull)) {
+        if (checkService.doCheck(author, checkService::checkAllFieldsAreNotNull)) {
             String str = String.format("%d. %s %s", author.getId(), author.getSurname(), author.getName());
-            outputDaoConsole.output(str);
+            outputDao.output(str);
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_AUTHOR_NULL);
         }
@@ -39,7 +39,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
                 sb.append(", genreId: ");
                 bookEntity.getGenreListId().forEach(g -> sb.append(g).append(", "));
             }
-            outputDaoConsole.output(sb.toString());
+            outputDao.output(sb.toString());
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
         }
@@ -52,15 +52,15 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\"");
 
             if (book.getAuthor() != null) {
-                if (checkServiceImpl.doCheck(book.getAuthor(), checkServiceImpl::checkAllFieldsAreNotNull)) {
+                if (checkService.doCheck(book.getAuthor(), checkService::checkAllFieldsAreNotNull)) {
                     sb.append(", ").append(book.getAuthor().getSurname())
                             .append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
                 }
             }
 
-            outputDaoConsole.output(sb.toString());
+            outputDao.output(sb.toString());
             if (book.getGenreList() != null && !book.getGenreList().isEmpty()) {
-                outputDaoConsole.output(", жанр: ");
+                outputDao.output(", жанр: ");
                 book.getGenreList().forEach(this::print);
             }
         } else {
@@ -73,9 +73,9 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
         genre.setDescription(genre.getDescription() == null ?
                 BusinessConstants.PrintService.GENRE_DESCRIPTION_NULL : genre.getDescription());
 
-        if (checkServiceImpl.doCheck(genre, checkServiceImpl::checkAllFieldsAreNotNull)) {
+        if (checkService.doCheck(genre, checkService::checkAllFieldsAreNotNull)) {
             String str = String.format("%d. %s - %s", genre.getId(), genre.getName(), genre.getDescription());
-            outputDaoConsole.output(str);
+            outputDao.output(str);
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_GENRE_NULL);
         }

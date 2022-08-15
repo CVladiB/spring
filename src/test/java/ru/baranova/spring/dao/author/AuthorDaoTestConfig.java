@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 @TestConfiguration
 public class AuthorDaoTestConfig {
     @Bean
-    public AuthorDao authorDaoJdbc(NamedParameterJdbcOperations jdbc) {
+    public AuthorDao authorDao(NamedParameterJdbcOperations jdbc) {
         return new AuthorDaoJdbc(jdbc);
     }
 

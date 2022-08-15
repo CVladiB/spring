@@ -21,11 +21,11 @@ import java.util.stream.Stream;
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class})
 class LibraryServiceImplOtherMethodsTest {
     @Autowired
-    private AuthorService authorServiceImpl;
+    private AuthorService authorService;
     @Autowired
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @Autowired
-    private LibraryService libraryServiceImpl;
+    private LibraryService libraryService;
     private Author insertAuthor1;
     private Author insertAuthor2;
     private Genre testGenre1;
@@ -58,16 +58,16 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorSurname = insertAuthor1.getSurname();
         String inputAuthorName = insertAuthor2.getName();
 
-        Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
+        Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
                 .thenReturn(Collections.emptyList());
         testAuthor.setId(authorList.size() + 1);
         testAuthor.setName(inputAuthorSurname);
         testAuthor.setName(inputAuthorName);
-        Mockito.when(authorServiceImpl.create(inputAuthorSurname, inputAuthorName))
+        Mockito.when(authorService.create(inputAuthorSurname, inputAuthorName))
                 .thenReturn(testAuthor);
 
         Author expected = testAuthor;
-        Author actual = libraryServiceImpl.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName);
+        Author actual = libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -76,14 +76,14 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorSurname = insertAuthor1.getSurname();
         String inputAuthorName = insertAuthor2.getName();
 
-        Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
+        Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
                 .thenReturn(Collections.emptyList());
         testAuthor.setId(authorList.size() + 1);
         testAuthor.setName(inputAuthorSurname);
         testAuthor.setName(inputAuthorName);
-        Mockito.when(authorServiceImpl.create(inputAuthorSurname, inputAuthorName)).thenReturn(null);
+        Mockito.when(authorService.create(inputAuthorSurname, inputAuthorName)).thenReturn(null);
 
-        Assertions.assertNull(libraryServiceImpl.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
+        Assertions.assertNull(libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
     }
 
     @Test
@@ -91,11 +91,11 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorSurname = insertAuthor1.getSurname();
         String inputAuthorName = insertAuthor1.getName();
 
-        Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
+        Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
                 .thenReturn(List.of(insertAuthor1));
 
         Author expected = insertAuthor1;
-        Author actual = libraryServiceImpl.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName);
+        Author actual = libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -106,23 +106,23 @@ class LibraryServiceImplOtherMethodsTest {
         String inputAuthorSurname = insertAuthor1.getSurname();
         String inputAuthorName = "-";
 
-        Mockito.when(authorServiceImpl.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
+        Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName))
                 .thenReturn(List.of(insertAuthor1, testAuthor));
 
-        Assertions.assertNull(libraryServiceImpl.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
+        Assertions.assertNull(libraryService.checkAndCreateAuthorForBook(inputAuthorSurname, inputAuthorName));
     }
 
     @Test
     void genre__checkAndCreateGenreForBook__returnNewGenre() {
         List<String> inputGenreNameList = Stream.of(testGenre1, testGenre2).map(Genre::getName).toList();
 
-        Mockito.when(genreServiceImpl.readByName(testGenre1.getName())).thenReturn(null);
-        Mockito.when(genreServiceImpl.readByName(testGenre2.getName())).thenReturn(null);
-        Mockito.when(genreServiceImpl.create(testGenre1.getName(), null)).thenReturn(testGenre1);
-        Mockito.when(genreServiceImpl.create(testGenre2.getName(), null)).thenReturn(testGenre2);
+        Mockito.when(genreService.readByName(testGenre1.getName())).thenReturn(null);
+        Mockito.when(genreService.readByName(testGenre2.getName())).thenReturn(null);
+        Mockito.when(genreService.create(testGenre1.getName(), null)).thenReturn(testGenre1);
+        Mockito.when(genreService.create(testGenre2.getName(), null)).thenReturn(testGenre2);
 
         List<Genre> expected = List.of(testGenre1, testGenre2);
-        List<Genre> actual = libraryServiceImpl.checkAndCreateGenreForBook(inputGenreNameList);
+        List<Genre> actual = libraryService.checkAndCreateGenreForBook(inputGenreNameList);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -130,24 +130,24 @@ class LibraryServiceImplOtherMethodsTest {
     void genre__checkAndCreateGenreForBook_ErrorCreate__returnEmptyList() {
         List<String> inputGenreNameList = Stream.of(testGenre1, testGenre2).map(Genre::getName).toList();
 
-        Mockito.when(genreServiceImpl.readByName(testGenre1.getName())).thenReturn(null);
-        Mockito.when(genreServiceImpl.readByName(testGenre2.getName())).thenReturn(null);
-        Mockito.when(genreServiceImpl.create(testGenre1.getName(), null)).thenReturn(null);
-        Mockito.when(genreServiceImpl.create(testGenre2.getName(), null)).thenReturn(null);
+        Mockito.when(genreService.readByName(testGenre1.getName())).thenReturn(null);
+        Mockito.when(genreService.readByName(testGenre2.getName())).thenReturn(null);
+        Mockito.when(genreService.create(testGenre1.getName(), null)).thenReturn(null);
+        Mockito.when(genreService.create(testGenre2.getName(), null)).thenReturn(null);
 
         List<Genre> expected = Collections.emptyList();
-        List<Genre> actual = libraryServiceImpl.checkAndCreateGenreForBook(inputGenreNameList);
+        List<Genre> actual = libraryService.checkAndCreateGenreForBook(inputGenreNameList);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__checkAndCreateGenreForBook__returnExistGenre() {
         List<String> inputGenreNameList = genreList.stream().map(Genre::getName).toList();
-        Mockito.when(genreServiceImpl.readByName(genreList.get(0).getName())).thenReturn(genreList.get(0));
-        Mockito.when(genreServiceImpl.readByName(genreList.get(1).getName())).thenReturn(genreList.get(1));
+        Mockito.when(genreService.readByName(genreList.get(0).getName())).thenReturn(genreList.get(0));
+        Mockito.when(genreService.readByName(genreList.get(1).getName())).thenReturn(genreList.get(1));
 
         List<Genre> expected = genreList;
-        List<Genre> actual = libraryServiceImpl.checkAndCreateGenreForBook(inputGenreNameList);
+        List<Genre> actual = libraryService.checkAndCreateGenreForBook(inputGenreNameList);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -155,14 +155,14 @@ class LibraryServiceImplOtherMethodsTest {
     void book_checkAndSetFieldsToBook__returnFilledBook() {
         BookEntity inputBookEntity = emptyInsertBook1;
 
-        Mockito.when(authorServiceImpl.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
+        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
         for (int i = 0; i < inputBookEntity.getGenreListId().size(); i++) {
-            Mockito.when(genreServiceImpl.readById(inputBookEntity.getGenreListId().get(i)))
+            Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(i)))
                     .thenReturn(insertBook1.getGenreList().get(i));
         }
 
         BookDTO expected = insertBook1;
-        BookDTO actual = libraryServiceImpl.checkAndSetFieldsToBook(inputBookEntity);
+        BookDTO actual = libraryService.checkAndSetFieldsToBook(inputBookEntity);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -170,8 +170,8 @@ class LibraryServiceImplOtherMethodsTest {
     void book_checkAndSetFieldsToBook_ErrorAuthor__returnNull() {
         emptyInsertBook1.setAuthorId(100);
         BookEntity inputBookEntity = emptyInsertBook1;
-        Mockito.when(authorServiceImpl.readById(inputBookEntity.getAuthorId())).thenReturn(null);
-        Assertions.assertNull(libraryServiceImpl.checkAndSetFieldsToBook(inputBookEntity));
+        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(null);
+        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
 
     }
 
@@ -180,22 +180,22 @@ class LibraryServiceImplOtherMethodsTest {
         emptyInsertBook1.setGenreListId(List.of(100));
         BookEntity inputBookEntity = emptyInsertBook1;
 
-        Mockito.when(authorServiceImpl.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
-        Mockito.when(genreServiceImpl.readById(inputBookEntity.getGenreListId().get(0))).thenReturn(null);
+        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
+        Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(0))).thenReturn(null);
 
-        Assertions.assertNull(libraryServiceImpl.checkAndSetFieldsToBook(inputBookEntity));
+        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
     }
 
     @Test
     void book_checkAndSetFieldsToBook__returnNull() {
         BookEntity inputBookEntity = emptyInsertBook1;
 
-        Mockito.when(authorServiceImpl.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
+        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
         for (int i = 0; i < inputBookEntity.getGenreListId().size(); i++) {
-            Mockito.when(genreServiceImpl.readById(inputBookEntity.getGenreListId().get(i)))
+            Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(i)))
                     .thenReturn(insertBook1.getGenreList().get(0));
         }
 
-        Assertions.assertNull(libraryServiceImpl.checkAndSetFieldsToBook(inputBookEntity));
+        Assertions.assertNull(libraryService.checkAndSetFieldsToBook(inputBookEntity));
     }
 }

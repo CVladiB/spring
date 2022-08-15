@@ -18,11 +18,11 @@ import java.util.List;
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
 class BookEntityServiceImplDeleteTest {
     @Autowired
-    private BookDao bookDaoJdbc;
+    private BookDao bookDao;
     @Autowired
-    private BookService bookServiceImpl;
+    private BookService bookService;
     @Autowired
-    private CheckService checkServiceImpl;
+    private CheckService checkService;
     private List<BookEntity> bookList;
 
     @BeforeEach
@@ -39,31 +39,31 @@ class BookEntityServiceImplDeleteTest {
     @Test
     void book__delete__true() {
         Integer inputId = bookList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(Boolean.TRUE);
-        Assertions.assertTrue(bookServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDao.delete(inputId)).thenReturn(Boolean.TRUE);
+        Assertions.assertTrue(bookService.delete(inputId));
     }
 
     @Test
     void book__delete_Exception__false() {
         Integer inputId = bookList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(false);
-        Assertions.assertFalse(bookServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDao.delete(inputId)).thenReturn(false);
+        Assertions.assertFalse(bookService.delete(inputId));
     }
 
     @Test
     void book__delete_NonexistentId__false() {
         Integer inputId = bookList.size() + 1;
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertFalse(bookServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
+        Assertions.assertFalse(bookService.delete(inputId));
     }
 
     @Test
     void book__delete_ExistNonexistentId__false() {
         Integer inputId = bookList.size();
-        Mockito.when(checkServiceImpl.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDaoJdbc.delete(inputId)).thenReturn(Boolean.FALSE);
-        Assertions.assertFalse(bookServiceImpl.delete(inputId));
+        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(bookDao.delete(inputId)).thenReturn(Boolean.FALSE);
+        Assertions.assertFalse(bookService.delete(inputId));
     }
 }

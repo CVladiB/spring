@@ -18,24 +18,24 @@ public class BookServiceImpl implements BookService {
 
     private final static int MIN_INPUT = 3;
     private final static int MAX_INPUT = 40;
-    private final BookDao bookDaoJdbc;
-    private final CheckService checkServiceImpl;
+    private final BookDao bookDao;
+    private final CheckService checkService;
     private final Function<String, List<String>> correctInputStrTitleMinMaxFn;
     private final BiFunction<String, Integer, List<String>> existTitleAndAuthorIdFn;
 
-    public BookServiceImpl(BookDao bookDaoJdbc, CheckService checkServiceImpl) {
-        this.bookDaoJdbc = bookDaoJdbc;
-        this.checkServiceImpl = checkServiceImpl;
-        correctInputStrTitleMinMaxFn = str -> checkServiceImpl.checkCorrectInputStrLength(str, MIN_INPUT, MAX_INPUT);
-        existTitleAndAuthorIdFn = (title, authorId) -> checkServiceImpl.checkIfNotExist(() -> readByTitleAndAuthorId(title, authorId));
+    public BookServiceImpl(BookDao bookDao, CheckService checkService) {
+        this.bookDao = bookDao;
+        this.checkService = checkService;
+        correctInputStrTitleMinMaxFn = str -> checkService.checkCorrectInputStrLength(str, MIN_INPUT, MAX_INPUT);
+        existTitleAndAuthorIdFn = (title, authorId) -> checkService.checkIfNotExist(() -> readByTitleAndAuthorId(title, authorId));
     }
 
     @Nullable
     @Override
     public BookEntity create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         BookEntity bookEntity = null;
-        if (checkServiceImpl.doCheck(title, correctInputStrTitleMinMaxFn, t -> existTitleAndAuthorIdFn.apply(title, authorId))) {
-            bookEntity = bookDaoJdbc.create(title, authorId, genreIdList);
+        if (checkService.doCheck(title, correctInputStrTitleMinMaxFn, t -> existTitleAndAuthorIdFn.apply(title, authorId))) {
+            bookEntity = bookDao.create(title, authorId, genreIdList);
         }
         return bookEntity;
     }
@@ -43,32 +43,32 @@ public class BookServiceImpl implements BookService {
     @Nullable
     @Override
     public BookEntity readById(@NonNull Integer id) {
-        return bookDaoJdbc.getById(id);
+        return bookDao.getById(id);
     }
 
     @Override
     public List<BookEntity> readByTitle(@NonNull String title) {
-        return getOrEmptyList(bookDaoJdbc.getByTitle(title));
+        return getOrEmptyList(bookDao.getByTitle(title));
     }
 
     @Override
     public List<BookEntity> readByTitleAndAuthorId(@NonNull String title, @NonNull Integer authorId) {
-        return getOrEmptyList(bookDaoJdbc.getByTitleAndAuthor(title, authorId));
+        return getOrEmptyList(bookDao.getByTitleAndAuthor(title, authorId));
     }
 
     @Override
     public List<BookEntity> readAll() {
-        return getOrEmptyList(bookDaoJdbc.getAll());
+        return getOrEmptyList(bookDao.getAll());
     }
 
     @Nullable
     @Override
     public BookEntity update(@NonNull Integer id, String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
         BookEntity bookEntity = null;
-        BookEntity bookEntityById = bookDaoJdbc.getById(id);
-        if (checkServiceImpl.doCheck(bookEntityById, checkServiceImpl::checkExist, t -> existTitleAndAuthorIdFn.apply(title, authorId))) {
-            bookEntity = bookDaoJdbc.update(id
-                    , checkServiceImpl.correctOrDefault(title, correctInputStrTitleMinMaxFn, bookEntityById::getTitle)
+        BookEntity bookEntityById = bookDao.getById(id);
+        if (checkService.doCheck(bookEntityById, checkService::checkExist, t -> existTitleAndAuthorIdFn.apply(title, authorId))) {
+            bookEntity = bookDao.update(id
+                    , checkService.correctOrDefault(title, correctInputStrTitleMinMaxFn, bookEntityById::getTitle)
                     , authorId
                     , genreIdList);
         }
@@ -77,7 +77,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkServiceImpl.doCheck(bookDaoJdbc.getById(id), checkServiceImpl::checkExist)
-                && bookDaoJdbc.delete(id);
+        return checkService.doCheck(bookDao.getById(id), checkService::checkExist)
+                && bookDao.delete(id);
     }
 }

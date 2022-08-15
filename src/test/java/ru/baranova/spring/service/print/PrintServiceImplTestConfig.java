@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 @TestConfiguration
 public class PrintServiceImplTestConfig {
     @MockBean
-    private EntityPrintVisitor entityPrintVisitorImpl;
+    private EntityPrintVisitor printer;
     @MockBean
     private Author testAuthor;
     @MockBean

@@ -21,9 +21,9 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class LibraryServiceImpl implements LibraryService {
-    private final BookService bookServiceImpl;
-    private final AuthorService authorServiceImpl;
-    private final GenreService genreServiceImpl;
+    private final BookService bookService;
+    private final AuthorService authorService;
+    private final GenreService genreService;
 
     @Nullable
     @Override
@@ -31,7 +31,7 @@ public class LibraryServiceImpl implements LibraryService {
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
         List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
         if (author != null && !genreList.isEmpty()) {
-            BookEntity bookEntity = bookServiceImpl.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
+            BookEntity bookEntity = bookService.create(title, author.getId(), genreList.stream().map(Genre::getId).toList());
             return bookEntity == null ? null : bookEntityToBookDTO(bookEntity, author, genreList);
         } else {
             log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
@@ -42,13 +42,13 @@ public class LibraryServiceImpl implements LibraryService {
     @Nullable
     @Override
     public BookDTO create(@NonNull String title, @NonNull Integer authorId, @NonNull List<Integer> genreIdList) {
-        Author author = authorServiceImpl.readById(authorId);
+        Author author = authorService.readById(authorId);
         List<Genre> genreList = genreIdList.stream()
-                .map(genreServiceImpl::readById)
+                .map(genreService::readById)
                 .filter(Objects::nonNull)
                 .toList();
         if (author != null && !genreList.isEmpty()) {
-            BookEntity bookEntity = bookServiceImpl.create(title, authorId, genreIdList);
+            BookEntity bookEntity = bookService.create(title, authorId, genreIdList);
             return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
             log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
@@ -60,9 +60,9 @@ public class LibraryServiceImpl implements LibraryService {
     @Override
     public Author checkAndCreateAuthorForBook(String authorSurname, String authorName) {
         Author author = null;
-        List<Author> authorList = authorServiceImpl.readBySurnameAndName(authorSurname, authorName);
+        List<Author> authorList = authorService.readBySurnameAndName(authorSurname, authorName);
         if (authorList.isEmpty()) {
-            author = authorServiceImpl.create(authorSurname, authorName);
+            author = authorService.create(authorSurname, authorName);
         } else if (authorList.size() == 1) {
             author = authorList.get(0);
         } else {
@@ -74,8 +74,8 @@ public class LibraryServiceImpl implements LibraryService {
     @Override
     public List<Genre> checkAndCreateGenreForBook(List<String> genreNameList) {
         return genreNameList.stream()
-                .map(genreName -> genreServiceImpl.readByName(genreName) == null ?
-                        genreServiceImpl.create(genreName, null) : genreServiceImpl.readByName(genreName))
+                .map(genreName -> genreService.readByName(genreName) == null ?
+                        genreService.create(genreName, null) : genreService.readByName(genreName))
                 .filter(Objects::nonNull)
                 .toList();
     }
@@ -83,13 +83,13 @@ public class LibraryServiceImpl implements LibraryService {
     @Nullable
     @Override
     public BookDTO readById(Integer id) {
-        BookEntity bookEntity = bookServiceImpl.readById(id);
+        BookEntity bookEntity = bookService.readById(id);
         return bookEntity != null ? checkAndSetFieldsToBook(bookEntity) : null;
     }
 
     @Override
     public List<BookDTO> readByTitle(String title) {
-        return bookServiceImpl.readByTitle(title)
+        return bookService.readByTitle(title)
                 .stream()
                 .map(this::checkAndSetFieldsToBook)
                 .filter(Objects::nonNull)
@@ -98,7 +98,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public List<BookDTO> readAll() {
-        return bookServiceImpl.readAll()
+        return bookService.readAll()
                 .stream()
                 .map(this::checkAndSetFieldsToBook)
                 .filter(Objects::nonNull)
@@ -110,13 +110,13 @@ public class LibraryServiceImpl implements LibraryService {
     public BookDTO checkAndSetFieldsToBook(@NonNull BookEntity bookEntity) {
         Author author = null;
         if (bookEntity.getAuthorId() != null) {
-            author = authorServiceImpl.readById(bookEntity.getAuthorId());
+            author = authorService.readById(bookEntity.getAuthorId());
             if (author == null) {
                 return null;
             }
         }
         List<Genre> genreList = bookEntity.getGenreListId().stream()
-                .map(genreServiceImpl::readById)
+                .map(genreService::readById)
                 .filter(Objects::nonNull)
                 .toList();
         return bookEntityToBookDTO(bookEntity, author, genreList);
@@ -125,12 +125,12 @@ public class LibraryServiceImpl implements LibraryService {
     @Nullable
     @Override
     public BookDTO update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList) {
-        BookEntity bookEntity = bookServiceImpl.readById(id);
+        BookEntity bookEntity = bookService.readById(id);
         Author author = checkAndCreateAuthorForBook(authorSurname, authorName);
         List<Genre> genreList = checkAndCreateGenreForBook(genreNameList);
 
         if (bookEntity != null && author != null && !genreList.isEmpty()) {
-            bookEntity = bookServiceImpl.update(id, title, author.getId(), genreList.stream().map(Genre::getId).toList());
+            bookEntity = bookService.update(id, title, author.getId(), genreList.stream().map(Genre::getId).toList());
             return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
             log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
@@ -141,12 +141,12 @@ public class LibraryServiceImpl implements LibraryService {
     @Nullable
     @Override
     public BookDTO update(@NonNull Integer id, String title, Integer authorId, List<Integer> genreIdList) {
-        BookEntity bookEntity = bookServiceImpl.readById(id);
-        Author author = authorServiceImpl.readById(authorId);
-        List<Genre> genreList = genreIdList.stream().map(genreServiceImpl::readById).toList();
+        BookEntity bookEntity = bookService.readById(id);
+        Author author = authorService.readById(authorId);
+        List<Genre> genreList = genreIdList.stream().map(genreService::readById).toList();
 
         if (bookEntity != null && author != null && !genreList.isEmpty()) {
-            bookEntity = bookServiceImpl.update(id, title, authorId, genreIdList);
+            bookEntity = bookService.update(id, title, authorId, genreIdList);
             return bookEntity != null ? bookEntityToBookDTO(bookEntity, author, genreList) : null;
         } else {
             log.info(BusinessConstants.EntityServiceLog.WARNING_CREATE);
@@ -157,7 +157,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Override
     public boolean delete(Integer id) {
-        return bookServiceImpl.delete(id);
+        return bookService.delete(id);
     }
 
     @Nullable

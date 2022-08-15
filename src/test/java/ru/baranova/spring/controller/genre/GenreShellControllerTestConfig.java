@@ -12,7 +12,7 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 @TestConfiguration
 public class GenreShellControllerTestConfig {
     @MockBean
-    private GenreService genreServiceImpl;
+    private GenreService genreService;
     @MockBean
     private EntityPrintVisitor printer;
     private String create;
@@ -30,7 +30,7 @@ public class GenreShellControllerTestConfig {
 
 
     @Bean
-    public GenreShellController genreShellController(GenreService genreServiceImpl, EntityPrintVisitor printer) {
+    public GenreShellController genreShellController(GenreService genreService, EntityPrintVisitor printer) {
         create = "gc";
         readById = "gr-id";
         readByName = "gr";
@@ -46,7 +46,7 @@ public class GenreShellControllerTestConfig {
         WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
 
 
-        return new GenreShellController(genreServiceImpl, printer);
+        return new GenreShellController(genreService, printer);
     }
 
 }
