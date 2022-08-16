@@ -9,7 +9,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.domain.BusinessConstants;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -36,11 +35,11 @@ public class ThrowingAspect {
                     .<Class>map(Object::getClass)
                     .toList()
                     .toArray(new Class[0]);
-            Method method = joinPoint
+            Class returnType = joinPoint
                     .getSourceLocation()
                     .getWithinType()
-                    .getMethod(joinPoint.getSignature().getName(), args);
-            Class returnType = method.getReturnType();
+                    .getMethod(joinPoint.getSignature().getName(), args)
+                    .getReturnType();
 
             if (returnType == Boolean.class) {
                 returnValueIfException = Boolean.FALSE;
