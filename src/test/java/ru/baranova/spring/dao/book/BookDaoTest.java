@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,7 +15,6 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookEntity;
 import ru.baranova.spring.domain.Genre;
 
-import java.util.Collections;
 import java.util.List;
 
 @JdbcTest
@@ -127,40 +127,34 @@ public class BookDaoTest {
     }
 
     @Test
-    void book__getByTitle_NullTitle__correctReturnEmptyListBooks() {
-        List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookDao.getByTitle(null);
-        Assertions.assertEquals(expected, actual);
+    void book__getByTitle_NullTitle__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class, () -> bookDao.getByTitle(null));
+
     }
 
     @Test
-    void book__getByTitle_NonexistentTitle__correctReturnEmptyListBooks() {
+    void book__getByTitle_NonexistentTitle__emptyListResultException() {
         String nonexistentTitle = "Smth";
-        List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookDao.getByTitle(nonexistentTitle);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertThrows(DataAccessException.class, () -> bookDao.getByTitle(nonexistentTitle));
     }
 
     @Test
-    void book__getByTitleAndAuthor__correctReturnListBooks() {
-        insertBook1.setGenreListId(null);
-        List<BookEntity> expected = List.of(insertBook1);
-        List<BookEntity> actual = bookDao.getByTitleAndAuthor(insertBook1.getTitle(), insertBook1.getAuthorId());
-        Assertions.assertEquals(expected, actual);
+    void book__getByTitleAndAuthor__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> bookDao.getByTitleAndAuthor(insertBook1.getTitle(), insertBook1.getAuthorId()));
     }
 
     @Test
-    void book__getByTitleAndAuthor_NullTitle__correctReturnEmptyListBooks() {
-        List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookDao.getByTitleAndAuthor(null, insertBook1.getAuthorId());
-        Assertions.assertEquals(expected, actual);
+    void book__getByTitleAndAuthor_NullTitle__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> bookDao.getByTitleAndAuthor(null, insertBook1.getAuthorId()));
+
     }
 
     @Test
-    void book__getByTitleAndAuthor_NullAuthorId__correctReturnEmptyListBooks() {
-        List<BookEntity> expected = Collections.emptyList();
-        List<BookEntity> actual = bookDao.getByTitleAndAuthor(insertBook1.getTitle(), null);
-        Assertions.assertEquals(expected, actual);
+    void book__getByTitleAndAuthor_NullAuthorId__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class,
+                () -> bookDao.getByTitleAndAuthor(insertBook1.getTitle(), null));
     }
 
     @Test

@@ -2,14 +2,15 @@ package ru.baranova.spring.dao.genre;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
+import ru.baranova.spring.domain.BusinessConstants;
 import ru.baranova.spring.domain.Genre;
 
 import javax.validation.constraints.NotNull;
@@ -20,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GenreDaoJdbc implements GenreDao {
     private final NamedParameterJdbcOperations jdbc;
+    private BusinessConstants.DaoLog bc;
 
     @SneakyThrows
     private static Genre genreMapper(ResultSet resultSet, int rowNum) {
@@ -31,7 +33,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public Genre create(@NonNull String name, String description) {
+    public Genre create(@NonNull String name, String description) throws DataAccessException {
         String sql = """
                 insert into genre (genre_name, genre_description)
                 values (:name, :description)
@@ -64,7 +66,11 @@ public class GenreDaoJdbc implements GenreDao {
 
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
 
-        return jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
+        Genre genre = jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
+        if (genre == null) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return genre;
     }
 
     @Override
@@ -76,7 +82,11 @@ public class GenreDaoJdbc implements GenreDao {
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource("name", name);
 
-        return jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
+        Genre genre = jdbc.queryForObject(sql, params, GenreDaoJdbc::genreMapper);
+        if (genre == null) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return genre;
     }
 
     @Override
@@ -86,12 +96,17 @@ public class GenreDaoJdbc implements GenreDao {
                 from genre
                 """;
 
-        return jdbc.query(sql, GenreDaoJdbc::genreMapper);
+        List<Genre> genres = jdbc.query(sql, GenreDaoJdbc::genreMapper);
+        if (genres.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.NOTHING_IN_BD);
+        }
+        return genres;
     }
 
     @Override
-    @Nullable
-    public Genre update(@NonNull Integer id, @NotNull String name, @NotNull String description) {
+    public Genre update(@NonNull Integer id
+            , @NotNull String name
+            , @NotNull String description) throws DataAccessException {
         String sql = """
                 update genre set genre_name = :name, genre_description = :description
                 where genre_id = :id
@@ -114,7 +129,7 @@ public class GenreDaoJdbc implements GenreDao {
     }
 
     @Override
-    public Boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) throws DataAccessException {
         String sql = """
                 delete from genre
                 where genre_id = :id
@@ -122,7 +137,7 @@ public class GenreDaoJdbc implements GenreDao {
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         int countAffectedRows = jdbc.update(sql, params);
         if (countAffectedRows == 0) {
-            throw new DataIntegrityViolationException("");
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
         }
         return countAffectedRows > 0;
     }

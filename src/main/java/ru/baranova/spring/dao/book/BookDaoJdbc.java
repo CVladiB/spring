@@ -2,15 +2,16 @@ package ru.baranova.spring.dao.book;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.baranova.spring.domain.BookEntity;
+import ru.baranova.spring.domain.BusinessConstants;
 
 import javax.validation.constraints.NotNull;
 import java.sql.ResultSet;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BookDaoJdbc implements BookDao {
     private final NamedParameterJdbcOperations jdbc;
+    private BusinessConstants.DaoLog bc;
 
     @SneakyThrows
     private static BookEntity bookMapper(ResultSet resultSet, int rowNum) {
@@ -47,9 +49,8 @@ public class BookDaoJdbc implements BookDao {
         return new BookEntity(bookId, null, null, genreList);
     }
 
-    @Nullable
     @Override
-    public BookEntity create(@NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreIdList) throws DataIntegrityViolationException {
+    public BookEntity create(@NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreIdList) throws DataAccessException {
         String sql = """
                 insert into book (book_title, author_id)
                 values (:title, :author_id)
@@ -78,7 +79,7 @@ public class BookDaoJdbc implements BookDao {
                 .build();
     }
 
-    private void createBookGenreByBookId(@NonNull Integer bookId, @NonNull List<Integer> genreList) {
+    private void createBookGenreByBookId(@NonNull Integer bookId, @NonNull List<Integer> genreList) throws DataAccessException {
         String sqlGenre = """
                 insert into book_genre (book_id, genre_id)
                 values (:book_id, :genre_id);
@@ -94,7 +95,6 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    @Nullable
     public BookEntity getById(@NonNull Integer id) {
         BookEntity bookEntity = getByIdWithoutGenre(id);
         bookEntity.setGenreListId(getBookGenreById(bookEntity.getId()));
@@ -102,7 +102,6 @@ public class BookDaoJdbc implements BookDao {
     }
 
     @Override
-    @Nullable
     public BookEntity getByIdWithoutGenre(@NonNull Integer id) {
         String sql = """
                 select book_id, book_title, author_id
@@ -112,7 +111,11 @@ public class BookDaoJdbc implements BookDao {
 
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
 
-        return jdbc.queryForObject(sql, params, BookDaoJdbc::bookMapper);
+        BookEntity book = jdbc.queryForObject(sql, params, BookDaoJdbc::bookMapper);
+        if (book == null) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return book;
     }
 
     private List<Integer> getBookGenreById(@NonNull Integer bookId) {
@@ -137,7 +140,11 @@ public class BookDaoJdbc implements BookDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("title", title);
 
-        return jdbc.query(sql, params, BookDaoJdbc::bookMapper);
+        List<BookEntity> book = jdbc.query(sql, params, BookDaoJdbc::bookMapper);
+        if (book.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return book;
     }
 
     @Override
@@ -152,7 +159,12 @@ public class BookDaoJdbc implements BookDao {
         params.addValue("title", title);
         params.addValue("author_id", authorId);
 
-        return jdbc.query(sql, params, BookDaoJdbc::bookMapper);
+        List<BookEntity> bookList = jdbc.queryForStream(sql, Map.of(), BookDaoJdbc::bookMapper)
+                .collect(Collectors.toList());
+        if (bookList.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return bookList;
     }
 
     @Override
@@ -161,14 +173,19 @@ public class BookDaoJdbc implements BookDao {
                 select book_id, book_title, author_id
                 from book
                 """;
-
-        return jdbc.queryForStream(sql, Map.of(), BookDaoJdbc::bookMapper)
-                .collect(Collectors.toList());
+        List<BookEntity> bookList;
+        if ((bookList = jdbc.queryForStream(sql, Map.of(), BookDaoJdbc::bookMapper)
+                .collect(Collectors.toList())).isEmpty()) {
+            throw new DataIntegrityViolationException(bc.NOTHING_IN_BD);
+        }
+        return bookList;
     }
 
     @Override
-    @Nullable
-    public BookEntity update(@NonNull Integer id, @NonNull String title, @NonNull Integer authorId, @NotNull List<Integer> genreListId) {
+    public BookEntity update(@NonNull Integer id
+            , @NonNull String title
+            , @NonNull Integer authorId
+            , @NotNull List<Integer> genreListId) throws DataAccessException {
         String sql = """
                 update book set book_title = :title, author_id = :author_id
                 where book_id = :id
@@ -193,19 +210,23 @@ public class BookDaoJdbc implements BookDao {
                 .build();
     }
 
-    private void updateBookGenreByBookId(@NonNull Integer bookId, @NonNull List<Integer> genreListId) {
+    private void updateBookGenreByBookId(@NonNull Integer bookId
+            , @NonNull List<Integer> genreListId) throws DataAccessException {
         String sqlGenre = """
                 delete from book_genre
                 where book_id = :id
                 """;
         MapSqlParameterSource params = new MapSqlParameterSource("id", bookId);
-        jdbc.update(sqlGenre, params);
+
+        if (jdbc.update(sqlGenre, params) == 0) {
+            throw new DataIntegrityViolationException("");
+        }
 
         createBookGenreByBookId(bookId, genreListId);
     }
 
     @Override
-    public Boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) throws DataAccessException {
         String sql = """
                 delete from book
                 where book_id = :id
@@ -213,7 +234,7 @@ public class BookDaoJdbc implements BookDao {
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         int countAffectedRows = jdbc.update(sql, params);
         if (countAffectedRows == 0) {
-            throw new DataIntegrityViolationException("");
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
         }
         return countAffectedRows > 0;
     }

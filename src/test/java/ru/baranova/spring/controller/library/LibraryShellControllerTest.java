@@ -16,7 +16,6 @@ import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -71,7 +70,7 @@ class LibraryShellControllerTest {
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
                         , List.of(genre1.getName(), genre2.getName())))
-                .thenReturn(null);
+                .thenThrow(NullPointerException.class);
 
         String expected = config.getWARNING();
         String actual = libraryShellController.create(book.getTitle()
@@ -110,7 +109,7 @@ class LibraryShellControllerTest {
         Mockito.when(libraryService.create(book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
-                .thenReturn(null);
+                .thenThrow(NullPointerException.class);
 
         String expected = config.getWARNING();
         String actual = libraryShellController.createById(book.getTitle()
@@ -142,7 +141,7 @@ class LibraryShellControllerTest {
     @Test
     void readById_incorrect() {
         Integer id = book.getId();
-        Mockito.when(libraryService.readById(id)).thenReturn(null);
+        Mockito.when(libraryService.readById(id)).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = libraryShellController.readById(id);
         Assertions.assertEquals(expected, actual);
@@ -177,7 +176,7 @@ class LibraryShellControllerTest {
     @Test
     void readByTitle_incorrect() {
         String inputTitle = book.getTitle();
-        Mockito.when(libraryService.readByTitle(inputTitle)).thenReturn(Collections.emptyList());
+        Mockito.when(libraryService.readByTitle(inputTitle)).thenThrow(NullPointerException.class);
 
         String expected = config.getWARNING();
         String actual = libraryShellController.readByTitle(inputTitle);
@@ -210,7 +209,7 @@ class LibraryShellControllerTest {
 
     @Test
     void readAll_incorrect() {
-        Mockito.when(libraryService.readAll()).thenReturn(Collections.emptyList());
+        Mockito.when(libraryService.readAll()).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = libraryShellController.readAll();
         Assertions.assertEquals(expected, actual);
@@ -247,7 +246,7 @@ class LibraryShellControllerTest {
                         , book.getAuthor().getSurname()
                         , book.getAuthor().getName()
                         , List.of(genre1.getName(), genre2.getName())))
-                .thenReturn(null);
+                .thenThrow(NullPointerException.class);
 
         String expected = config.getWARNING();
         String actual = libraryShellController.update(book.getId()
@@ -286,7 +285,7 @@ class LibraryShellControllerTest {
                         , book.getTitle()
                         , book.getAuthor().getId()
                         , List.of(genre1.getId(), genre2.getId())))
-                .thenReturn(null);
+                .thenThrow(NullPointerException.class);
 
         String expected = config.getWARNING();
         String actual = libraryShellController.updateById(book.getId()
@@ -308,7 +307,7 @@ class LibraryShellControllerTest {
     @Test
     void delete_incorrect() {
         Integer id = book.getId();
-        Mockito.when(libraryService.delete(id)).thenReturn(false);
+        Mockito.when(libraryService.delete(id)).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = libraryShellController.delete(id);
         Assertions.assertEquals(expected, actual);

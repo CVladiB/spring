@@ -108,7 +108,7 @@ class LibraryServiceImplReadTest {
         Mockito.when(bookService.readByTitle(title)).thenReturn(Collections.emptyList());
         Assertions.assertThrows(NullPointerException.class, () -> libraryService.readByTitle(title));
     }
-    
+
     @Test
     void book__readByTitle_NullSetFields__returnNull() {
         String title = insertBook1.getTitle();

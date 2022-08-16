@@ -13,19 +13,14 @@ import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.Collections;
 import java.util.List;
 
-@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class
-        , ThrowingAspect.class
-})
+@SpringBootTest(classes = {AuthorShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class AuthorShellControllerTest {
     @Autowired
     private AuthorService authorService;
     @Autowired
     private EntityPrintVisitor printer;
-    //    @Autowired
-//    private ThrowingAspect aspect;
     @Autowired
     private AuthorShellController authorShellController;
     @Autowired
@@ -47,7 +42,7 @@ class AuthorShellControllerTest {
 
     @Test
     void create_incorrect() {
-        Mockito.when(authorService.create(author.getSurname(), author.getName())).thenReturn(null);
+        Mockito.when(authorService.create(author.getSurname(), author.getName())).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = authorShellController.create(author.getSurname(), author.getName());
         Assertions.assertEquals(expected, actual);
@@ -76,7 +71,8 @@ class AuthorShellControllerTest {
     @Test
     void readById_incorrect() {
         Integer id = author.getId();
-        Mockito.when(authorService.readById(id)).thenReturn(null);
+        Mockito.when(authorService.readById(id)).thenThrow(NullPointerException.class);
+        Mockito.doNothing().when(printer).print(author);
         String expected = config.getWARNING();
         String actual = authorShellController.readById(id);
         Assertions.assertEquals(expected, actual);
@@ -114,7 +110,7 @@ class AuthorShellControllerTest {
     void readBySurnameAndName_incorrect() {
         String inputSurname = author.getSurname();
         String inputName = "-";
-        Mockito.when(authorService.readBySurnameAndName(inputSurname, inputName)).thenReturn(Collections.emptyList());
+        Mockito.when(authorService.readBySurnameAndName(inputSurname, inputName)).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = authorShellController.readBySurnameAndName(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
@@ -145,7 +141,7 @@ class AuthorShellControllerTest {
 
     @Test
     void readAll_incorrect() {
-        Mockito.when(authorService.readAll()).thenReturn(Collections.emptyList());
+        Mockito.when(authorService.readAll()).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = authorShellController.readAll();
         Assertions.assertEquals(expected, actual);
@@ -161,7 +157,7 @@ class AuthorShellControllerTest {
 
     @Test
     void update_incorrect() {
-        Mockito.when(authorService.update(author.getId(), author.getSurname(), author.getName())).thenReturn(null);
+        Mockito.when(authorService.update(author.getId(), author.getSurname(), author.getName())).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = authorShellController.update(author.getId(), author.getSurname(), author.getName());
         Assertions.assertEquals(expected, actual);
@@ -179,7 +175,7 @@ class AuthorShellControllerTest {
     @Test
     void delete_incorrect() {
         Integer id = author.getId();
-        Mockito.when(authorService.delete(id)).thenReturn(Boolean.FALSE);
+        Mockito.when(authorService.delete(id)).thenThrow(NullPointerException.class);
         String expected = config.getWARNING();
         String actual = authorShellController.delete(id);
         Assertions.assertEquals(expected, actual);

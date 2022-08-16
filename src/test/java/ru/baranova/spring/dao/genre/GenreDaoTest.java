@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,7 +13,6 @@ import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Genre;
 
-import java.util.Collections;
 import java.util.List;
 
 @JdbcTest
@@ -117,11 +117,9 @@ class GenreDaoTest {
     }
 
     @Test
-    void genre__getAll_Empty_incorrectException() {
+    void genre__getAll_Empty_emptyListResultException() {
         genreList.stream().map(Genre::getId).forEach(genreDao::delete);
-        List<Genre> expected = Collections.emptyList();
-        List<Genre> actual = genreDao.getAll();
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertThrows(DataAccessException.class, () -> genreDao.getAll());
     }
 
     @Test

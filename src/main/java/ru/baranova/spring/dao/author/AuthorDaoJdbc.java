@@ -2,15 +2,16 @@ package ru.baranova.spring.dao.author;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.domain.BusinessConstants;
 
 import java.sql.ResultSet;
 import java.sql.Types;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class AuthorDaoJdbc implements AuthorDao {
 
     private final NamedParameterJdbcOperations jdbc;
+    private BusinessConstants.DaoLog bc;
 
     @SneakyThrows
     private static Author map(ResultSet resultSet, int rowNum) {
@@ -33,7 +35,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Author create(@NonNull String surname, @NonNull String name) {
+    public Author create(@NonNull String surname, @NonNull String name) throws DataAccessException {
         String sql = """
                 insert into author (author_surname, author_name)
                 values (:surname, :name)
@@ -57,7 +59,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Author getById(@NonNull Integer id) {
+    public Author getById(@NonNull Integer id) throws DataAccessException {
         String sql = """
                 select author_id, author_surname, author_name
                 from author
@@ -67,7 +69,11 @@ public class AuthorDaoJdbc implements AuthorDao {
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("id", id);
 
-        return jdbc.queryForObject(sql, params, AuthorDaoJdbc::map);
+        Author author = jdbc.queryForObject(sql, params, AuthorDaoJdbc::map);
+        if (author == null) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return author;
     }
 
     @Override
@@ -89,7 +95,11 @@ public class AuthorDaoJdbc implements AuthorDao {
         params.addValue("surname", surname, Types.VARCHAR);
         params.addValue("name", name, Types.VARCHAR);
 
-        return jdbc.query(sql, params, AuthorDaoJdbc::map);
+        List<Author> authors = jdbc.query(sql, params, AuthorDaoJdbc::map);
+        if (authors.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return authors;
     }
 
     @Override
@@ -98,13 +108,16 @@ public class AuthorDaoJdbc implements AuthorDao {
                 select author_id, author_surname, author_name
                 from author
                 """;
-        return jdbc.queryForStream(sql, Map.of(), AuthorDaoJdbc::map)
+        List<Author> authors = jdbc.queryForStream(sql, Map.of(), AuthorDaoJdbc::map)
                 .collect(Collectors.toList());
+        if (authors.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        }
+        return authors;
     }
 
     @Override
-    @Nullable
-    public Author update(@NonNull Integer id, @NonNull String surname, @NonNull String name) {
+    public Author update(@NonNull Integer id, @NonNull String surname, @NonNull String name) throws DataAccessException {
         String sql = """
                 update author set author_surname = :surname, author_name = :name
                 where author_id = :id
@@ -127,7 +140,7 @@ public class AuthorDaoJdbc implements AuthorDao {
     }
 
     @Override
-    public Boolean delete(@NonNull Integer id) {
+    public Boolean delete(@NonNull Integer id) throws DataAccessException {
         String sql = """
                 delete from author
                 where author_id = :id
@@ -136,7 +149,7 @@ public class AuthorDaoJdbc implements AuthorDao {
         MapSqlParameterSource params = new MapSqlParameterSource("id", id);
         int countAffectedRows = jdbc.update(sql, params);
         if (countAffectedRows == 0) {
-            throw new DataIntegrityViolationException("");
+            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
         }
         return countAffectedRows > 0;
     }

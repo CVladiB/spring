@@ -7,29 +7,41 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.Shell;
+import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
+import ru.baranova.spring.controller.LibraryShellController;
 import ru.baranova.spring.domain.Author;
 import ru.baranova.spring.domain.BookDTO;
 import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
+import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import java.util.List;
 
-@SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class})
+@SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class LibraryShellControllerKeyTest {
     @Autowired
     private Shell shell;
     @Autowired
     private LibraryService libraryService;
     @Autowired
+    private ParseService parseService;
+    @Autowired
+    private EntityPrintVisitor printer;
+    @Autowired
+    private LibraryShellController libraryShellController;
+    @Autowired
     private LibraryShellControllerTestConfig config;
+    private Genre genre1;
+    private Genre genre2;
     private BookDTO book;
 
     @BeforeEach
     void setUp() {
         Author author = new Author(7, "surname", "name");
-        Genre genre1 = new Genre(7, "name1", "description");
-        Genre genre2 = new Genre(8, "name2", "description");
+        genre1 = new Genre(7, "name1", "description");
+        genre2 = new Genre(8, "name2", "description");
         book = new BookDTO(7, "title", author, List.of(genre1, genre2));
     }
 
@@ -58,6 +70,18 @@ class LibraryShellControllerKeyTest {
     @Test
     void createById_correctKey() {
         String inputGenreIds = "7,8";
+
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreIds))
+                .thenReturn(List.of(genre1.getId().toString(), genre2.getId().toString()));
+        Mockito.when(parseService.parseStringToInt(genre1.getId().toString()))
+                .thenReturn(genre1.getId());
+        Mockito.when(parseService.parseStringToInt(genre2.getId().toString()))
+                .thenReturn(genre2.getId());
+        Mockito.when(libraryService.create(book.getTitle()
+                        , book.getAuthor().getId()
+                        , List.of(genre1.getId(), genre2.getId())))
+                .thenThrow(NullPointerException.class);
+
         String expected = "Ошибка";
         String actual = shell.evaluate(() -> config.getCreateById()
                 + " " + book.getTitle()
@@ -116,6 +140,16 @@ class LibraryShellControllerKeyTest {
     @Test
     void update_correctKey() {
         String inputGenreNames = "name1,name2";
+
+        Mockito.when(parseService.parseLinesToListStrByComma(inputGenreNames))
+                .thenReturn(List.of(genre1.getName(), genre2.getName()));
+        Mockito.when(libraryService.update(book.getId()
+                        , book.getTitle()
+                        , book.getAuthor().getSurname()
+                        , book.getAuthor().getName()
+                        , List.of(genre1.getName(), genre2.getName())))
+                .thenThrow(NullPointerException.class);
+
         String expected = "Ошибка";
         String actual = shell.evaluate(() -> config.getUpdate()
                 + " " + book.getId()
@@ -140,6 +174,15 @@ class LibraryShellControllerKeyTest {
     @Test
     void updateById_correctKey() {
         String inputGenreIds = "7,8";
+
+        Mockito.when(parseService.parseLinesToListIntByComma(inputGenreIds))
+                .thenReturn(List.of(genre1.getId(), genre2.getId()));
+        Mockito.when(libraryService.update(book.getId()
+                        , book.getTitle()
+                        , book.getAuthor().getId()
+                        , List.of(genre1.getId(), genre2.getId())))
+                .thenThrow(NullPointerException.class);
+
         String expected = "Ошибка";
         String actual = shell.evaluate(() -> config.getUpdateById()
                 + " " + book.getId()

@@ -58,7 +58,7 @@ class AppShellControllerTest {
             config.getWriter().println(test);
             return null;
         }).when(outputDao).output(test);
-        String expected = test + "\r\n";
+        String expected = test + System.lineSeparator();
         appShellController.output(test);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);

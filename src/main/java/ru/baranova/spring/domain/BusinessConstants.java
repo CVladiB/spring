@@ -7,7 +7,11 @@ public abstract class BusinessConstants {
         String COMPLETE_UPDATE = "Поле изменено";
         String COMPLETE_DELETE = "Поле удалено";
         String WARNING = "Ошибка";
+    }
 
+    public interface DaoLog {
+        String NOTHING_IN_BD = "В БД ничего не содержится";
+        String SHOULD_EXIST_INPUT = "В БД не найдено записи с указанными параметрами";
     }
 
     public interface CheckServiceLog {

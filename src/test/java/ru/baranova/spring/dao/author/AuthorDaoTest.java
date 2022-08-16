@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,7 +13,6 @@ import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.domain.Author;
 
-import java.util.Collections;
 import java.util.List;
 
 @JdbcTest
@@ -99,33 +99,29 @@ class AuthorDaoTest {
     }
 
     @Test
-    void author__getBySurnameAndName_NonexistentSurname__correctReturnListAuthors() {
+    void author__getBySurnameAndName_NonexistentSurname__emptyListResultException() {
         String nonexistentSurname = "Smth";
-        List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorDao.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName());
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertThrows(DataAccessException.class
+                , () -> authorDao.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName()));
     }
 
     @Test
-    void author__getBySurnameAndName_NonexistentName__correctReturnListAuthors() {
+    void author__getBySurnameAndName_NonexistentName__emptyListResultException() {
         String nonexistentName = "Smth";
-        List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorDao.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName);
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertThrows(DataAccessException.class
+                , () -> authorDao.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName));
     }
 
     @Test
-    void author__getBySurnameAndName_NullSurnameAndName__correctReturnEmptyListAuthors() {
-        List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorDao.getBySurnameAndName(null, null);
-        Assertions.assertEquals(expected, actual);
+    void author__getBySurnameAndName_NullSurnameAndName__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class
+                , () -> authorDao.getBySurnameAndName(null, null));
     }
 
     @Test
-    void author__getBySurnameAndName_DifferentSurnameAndName__correctReturnEmptyListAuthors() {
-        List<Author> expected = Collections.emptyList();
-        List<Author> actual = authorDao.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName());
-        Assertions.assertEquals(expected, actual);
+    void author__getBySurnameAndName_DifferentSurnameAndName__emptyListResultException() {
+        Assertions.assertThrows(DataAccessException.class
+                , () -> authorDao.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName()));
     }
 
     @Test
