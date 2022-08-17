@@ -48,7 +48,7 @@ class PrintServiceImplTest {
         }).when(printer).print(testAuthor);
         printService.printEntity(testAuthor);
 
-        String expected = "Print author\r\n";
+        String expected = "Print author" + System.lineSeparator();
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -61,7 +61,7 @@ class PrintServiceImplTest {
         }).when(printer).print(testGenre);
         printService.printEntity(testGenre);
 
-        String expected = "Print genre\r\n";
+        String expected = "Print genre" + System.lineSeparator();
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
@@ -74,7 +74,7 @@ class PrintServiceImplTest {
         }).when(printer).print(testBookEntity);
         printService.printEntity(testBookEntity);
 
-        String expected = "Print author\r\n";
+        String expected = "Print author" + System.lineSeparator();
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }

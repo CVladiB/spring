@@ -37,7 +37,7 @@ class EntityPrintVisitorImpBookEntityTest {
         String expectedAuthor = String.format("authorId: %s", testBook.getAuthorId());
         String expectedGenre = String.format("genreId: %s, %s,", testBook.getGenreListId().get(0), testBook.getGenreListId().get(1));
 
-        String expected = String.format("%d. \"%s\", %s, %s \r\n", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\", %s, %s " + System.lineSeparator(), testBook.getId(), testBook.getTitle()
                 , expectedAuthor, expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -61,7 +61,7 @@ class EntityPrintVisitorImpBookEntityTest {
         testBook.setAuthorId(null);
         String expectedGenre = String.format("genreId: %s, %s,", testBook.getGenreListId().get(0), testBook.getGenreListId().get(1));
 
-        String expected = String.format("%d. \"%s\", %s \r\n", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\", %s " + System.lineSeparator(), testBook.getId(), testBook.getTitle()
                 , expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -73,7 +73,7 @@ class EntityPrintVisitorImpBookEntityTest {
         testBook.setGenreListId(Collections.emptyList());
         String expectedAuthor = String.format("authorId: %s", testBook.getAuthorId());
 
-        String expected = String.format("%d. \"%s\", %s\r\n", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\", %s" + System.lineSeparator(), testBook.getId(), testBook.getTitle()
                 , expectedAuthor);
         printer.print(testBook);
         String actual = config.getOut().toString();

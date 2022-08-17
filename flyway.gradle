@@ -1,3 +1,8 @@
+ext {
+    flywayUrl = project.hasProperty('flywayUrl') ? project.property('flywayUrl') : 'jdbc:postgresql://localhost:5432/library'
+    flywayUser = project.hasProperty('flywayUser') ? project.property('flywayUser') : 'library'
+    flywayPassword = project.hasProperty('flywayPassword') ? project.property('flywayPassword') : 'strong_pass'
+}
 
 flyway {
     url = "$flywayUrl"

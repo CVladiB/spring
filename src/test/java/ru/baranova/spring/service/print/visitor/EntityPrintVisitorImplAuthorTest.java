@@ -31,7 +31,7 @@ class EntityPrintVisitorImplAuthorTest {
 
         Mockito.when(checkService.doCheck(Mockito.eq(testAuthor), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = String.format("%d. %s %s\r\n", testAuthor.getId(), testAuthor.getSurname(), testAuthor.getName());
+        String expected = String.format("%d. %s %s" + System.lineSeparator(), testAuthor.getId(), testAuthor.getSurname(), testAuthor.getName());
         printer.print(testAuthor);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);

@@ -40,7 +40,7 @@ class EntityPrintVisitorImpBookDTOTest {
 
     @Test
     void book__print__correctOutput() {
-        String expectedAuthor = String.format("%s %s.\r\n", testBook.getAuthor().getSurname()
+        String expectedAuthor = String.format("%s %s." + System.lineSeparator(), testBook.getAuthor().getSurname()
                 , testBook.getAuthor().getName().charAt(0));
         String expectedGenre = String.format("%d. %s - %s", testBook.getGenreList().get(0).getId()
                 , testBook.getGenreList().get(0).getName()
@@ -52,7 +52,7 @@ class EntityPrintVisitorImpBookDTOTest {
             return null;
         }).when(printer).print(testBook.getGenreList().get(0));
 
-        String expected = String.format("%d. \"%s\", %s, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\", %s, жанр: " + System.lineSeparator() + "%s", testBook.getId(), testBook.getTitle()
                 , expectedAuthor, expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -84,7 +84,7 @@ class EntityPrintVisitorImpBookDTOTest {
             return null;
         }).when(printer).print(testBook.getGenreList().get(0));
 
-        String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\"" + System.lineSeparator() + ", жанр: " + System.lineSeparator() + "%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -104,7 +104,7 @@ class EntityPrintVisitorImpBookDTOTest {
             return null;
         }).when(printer).print(testBook.getGenreList().get(0));
 
-        String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\"" + System.lineSeparator() + ", жанр: " + System.lineSeparator() + "%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -124,7 +124,7 @@ class EntityPrintVisitorImpBookDTOTest {
             return null;
         }).when(printer).print(testBook.getGenreList().get(0));
 
-        String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\"" + System.lineSeparator() + ", жанр: " + System.lineSeparator() + "%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -144,7 +144,7 @@ class EntityPrintVisitorImpBookDTOTest {
             return null;
         }).when(printer).print(testBook.getGenreList().get(0));
 
-        String expected = String.format("%d. \"%s\"\r\n, жанр: \r\n%s", testBook.getId(), testBook.getTitle()
+        String expected = String.format("%d. \"%s\"" + System.lineSeparator() + ", жанр: " + System.lineSeparator() + "%s", testBook.getId(), testBook.getTitle()
                 , expectedGenre);
         printer.print(testBook);
         String actual = config.getOut().toString();
@@ -154,7 +154,7 @@ class EntityPrintVisitorImpBookDTOTest {
     @Test
     void book__printNullGenre__correctOutput() {
         testBook.setGenreList(null);
-        String expectedAuthor = String.format("%s %s.\r\n", testBook.getAuthor().getSurname()
+        String expectedAuthor = String.format("%s %s." + System.lineSeparator(), testBook.getAuthor().getSurname()
                 , testBook.getAuthor().getName().charAt(0));
 
         Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);

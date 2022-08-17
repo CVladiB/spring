@@ -30,7 +30,7 @@ class EntityPrintVisitorImplGenreTest {
 
         Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
+        String expected = String.format("%d. %s - %s" + System.lineSeparator(), testGenre.getId(), testGenre.getName(), testGenre.getDescription());
         printer.print(testGenre);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
@@ -58,7 +58,7 @@ class EntityPrintVisitorImplGenreTest {
 
         Mockito.when(checkService.doCheck(Mockito.eq(testGenre), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = String.format("%d. %s - %s\r\n", testGenre.getId(), testGenre.getName(), testGenre.getDescription());
+        String expected = String.format("%d. %s - %s" + System.lineSeparator(), testGenre.getId(), testGenre.getName(), testGenre.getDescription());
 
         testGenre.setDescription(null);
         printer.print(testGenre);
