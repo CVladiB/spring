@@ -7,8 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.dao.genre.GenreDao;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.genre.GenreDao;
 
 import java.util.Collections;
 import java.util.List;

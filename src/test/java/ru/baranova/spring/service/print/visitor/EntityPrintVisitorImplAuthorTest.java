@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
 import ru.baranova.spring.service.app.CheckService;
 
 

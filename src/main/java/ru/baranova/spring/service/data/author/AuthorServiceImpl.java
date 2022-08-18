@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.baranova.spring.dao.author.AuthorDao;
-import ru.baranova.spring.domain.Author;
+import org.springframework.transaction.annotation.Transactional;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.repository.author.AuthorDao;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@Transactional
 @Slf4j
 @Service
 public class AuthorServiceImpl implements AuthorService {

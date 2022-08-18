@@ -1,6 +1,6 @@
 package ru.baranova.spring.service.data.author;
 
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
 import ru.baranova.spring.service.data.BaseService;
 
 import java.util.List;

@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.GenreShellController;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.genre.GenreService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 

@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})

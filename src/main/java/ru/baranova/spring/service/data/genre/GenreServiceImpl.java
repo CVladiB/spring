@@ -4,14 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.baranova.spring.dao.genre.GenreDao;
-import ru.baranova.spring.domain.Genre;
+import org.springframework.transaction.annotation.Transactional;
+import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@Transactional
 @Slf4j
 @Service
 public class GenreServiceImpl implements GenreService {

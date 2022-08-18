@@ -3,8 +3,8 @@ package ru.baranova.spring.service.app;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.baranova.spring.domain.BusinessConstants;
-import ru.baranova.spring.domain.Entity;
+import ru.baranova.spring.config.BusinessConstants;
+import ru.baranova.spring.model.EntityObject;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class CheckServiceImpl implements CheckService {
     private static final String correctSymbols = "[a-zA-Zа-яА-ЯёЁ\\-]+";
     private static final Pattern checkSymbols = Pattern.compile(correctSymbols);
-    private static BusinessConstants.CheckServiceLog bc;
+    private BusinessConstants.CheckServiceLog bc;
 
     @Override
     public Consumer<String> getLogger() {
@@ -72,11 +72,11 @@ public class CheckServiceImpl implements CheckService {
         return Collections.emptyList();
     }
 
-    public List<String> checkExist(Entity entity) {
+    public List<String> checkExist(EntityObject entity) {
         return entity == null ? List.of(bc.SHOULD_EXIST_INPUT) : Collections.emptyList();
     }
 
-    public List<String> checkIfNotExist(Supplier<List<? extends Entity>> supplier) {
+    public List<String> checkIfNotExist(Supplier<List<? extends EntityObject>> supplier) {
         return supplier.get().isEmpty() ? Collections.emptyList() : List.of(bc.WARNING_EXIST);
     }
 }

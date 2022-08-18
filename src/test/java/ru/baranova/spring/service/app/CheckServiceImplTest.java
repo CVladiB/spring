@@ -8,17 +8,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BookDTO;
-import ru.baranova.spring.domain.BookEntity;
-import ru.baranova.spring.domain.Entity;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.EntityObject;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.config.CheckServiceImplTestConfig;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 @SpringBootTest(classes = {CheckServiceImplTestConfig.class, StopSearchConfig.class})
 class CheckServiceImplTest {
@@ -135,9 +133,9 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull__true() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        BookEntity testBookEntity = new BookEntity(1, "TitleTest", testAuthor.getId(), List.of(testGenre.getId()));
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = Collections.emptyList();
-        List<String> actual = checkService.checkAllFieldsAreNotNull(testBookEntity);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -145,7 +143,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullFieldNestedField_AuthorId__true() {
         Author testAuthor = new Author(null, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", null);
-        BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
@@ -155,7 +153,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullFieldNestedField_GenreId__true() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
-        BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
@@ -165,7 +163,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullField_AuthorNull__false() {
         Author testAuthor = null;
         Genre testGenre = new Genre(1, "NameTest", null);
-        BookDTO testBook = new BookDTO(1, "TitleTest", testAuthor, List.of(testGenre));
+        Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
         List<String> expected = List.of(config.getNOTHING_INPUT());
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
@@ -173,15 +171,15 @@ class CheckServiceImplTest {
 
     @Test
     void book__isAllFieldsNotNull_NullObject__false() {
-        BookEntity testBookEntity = null;
+        Book testBook = null;
         List<String> expected = List.of(config.getNOTHING_INPUT());
-        List<String> actual = checkService.checkAllFieldsAreNotNull(testBookEntity);
+        List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void checkExist_CorrectObject__returnEmptyList() {
-        Entity inputEntity = Author.builder().build();
+        EntityObject inputEntity = Author.builder().build();
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkExist(inputEntity);
         Assertions.assertEquals(expected, actual);
@@ -189,7 +187,7 @@ class CheckServiceImplTest {
 
     @Test
     void checkExist_NullObject__returnListLog() {
-        Entity inputEntity = null;
+        EntityObject inputEntity = null;
         List<String> expected = List.of(config.getSHOULD_EXIST_INPUT());
         List<String> actual = checkService.checkExist(inputEntity);
         Assertions.assertEquals(expected, actual);
@@ -197,59 +195,59 @@ class CheckServiceImplTest {
 
     @Test
     void checkIfNotExist_NullObject__returnEmptyList() {
-        BookEntity book = BookEntity.builder().genreListId(List.of()).build();
-        Supplier<List<? extends Entity>> inputSupplier = () -> book.getGenreListId()
-                .stream()
-                .map(id -> Genre.builder().id(id).build())
-                .toList();
-        List<String> expected = Collections.emptyList();
-        List<String> actual = checkService.checkIfNotExist(inputSupplier);
-        Assertions.assertEquals(expected, actual);
+//        Book book = Book.builder().genreList(List.of()).build();
+//        Supplier<List<? extends EntityObject>> inputSupplier = () -> book.getGenreList()
+//                .stream()
+//                .map(id -> Genre.builder().id(id).build())
+//                .toList();
+//        List<String> expected = Collections.emptyList();
+//        List<String> actual = checkService.checkIfNotExist(inputSupplier);
+//        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void checkIfNotExist_CorrectObject__returnListLog() {
-        BookEntity book = BookEntity.builder().genreListId(List.of(1, 2)).build();
-        Supplier<List<? extends Entity>> inputSupplier = () -> book.getGenreListId()
-                .stream()
-                .map(id -> Genre.builder().id(id).build())
-                .toList();
-        List<String> expected = List.of(config.getWARNING_EXIST());
-        List<String> actual = checkService.checkIfNotExist(inputSupplier);
-        Assertions.assertEquals(expected, actual);
+//        Book book = Book.builder().genreList(List.of(1, 2)).build();
+//        Supplier<List<? extends EntityObject>> inputSupplier = () -> book.getGenreList()
+//                .stream()
+//                .map(id -> Genre.builder().id(id).build())
+//                .toList();
+//        List<String> expected = List.of(config.getWARNING_EXIST());
+//        List<String> actual = checkService.checkIfNotExist(inputSupplier);
+//        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void doCheck__true() {
-        Entity author = Author.builder().build();
-        Function<Entity, List<String>> inputFn = t -> Collections.emptyList();
+        EntityObject author = Author.builder().build();
+        Function<EntityObject, List<String>> inputFn = t -> Collections.emptyList();
         Assertions.assertTrue(checkService.doCheck(author, inputFn));
     }
 
     @Test
     void doCheck__false() {
-        Entity author = null;
-        Function<Entity, List<String>> inputFn = t -> List.of("");
+        EntityObject author = null;
+        Function<EntityObject, List<String>> inputFn = t -> List.of("");
         Assertions.assertFalse(checkService.doCheck(author, inputFn));
     }
 
     @Test
     void correctOrDefault__correct() {
-        BookDTO bookDTO = BookDTO.builder().author(Author.builder().name("AuthorBookDTO").build()).build();
-        Entity authorTest = Author.builder().build();
-        Function<Entity, List<String>> inputFn = t -> Collections.emptyList();
-        Entity expected = authorTest;
-        Entity actual = checkService.correctOrDefault(authorTest, inputFn, bookDTO::getAuthor);
+        Book book = Book.builder().author(Author.builder().name("AuthorBookDTO").build()).build();
+        EntityObject authorTest = Author.builder().build();
+        Function<EntityObject, List<String>> inputFn = t -> Collections.emptyList();
+        EntityObject expected = authorTest;
+        EntityObject actual = checkService.correctOrDefault(authorTest, inputFn, book::getAuthor);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void correctOrDefault__default() {
-        BookDTO bookDTO = BookDTO.builder().author(Author.builder().name("AuthorBookDTO").build()).build();
-        Entity authorTest = Author.builder().build();
-        Function<Entity, List<String>> inputFn = t -> List.of("");
-        Entity expected = bookDTO.getAuthor();
-        Entity actual = checkService.correctOrDefault(authorTest, inputFn, bookDTO::getAuthor);
+        Book book = Book.builder().author(Author.builder().name("AuthorBookDTO").build()).build();
+        EntityObject authorTest = Author.builder().build();
+        Function<EntityObject, List<String>> inputFn = t -> List.of("");
+        EntityObject expected = book.getAuthor();
+        EntityObject actual = checkService.correctOrDefault(authorTest, inputFn, book::getAuthor);
         Assertions.assertEquals(expected, actual);
     }
 }

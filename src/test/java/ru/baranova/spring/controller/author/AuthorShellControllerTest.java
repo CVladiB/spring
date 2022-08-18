@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 

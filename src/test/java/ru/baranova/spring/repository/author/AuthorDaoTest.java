@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 
@@ -15,7 +14,7 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 
 @DataJpaTest
-@Import(value = {AuthorDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
+@Import(value = {AuthorDaoTestConfig.class, StopSearchConfig.class})
 class AuthorDaoTest {
     @Autowired
     private AuthorDao authorDao;

@@ -5,23 +5,26 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
-import ru.baranova.spring.domain.BusinessConstants;
+import ru.baranova.spring.config.BusinessConstants;
 
+import javax.persistence.PersistenceException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 @Aspect
 @Component
 public class ThrowingAspect {
 
-    @Around("execution(* ru.baranova.spring.dao..*(..))")
+    @Around("allMethodsRepository()")
     public Object appDataAccessExceptionHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | PersistenceException e) {
             if (e.getMessage().equals(BusinessConstants.DaoLog.NOTHING_IN_BD)
                     || e.getMessage().equals(BusinessConstants.DaoLog.SHOULD_EXIST_INPUT)) {
                 log.info(e.getMessage());
@@ -43,14 +46,15 @@ public class ThrowingAspect {
 
             if (returnType == Boolean.class) {
                 returnValueIfException = Boolean.FALSE;
+            } else if (returnType == List.class) {
+                returnValueIfException = Collections.emptyList();
             }
 
             return returnValueIfException;
         }
     }
 
-    @AfterReturning(pointcut = "execution(* ru.baranova.spring.service.data..*(..))" +
-            "execution(* ru.baranova.spring.service.app..*(..))"
+    @AfterReturning(value = "allMethodsServiceData()"
             , returning = "result")
     public void serviceNPEMaker(Object result) {
         if (result == null || result.equals(Collections.emptyList()) || result.equals(Boolean.FALSE)) {
@@ -58,12 +62,24 @@ public class ThrowingAspect {
         }
     }
 
-    @Around("execution(* ru.baranova.spring.controller..*(..))")
+    @Around("allMethodsController()")
     public Object controllersNPEHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
         } catch (NullPointerException e) {
             return BusinessConstants.ShellEntityServiceLog.WARNING;
         }
+    }
+
+    @Pointcut("execution(* ru.baranova.spring.repository..*(..))")
+    private void allMethodsRepository() {
+    }
+
+    @Pointcut("execution(* ru.baranova.spring.service.data..*(..))")
+    private void allMethodsServiceData() {
+    }
+
+    @Pointcut("execution(* ru.baranova.spring.controller..*(..))")
+    private void allMethodsController() {
     }
 }

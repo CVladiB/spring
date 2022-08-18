@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.Shell;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.genre.GenreService;
 
 @SpringBootTest(classes = {GenreShellControllerTestConfig.class, StopSearchConfig.class})

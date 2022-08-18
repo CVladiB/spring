@@ -3,15 +3,16 @@ package ru.baranova.spring.aspect;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import ru.baranova.spring.controller.AuthorShellController;
-import ru.baranova.spring.dao.author.AuthorDao;
-import ru.baranova.spring.dao.author.AuthorDaoJdbc;
+import ru.baranova.spring.repository.author.AuthorDao;
+import ru.baranova.spring.repository.author.AuthorDaoJpa;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.author.AuthorServiceImpl;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
+
+import javax.persistence.EntityManager;
 
 @TestConfiguration
 public class ThrowingAspectTestConfig {
@@ -28,8 +29,8 @@ public class ThrowingAspectTestConfig {
     }
 
     @Bean
-    public AuthorDao authorDao(NamedParameterJdbcOperations jdbc) {
-        return new AuthorDaoJdbc(jdbc);
+    public AuthorDao authorDao(EntityManager em) {
+        return new AuthorDaoJpa(em);
     }
 
     @Bean

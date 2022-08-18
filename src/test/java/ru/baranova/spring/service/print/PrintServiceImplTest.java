@@ -8,9 +8,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BookEntity;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import java.util.List;
@@ -25,14 +25,14 @@ class PrintServiceImplTest {
     private PrintServiceImplTestConfig config;
     private Author testAuthor;
     private Genre testGenre;
-    private BookEntity testBookEntity;
+    private Book testBook;
 
 
     @BeforeEach
     void setUp() {
         testAuthor = new Author(1, "SurnameTest", "NameTest");
         testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        testBookEntity = new BookEntity(1, "TitleTest", testAuthor.getId(), List.of(testGenre.getId()));
+        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
     }
 
     @AfterEach
@@ -71,8 +71,8 @@ class PrintServiceImplTest {
         Mockito.doAnswer(invocationOnMock -> {
             config.getWriter().println("Print author");
             return null;
-        }).when(printer).print(testBookEntity);
-        printService.printEntity(testBookEntity);
+        }).when(printer).print(testBook);
+        printService.printEntity(testBook);
 
         String expected = "Print author" + System.lineSeparator();
         String actual = config.getOut().toString();

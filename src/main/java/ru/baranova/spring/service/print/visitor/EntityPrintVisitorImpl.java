@@ -3,13 +3,14 @@ package ru.baranova.spring.service.print.visitor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
+import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.dao.output.OutputDao;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BookDTO;
-import ru.baranova.spring.domain.BookEntity;
-import ru.baranova.spring.domain.BusinessConstants;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
+
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -27,42 +28,31 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
     }
 
     @Override
-    public void print(@NonNull BookEntity bookEntity) {
-        if (bookEntity.getId() != null && bookEntity.getTitle() != null) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(bookEntity.getId()).append(". \"")
-                    .append(bookEntity.getTitle()).append("\"");
-            if (bookEntity.getAuthorId() != null) {
-                sb.append(", authorId: ").append(bookEntity.getAuthorId());
-            }
-            if (!bookEntity.getGenreListId().isEmpty()) {
-                sb.append(", genreId: ");
-                bookEntity.getGenreListId().forEach(g -> sb.append(g).append(", "));
-            }
-            outputDao.output(sb.toString());
-        } else {
-            throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
-        }
-    }
-
-    @Override
-    public void print(@NonNull BookDTO book) {
+    public void print(@NonNull Book book) {
         if (book.getId() != null && book.getTitle() != null) {
             StringBuilder sb = new StringBuilder();
-            sb.append(book.getId()).append(". \"").append(book.getTitle()).append("\"");
+
+            String title = String.format("%d. \"%s\"", book.getId(), book.getTitle());
+            sb.append(title);
 
             if (book.getAuthor() != null) {
                 if (checkService.doCheck(book.getAuthor(), checkService::checkAllFieldsAreNotNull)) {
-                    sb.append(", ").append(book.getAuthor().getSurname())
-                            .append(" ").append(book.getAuthor().getName().charAt(0)).append(".");
+                    String author = String.format(", %s %s."
+                            , book.getAuthor().getSurname()
+                            , book.getAuthor().getName().charAt(0));
+                    sb.append(author);
                 }
             }
 
-            outputDao.output(sb.toString());
-            if (book.getGenreList() != null && !book.getGenreList().isEmpty()) {
-                outputDao.output(", жанр: ");
-                book.getGenreList().forEach(this::print);
+            if (!book.getGenreList().isEmpty()) {
+                String genre = book.getGenreList()
+                        .stream()
+                        .map(Genre::getName)
+                        .collect(Collectors.joining(", "));
+                sb.append(", жанр: ").append(genre);
             }
+
+            outputDao.output(sb.toString());
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
         }

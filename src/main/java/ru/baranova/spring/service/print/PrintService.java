@@ -1,7 +1,7 @@
 package ru.baranova.spring.service.print;
 
-import ru.baranova.spring.domain.Entity;
+import ru.baranova.spring.model.EntityObject;
 
 public interface PrintService {
-    void printEntity(Entity entity);
+    void printEntity(EntityObject entity);
 }

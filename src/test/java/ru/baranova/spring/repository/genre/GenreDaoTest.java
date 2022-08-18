@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Genre;
 
@@ -16,7 +15,7 @@ import javax.persistence.PersistenceException;
 import java.util.List;
 
 @DataJpaTest
-@Import(value = {GenreDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
+@Import(value = {GenreDaoTestConfig.class, StopSearchConfig.class})
 class GenreDaoTest {
     @Autowired
     private GenreDao genreDao;

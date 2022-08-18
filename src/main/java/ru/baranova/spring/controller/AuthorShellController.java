@@ -3,8 +3,8 @@ package ru.baranova.spring.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BusinessConstants;
+import ru.baranova.spring.config.BusinessConstants;
+import ru.baranova.spring.model.Author;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 

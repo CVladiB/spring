@@ -4,15 +4,19 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
-import ru.baranova.spring.dao.author.AuthorDao;
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.repository.author.AuthorDao;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.data.author.AuthorService;
 
-@SpringBootTest(classes = {ThrowingAspectTestConfig.class, StopSearchConfig.class})
+@DataJpaTest
+@Import(value = {ThrowingAspectTestConfig.class, StopSearchConfig.class})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 class ThrowingAspectTest {
     @Autowired
     public ThrowingAspect throwingAspect;
@@ -28,7 +32,6 @@ class ThrowingAspectTest {
     @Test
     void appDataAccessExceptionHandler__returnResult() {
         Integer id = 3;
-        authorDao.delete(id);
         String inputSurname = "SurnameTest" + id;
         String inputName = "NameTest" + id;
         Author test = new Author(id, inputSurname, inputName);
@@ -54,7 +57,6 @@ class ThrowingAspectTest {
     @Test
     void serviceNPEMaker__returnResult() {
         Integer id = 4;
-        authorDao.delete(id);
         String inputSurname = "SurnameTest" + id;
         String inputName = "NameTest" + id;
         Author test = new Author(id, inputSurname, inputName);
@@ -90,7 +92,6 @@ class ThrowingAspectTest {
     @Test
     void controllersNPEHandler__catchNPEReturnErrorMessage() {
         Integer id = 5;
-        authorDao.delete(id);
         String inputSurname = "-";
         String inputName = "-";
 
@@ -106,7 +107,6 @@ class ThrowingAspectTest {
     @Test
     void controllersNPEHandler__returnMessage() {
         Integer id = 6;
-        authorDao.delete(id);
         String inputSurname = "SurnameTest" + id;
         String inputName = "NameTest" + id;
 

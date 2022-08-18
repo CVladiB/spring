@@ -1,6 +1,6 @@
 package ru.baranova.spring.service.app;
 
-import ru.baranova.spring.domain.Entity;
+import ru.baranova.spring.model.EntityObject;
 import ru.baranova.spring.service.data.BaseService;
 
 import java.util.Arrays;
@@ -31,8 +31,8 @@ public interface CheckService extends BaseService {
 
     List<String> checkAllFieldsAreNotNull(Object obj);
 
-    List<String> checkExist(Entity entity);
+    List<String> checkExist(EntityObject entity);
 
-    List<String> checkIfNotExist(Supplier<List<? extends Entity>> supplier);
+    List<String> checkIfNotExist(Supplier<List<? extends EntityObject>> supplier);
 
 }

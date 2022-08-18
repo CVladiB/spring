@@ -3,8 +3,8 @@ package ru.baranova.spring.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.baranova.spring.domain.BusinessConstants;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.config.BusinessConstants;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.genre.GenreService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 

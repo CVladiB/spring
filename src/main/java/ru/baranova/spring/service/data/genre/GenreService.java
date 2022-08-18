@@ -1,6 +1,6 @@
 package ru.baranova.spring.service.data.genre;
 
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.BaseService;
 
 import java.util.List;
