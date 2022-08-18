@@ -1,6 +1,6 @@
-package ru.baranova.spring.dao.genre;
+package ru.baranova.spring.repository.genre;
 
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 
 import java.util.List;
 

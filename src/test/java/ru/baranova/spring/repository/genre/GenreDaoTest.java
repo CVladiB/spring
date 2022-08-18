@@ -1,22 +1,22 @@
-package ru.baranova.spring.dao.genre;
+package ru.baranova.spring.repository.genre;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Genre;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 
-@JdbcTest
-@ContextConfiguration(classes = {GenreDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
+@DataJpaTest
+@Import(value = {GenreDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class GenreDaoTest {
     @Autowired
     private GenreDao genreDao;
@@ -50,13 +50,13 @@ class GenreDaoTest {
 
     @Test
     void genre__create_NullName__incorrectException() {
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> genreDao.create(null, testGenre.getDescription()));
     }
 
     @Test
     void genre__create_DuplicateName__incorrectException() {
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> genreDao.create(insertGenre1.getName(), insertGenre1.getDescription()));
     }
 
@@ -88,7 +88,7 @@ class GenreDaoTest {
     @Test
     void genre__getById_NonexistentId__incorrectException() {
         Integer nonexistentId = 100;
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDao.getById(nonexistentId));
+        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getById(nonexistentId));
     }
 
     @Test
@@ -101,12 +101,12 @@ class GenreDaoTest {
     @Test
     void genre__getByName_NonexistentName__incorrectException() {
         String nonexistentName = "Name25";
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDao.getByName(nonexistentName));
+        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getByName(nonexistentName));
     }
 
     @Test
     void genre__getByName_NullName__incorrectException() {
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> genreDao.getByName(null));
+        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getByName(null));
     }
 
     @Test
@@ -141,7 +141,7 @@ class GenreDaoTest {
     @Test
     void genre__update_NullName__incorrectException() {
         testGenre.setId(insertGenre1.getId());
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> genreDao.update(testGenre.getId(), null, testGenre.getDescription()));
     }
 
