@@ -8,5 +8,10 @@ spring:
     locations: 'classpath:db/migration'
     create-schemas: true
     schemas: [ 'library' ]
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
   main:
     allow-circular-references: true
