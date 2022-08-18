@@ -1,7 +1,7 @@
-package ru.baranova.spring.domain;
+package ru.baranova.spring.model;
 
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-public interface Entity {
+public interface EntityObject {
     void print(EntityPrintVisitor visitor);
 }

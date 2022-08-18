@@ -1,4 +1,4 @@
-package ru.baranova.spring.domain;
+package ru.baranova.spring.config;
 
 public abstract class BusinessConstants {
     public interface ShellEntityServiceLog {
