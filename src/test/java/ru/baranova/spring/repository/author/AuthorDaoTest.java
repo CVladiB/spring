@@ -1,22 +1,21 @@
-package ru.baranova.spring.dao.author;
+package ru.baranova.spring.repository.author;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.dao.DataAccessException;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.test.context.ContextConfiguration;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
 
+import javax.persistence.PersistenceException;
 import java.util.List;
 
-@JdbcTest
-@ContextConfiguration(classes = {AuthorDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
+@DataJpaTest
+@Import(value = {AuthorDaoTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class AuthorDaoTest {
     @Autowired
     private AuthorDao authorDao;
@@ -49,13 +48,13 @@ class AuthorDaoTest {
 
     @Test
     void author__create_NullSurname__incorrectException() {
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> authorDao.create(null, testAuthor.getName()));
     }
 
     @Test
     void author__create_NullName__incorrectException() {
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> authorDao.create(testAuthor.getSurname(), null));
     }
 
@@ -64,17 +63,13 @@ class AuthorDaoTest {
         Integer id = insertAuthor1.getId();
         Author expected = insertAuthor1;
         Author actual = authorDao.getById(id);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expected.getSurname(), actual.getSurname()),
-                () -> Assertions.assertEquals(expected.getName(), actual.getName()),
-                () -> Assertions.assertEquals(expected.getId(), actual.getId())
-        );
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void author__getById_NonexistentId__incorrectException() {
         Integer nonexistentId = 100;
-        Assertions.assertThrows(EmptyResultDataAccessException.class, () -> authorDao.getById(nonexistentId));
+        Assertions.assertThrows(PersistenceException.class, () -> authorDao.getById(nonexistentId));
     }
 
     @Test
@@ -101,26 +96,26 @@ class AuthorDaoTest {
     @Test
     void author__getBySurnameAndName_NonexistentSurname__emptyListResultException() {
         String nonexistentSurname = "Smth";
-        Assertions.assertThrows(DataAccessException.class
+        Assertions.assertThrows(DataIntegrityViolationException.class
                 , () -> authorDao.getBySurnameAndName(nonexistentSurname, insertAuthor1.getName()));
     }
 
     @Test
     void author__getBySurnameAndName_NonexistentName__emptyListResultException() {
         String nonexistentName = "Smth";
-        Assertions.assertThrows(DataAccessException.class
+        Assertions.assertThrows(DataIntegrityViolationException.class
                 , () -> authorDao.getBySurnameAndName(insertAuthor1.getSurname(), nonexistentName));
     }
 
     @Test
     void author__getBySurnameAndName_NullSurnameAndName__emptyListResultException() {
-        Assertions.assertThrows(DataAccessException.class
+        Assertions.assertThrows(DataIntegrityViolationException.class
                 , () -> authorDao.getBySurnameAndName(null, null));
     }
 
     @Test
     void author__getBySurnameAndName_DifferentSurnameAndName__emptyListResultException() {
-        Assertions.assertThrows(DataAccessException.class
+        Assertions.assertThrows(DataIntegrityViolationException.class
                 , () -> authorDao.getBySurnameAndName(insertAuthor1.getSurname(), insertAuthor2.getName()));
     }
 
@@ -150,14 +145,14 @@ class AuthorDaoTest {
     @Test
     void author__update_NullSurname__incorrectException() {
         testAuthor.setId(insertAuthor1.getId());
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> authorDao.update(testAuthor.getId(), null, testAuthor.getName()));
     }
 
     @Test
     void author__update_NullName__incorrectException() {
         testAuthor.setId(insertAuthor1.getId());
-        Assertions.assertThrows(DataIntegrityViolationException.class,
+        Assertions.assertThrows(PersistenceException.class,
                 () -> authorDao.update(testAuthor.getId(), testAuthor.getSurname(), null));
     }
 

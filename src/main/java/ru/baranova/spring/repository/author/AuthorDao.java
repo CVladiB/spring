@@ -1,6 +1,6 @@
-package ru.baranova.spring.dao.author;
+package ru.baranova.spring.repository.author;
 
-import ru.baranova.spring.domain.Author;
+import ru.baranova.spring.model.Author;
 
 import java.util.List;
 
