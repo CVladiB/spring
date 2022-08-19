@@ -32,9 +32,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "book", uniqueConstraints = {@UniqueConstraint(columnNames = {"book_title", "author_id"}),
-//                                           @UniqueConstraint(columnNames = {"book_title", "book_genre"})
-})
+@Table(name = "book", uniqueConstraints = {@UniqueConstraint(columnNames = {"book_title", "author_id"})})
 public class Book implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +42,7 @@ public class Book implements EntityObject {
     @Column(name = "book_title", nullable = false)
     private String title;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 

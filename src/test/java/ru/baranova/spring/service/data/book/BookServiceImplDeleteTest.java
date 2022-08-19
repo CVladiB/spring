@@ -7,23 +7,23 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.dao.book.BookDao;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BookEntity;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
-class BookEntityServiceImplDeleteTest {
+class BookServiceImplDeleteTest {
     @Autowired
     private BookDao bookDao;
     @Autowired
     private BookService bookService;
     @Autowired
     private CheckService checkService;
-    private List<BookEntity> bookList;
+    private List<Book> bookList;
 
     @BeforeEach
     void setUp() {
@@ -31,8 +31,8 @@ class BookEntityServiceImplDeleteTest {
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
 
-        BookEntity insertBook1 = new BookEntity(1, "Title1", insertAuthor1.getId(), List.of(insertGenre1.getId(), insertGenre2.getId()));
-        BookEntity insertBook2 = new BookEntity(2, "Title2", insertAuthor1.getId(), List.of(insertGenre2.getId()));
+        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
+        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
         bookList = List.of(insertBook1, insertBook2);
     }
 
