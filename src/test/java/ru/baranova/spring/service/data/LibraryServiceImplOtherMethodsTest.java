@@ -8,12 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.domain.Author;
-import ru.baranova.spring.domain.BookDTO;
-import ru.baranova.spring.domain.BookEntity;
-import ru.baranova.spring.domain.Genre;
+import ru.baranova.spring.model.Author;
+import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
-import ru.baranova.spring.service.data.book.BookService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
 import java.util.Collections;
@@ -22,8 +19,6 @@ import java.util.stream.Stream;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
 class LibraryServiceImplOtherMethodsTest {
-    @Autowired
-    private BookService bookService;
     @Autowired
     private AuthorService authorService;
     @Autowired
@@ -37,8 +32,6 @@ class LibraryServiceImplOtherMethodsTest {
     private List<Genre> genreList;
     private Author testAuthor;
     private List<Author> authorList;
-    private BookDTO insertBook1;
-    private BookEntity emptyInsertBook1;
 
     @BeforeEach
     void setUp() {
@@ -52,9 +45,6 @@ class LibraryServiceImplOtherMethodsTest {
         testGenre1 = new Genre(null, "Name1Test", "DescriptionTest");
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
-
-        insertBook1 = new BookDTO(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        emptyInsertBook1 = new BookEntity(1, "Title1", 1, List.of(1, 2));
     }
 
     @Test
@@ -153,104 +143,6 @@ class LibraryServiceImplOtherMethodsTest {
 
         List<Genre> expected = genreList;
         List<Genre> actual = libraryService.checkAndCreateGenreForBook(inputGenreNameList);
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void book_checkAndSetFieldsToBook__returnFilledBook() {
-        BookEntity inputBookEntity = emptyInsertBook1;
-
-        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
-        for (int i = 0; i < inputBookEntity.getGenreListId().size(); i++) {
-            Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(i)))
-                    .thenReturn(insertBook1.getGenreList().get(i));
-        }
-
-        BookDTO expected = insertBook1;
-        BookDTO actual = libraryService.checkAndSetFieldsToBook(inputBookEntity);
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void book_checkAndSetFieldsToBook_ErrorAuthor__returnNull() {
-        emptyInsertBook1.setAuthorId(100);
-        BookEntity inputBookEntity = emptyInsertBook1;
-        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(null);
-        Assertions.assertThrows(NullPointerException.class
-                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
-
-    }
-
-    @Test
-    void book_checkAndSetFieldsToBook_ErrorGenre__returnNull() {
-        emptyInsertBook1.setGenreListId(List.of(100));
-        BookEntity inputBookEntity = emptyInsertBook1;
-
-        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
-        Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(0))).thenReturn(null);
-
-        Assertions.assertThrows(NullPointerException.class
-                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
-    }
-
-    @Test
-    void book_checkAndSetFieldsToBook__returnNull() {
-        BookEntity inputBookEntity = emptyInsertBook1;
-
-        Mockito.when(authorService.readById(inputBookEntity.getAuthorId())).thenReturn(insertBook1.getAuthor());
-        for (int i = 0; i < inputBookEntity.getGenreListId().size(); i++) {
-            Mockito.when(genreService.readById(inputBookEntity.getGenreListId().get(i)))
-                    .thenReturn(insertBook1.getGenreList().get(0));
-        }
-
-        Assertions.assertThrows(NullPointerException.class
-                , () -> libraryService.checkAndSetFieldsToBook(inputBookEntity));
-    }
-
-    @Test
-    void bookEntityToBookDTO__correctReturnNewObject() {
-        BookEntity inputBookEntity = emptyInsertBook1;
-        Author inputAuthor = insertBook1.getAuthor();
-        List<Genre> inputGenreList = insertBook1.getGenreList();
-
-        BookDTO expected = insertBook1;
-        BookDTO actual = libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList);
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void bookEntityToBookDTO_AuthorNull__returnNull() {
-        BookEntity inputBookEntity = emptyInsertBook1;
-        Author inputAuthor = null;
-        List<Genre> inputGenreList = insertBook1.getGenreList();
-
-        Assertions.assertThrows(NullPointerException.class
-                , () -> libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList));
-    }
-
-    @Test
-    void bookEntityToBookDTO_GenreNull__returnNull() {
-        BookEntity inputBookEntity = emptyInsertBook1;
-        Author inputAuthor = insertBook1.getAuthor();
-        List<Genre> inputGenreList = Collections.emptyList();
-
-        Assertions.assertThrows(NullPointerException.class
-                , () -> libraryService.bookEntityToBookDTO(inputBookEntity, inputAuthor, inputGenreList));
-    }
-
-    @Test
-    void getBookDTOIfAuthorAndGenreNotNull__correctReturnNewObject() {
-        Author inputAuthor = insertBook1.getAuthor();
-        List<Genre> inputGenreList = insertBook1.getGenreList();
-
-        Mockito.when(bookService.create(Mockito.eq(emptyInsertBook1.getTitle()), Mockito.any(), Mockito.any())).thenReturn(emptyInsertBook1);
-
-        BookDTO expected = insertBook1;
-        BookDTO actual = libraryService.getBookDTOIfAuthorAndGenreNotNull(inputAuthor
-                , inputGenreList
-                , Author::getId
-                , u -> u.stream().map(Genre::getId).toList()
-                , (t, u) -> bookService.create(emptyInsertBook1.getTitle(), t, u));
         Assertions.assertEquals(expected, actual);
     }
 }

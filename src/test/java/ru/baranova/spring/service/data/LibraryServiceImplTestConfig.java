@@ -23,6 +23,8 @@ public class LibraryServiceImplTestConfig {
     public LibraryServiceImpl libraryService(BookService bookService
             , AuthorService authorService
             , GenreService genreService) {
+
+
         return new LibraryServiceImpl(bookService, authorService, genreService);
     }
 }

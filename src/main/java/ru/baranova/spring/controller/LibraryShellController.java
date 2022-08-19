@@ -3,8 +3,8 @@ package ru.baranova.spring.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.baranova.spring.domain.BookDTO;
-import ru.baranova.spring.domain.BusinessConstants;
+import ru.baranova.spring.config.BusinessConstants;
+import ru.baranova.spring.model.Book;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
@@ -23,34 +23,34 @@ public class LibraryShellController {
     @ShellMethod(group = "Book", value = "Create book", key = {"bc"})
     public String create(String title, String authorSurname, String authorName, String genreNames) {
         List<String> genreNameList = parseService.parseLinesToListStrByComma(genreNames);
-        BookDTO book = libraryService.create(title, authorSurname, authorName, genreNameList);
+        Book book = libraryService.create(title, authorSurname, authorName, genreNameList);
         return String.format(bc.COMPLETE_CREATE, book.getId());
     }
 
     @ShellMethod(group = "Book", value = "Create book", key = {"bc-id"})
     public String createById(String title, Integer authorId, String genreIds) {
         List<Integer> genreIdList = parseService.parseLinesToListIntByComma(genreIds);
-        BookDTO book = libraryService.create(title, authorId, genreIdList);
+        Book book = libraryService.create(title, authorId, genreIdList);
         return String.format(bc.COMPLETE_CREATE, book.getId());
     }
 
     @ShellMethod(group = "Book", value = "Read book", key = {"br-id"})
     public String readById(Integer id) {
-        BookDTO book = libraryService.readById(id);
+        Book book = libraryService.readById(id);
         printer.print(book);
         return bc.COMPLETE_OUTPUT;
     }
 
     @ShellMethod(group = "Book", value = "Read book", key = {"br"})
     public String readByTitle(String title) {
-        List<BookDTO> bookList = libraryService.readByTitle(title);
+        List<Book> bookList = libraryService.readByTitle(title);
         bookList.forEach(printer::print);
         return bc.COMPLETE_OUTPUT;
     }
 
     @ShellMethod(group = "Book", value = "Read all book", key = {"br-all"})
     public String readAll() {
-        List<BookDTO> bookList = libraryService.readAll();
+        List<Book> bookList = libraryService.readAll();
         bookList.forEach(printer::print);
         return bc.COMPLETE_OUTPUT;
     }

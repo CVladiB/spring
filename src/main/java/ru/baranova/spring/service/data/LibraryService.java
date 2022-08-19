@@ -1,23 +1,23 @@
 package ru.baranova.spring.service.data;
 
-import ru.baranova.spring.domain.BookDTO;
+import ru.baranova.spring.model.Book;
 
 import java.util.List;
 
 public interface LibraryService extends BaseService {
-    BookDTO create(String title, String authorSurname, String authorName, List<String> genreNameList);
+    Book create(String title, String authorSurname, String authorName, List<String> genreNameList);
 
-    BookDTO create(String title, Integer authorId, List<Integer> genreIdList);
+    Book create(String title, Integer authorId, List<Integer> genreIdList);
 
-    BookDTO readById(Integer id);
+    Book readById(Integer id);
 
-    List<BookDTO> readByTitle(String title);
+    List<Book> readByTitle(String title);
 
-    List<BookDTO> readAll();
+    List<Book> readAll();
 
-    BookDTO update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList);
+    Book update(Integer id, String title, String authorSurname, String authorName, List<String> genreNameList);
 
-    BookDTO update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
+    Book update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
 
     boolean delete(Integer id);
 }
