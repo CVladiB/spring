@@ -21,6 +21,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.util.List;
@@ -32,7 +33,8 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Entity
-@Table(name = "book", uniqueConstraints = {@UniqueConstraint(columnNames = {"book_title", "author_id"})})
+@Table(name = "book", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"book_title", "author_id"})})
 public class Book implements EntityObject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +54,10 @@ public class Book implements EntityObject {
             , joinColumns = @JoinColumn(name = "book_id")
             , inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> genreList;
+
+    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "book_id")
+    private List<Comment> commentList;
 
     @Override
     public void print(EntityPrintVisitor visitor) {

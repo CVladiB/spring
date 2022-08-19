@@ -27,6 +27,7 @@ public abstract class BusinessConstants {
         String GENRE_DESCRIPTION_NULL = "описание жанра пока отсутствует";
         String WARNING_AUTHOR_NULL = "Ошибка печати автора, поля не заполнены";
         String WARNING_GENRE_NULL = "Ошибка печати жанра, поля не заполнены";
+        String WARNING_COMMENT_NULL = "Ошибка печати комментария, поля не заполнены";
         String WARNING_BOOK_NULL = "Ошибка печати книги, поля не заполнены";
 
     }
