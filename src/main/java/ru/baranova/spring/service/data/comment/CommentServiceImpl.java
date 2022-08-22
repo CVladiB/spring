@@ -21,15 +21,14 @@ public class CommentServiceImpl implements CommentService {
     private final static int MAX_INPUT_TEXT = 200;
     private final CommentDao commentDao;
     private final CheckService checkService;
-    private final BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn;
     private final Function<String, List<String>> authorMinMaxFn;
     private final Function<String, List<String>> textMinMaxFn;
 
     public CommentServiceImpl(CommentDao commentDao, CheckService checkService) {
         this.commentDao = commentDao;
         this.checkService = checkService;
-        correctInputStrFn =
-                (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
+        BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
+                = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLength(str, minValue, maxValue);
         authorMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_AUTHOR);
         textMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_TEXT);
     }

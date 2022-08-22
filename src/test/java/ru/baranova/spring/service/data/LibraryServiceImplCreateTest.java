@@ -49,10 +49,10 @@ class LibraryServiceImplCreateTest {
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
 
-        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2));
+        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), Collections.emptyList());
+        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), Collections.emptyList());
+        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1), Collections.emptyList());
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2), Collections.emptyList());
 
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }

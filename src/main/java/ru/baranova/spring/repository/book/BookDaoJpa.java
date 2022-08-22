@@ -15,6 +15,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -28,7 +29,7 @@ public class BookDaoJpa implements BookDao {
     public Book create(@NonNull String title
             , @NonNull Author author
             , @NonNull List<Genre> genreList) throws DataAccessException, PersistenceException {
-        Book book = new Book(null, title, author, genreList);
+        Book book = new Book(null, title, author, genreList, Collections.emptyList());
         if (book.getId() == null) {
             em.persist(book);
             return book;
@@ -42,6 +43,7 @@ public class BookDaoJpa implements BookDao {
         String sql = """
                 select b from Book b
                 join fetch b.author
+                join fetch b.commentList
                 where b.id = :id
                 """;
         TypedQuery<Book> query = em.createQuery(sql, Book.class);
@@ -80,7 +82,7 @@ public class BookDaoJpa implements BookDao {
         query.setParameter("title", title);
         query.setParameter("author_id", authorId);
         List<Book> bookList = query.getResultList();
-        if (bookList.isEmpty() || bookList == null) {
+        if (bookList.isEmpty()) {
             throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
         }
         return bookList;
@@ -105,7 +107,7 @@ public class BookDaoJpa implements BookDao {
             , @NonNull String title
             , @NonNull Author author
             , @NonNull List<Genre> genreList) throws DataAccessException, PersistenceException {
-        Book book = new Book(id, title, author, genreList);
+        Book book = new Book(id, title, author, genreList, Collections.emptyList());
         String sql = """
                 update Book b
                 set b.title = :title, b.author.id = :author_id

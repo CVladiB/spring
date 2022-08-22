@@ -25,6 +25,7 @@ class CommentDaoJpaTest {
     private Comment insertComment1;
     private Comment insertComment2;
     private Comment insertComment3;
+    private Comment insertComment4;
     private Comment testComment;
     private List<Comment> commentList;
 
@@ -34,13 +35,13 @@ class CommentDaoJpaTest {
         insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
         insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
         insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", config.getDateWithoutTime());
+        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
         testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
-        commentList = List.of(insertComment1, insertComment2, insertComment3);
+        commentList = List.of(insertComment1, insertComment2, insertComment3, insertComment4);
     }
 
     @Test
     void comment__create__correctReturnNewComment() {
-        // todo
         List<Integer> listExistId = commentDao.getAll()
                 .stream()
                 .map(Comment::getId)
@@ -74,7 +75,7 @@ class CommentDaoJpaTest {
 
     @Test
     void comment__getByAuthor__correctReturnCommentByName() {
-        List<Comment> expected = List.of(insertComment1, insertComment2);
+        List<Comment> expected = List.of(insertComment1, insertComment2, insertComment4);
         List<Comment> actual = commentDao.getByAuthorOfComment(insertComment1.getAuthor());
         Assertions.assertEquals(expected, actual);
     }
@@ -127,11 +128,13 @@ class CommentDaoJpaTest {
         Integer inputId = insertComment1.getId();
         Integer inputId2 = insertComment2.getId();
         Integer inputId3 = insertComment3.getId();
+        Integer inputId4 = insertComment4.getId();
 
         Assertions.assertNotNull(actualBeforeDelete);
         Assertions.assertTrue(commentDao.delete(inputId));
         Assertions.assertTrue(commentDao.delete(inputId2));
         Assertions.assertTrue(commentDao.delete(inputId3));
+        Assertions.assertTrue(commentDao.delete(inputId4));
         Assertions.assertThrows(DataAccessException.class, () -> commentDao.getAll());
     }
 

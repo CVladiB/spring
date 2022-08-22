@@ -23,9 +23,6 @@ class BookServiceImplCreateTest {
     private CheckService checkService;
     @Autowired
     private BookService bookService;
-    private int minInput;
-    private int maxInput;
-    private Book insertBook1;
     private Book testBook;
     private List<Book> bookList;
 
@@ -36,16 +33,11 @@ class BookServiceImplCreateTest {
         Author testAuthor = new Author(1, null, null);
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
-        Genre testGenre = new Genre(1, null, null);
-
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2));
+        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), null);
+        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), null);
+        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1), null);
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2), null);
         bookList = List.of(insertBook1, insertBook2, insertBook3);
-
-        minInput = 3;
-        maxInput = 40;
     }
 
     @Test

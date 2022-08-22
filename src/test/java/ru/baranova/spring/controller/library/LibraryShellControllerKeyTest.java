@@ -9,14 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.Shell;
 import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.controller.LibraryShellController;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
-import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -28,10 +27,6 @@ class LibraryShellControllerKeyTest {
     @Autowired
     private ParseService parseService;
     @Autowired
-    private EntityPrintVisitor printer;
-    @Autowired
-    private LibraryShellController libraryShellController;
-    @Autowired
     private LibraryShellControllerTestConfig config;
     private Genre genre1;
     private Genre genre2;
@@ -42,7 +37,7 @@ class LibraryShellControllerKeyTest {
         Author author = new Author(7, "surname", "name");
         genre1 = new Genre(7, "name1", "description");
         genre2 = new Genre(8, "name2", "description");
-        book = new Book(7, "title", author, List.of(genre1, genre2));
+        book = new Book(7, "title", author, List.of(genre1, genre2), Collections.emptyList());
     }
 
     @Test

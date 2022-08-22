@@ -91,7 +91,6 @@ class ThrowingAspectTest {
 
     @Test
     void controllersNPEHandler__catchNPEReturnErrorMessage() {
-        Integer id = 5;
         String inputSurname = "-";
         String inputName = "-";
 

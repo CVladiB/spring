@@ -57,7 +57,7 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
 
             if (!book.getCommentList().isEmpty()) {
                 outputDao.output("Комментарии:");
-                book.getCommentList().stream().forEach(this::print);
+                book.getCommentList().forEach(this::print);
             }
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);

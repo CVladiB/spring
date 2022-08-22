@@ -59,7 +59,6 @@ class AppShellControllerKeyTest {
 
     @Test
     void output_incorrectKey() {
-        String test = "smth";
         shell.evaluate(() -> "smthWrong");
         Mockito.verify(outputDao, Mockito.never()).output(Mockito.any());
     }

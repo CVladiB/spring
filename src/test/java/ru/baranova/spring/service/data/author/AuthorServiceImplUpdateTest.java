@@ -21,9 +21,6 @@ class AuthorServiceImplUpdateTest {
     private CheckService checkService;
     @Autowired
     private AuthorService authorService;
-    private int minInput;
-    private int maxInputSurname;
-    private int maxInputName;
     private Author insertAuthor1;
     private Author testAuthor;
     private List<Author> authorList;
@@ -34,9 +31,6 @@ class AuthorServiceImplUpdateTest {
         Author insertAuthor2 = new Author(2, "Surname2", "Name2");
         testAuthor = new Author(null, "SurnameTest", "NameTest");
         authorList = List.of(insertAuthor1, insertAuthor2);
-        minInput = 3;
-        maxInputSurname = 20;
-        maxInputName = 15;
     }
 
     @Test

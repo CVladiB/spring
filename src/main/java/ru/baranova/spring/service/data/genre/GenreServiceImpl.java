@@ -24,7 +24,6 @@ public class GenreServiceImpl implements GenreService {
     private final GenreDao genreDaoJdbc;
     private final CheckService checkService;
     private final Function<String, List<String>> nonexistentNameFn;
-    private final BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn;
     private final Function<String, List<String>> nameMinMaxFn;
     private final Function<String, List<String>> descriptionMinMaxFn;
 
@@ -32,8 +31,8 @@ public class GenreServiceImpl implements GenreService {
         this.genreDaoJdbc = genreDaoJdbc;
         this.checkService = checkService;
         nonexistentNameFn = name -> checkService.checkIfNotExist(() -> getOrEmptyList(List.of(readByName(name))));
-        correctInputStrFn =
-                (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
+        BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
+                = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
         nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
         descriptionMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_DESCRIPTION);
     }

@@ -31,7 +31,6 @@ public class PrintServiceImplTestConfig {
     private ByteArrayOutputStream out;
     @Getter
     private PrintWriter writer;
-    private SimpleDateFormat sdf;
     @Getter
     private Date dateWithoutTime;
 
@@ -39,7 +38,7 @@ public class PrintServiceImplTestConfig {
     public PrintService printServiceImpl(EntityPrintVisitor entityPrintVisitorImpl) throws ParseException {
         out = new ByteArrayOutputStream();
         writer = new PrintWriter(out, true);
-        sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         dateWithoutTime = sdf.parse(sdf.format(new Date()));
         return new PrintServiceImpl(entityPrintVisitorImpl);
     }

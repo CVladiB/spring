@@ -13,6 +13,7 @@ import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.repository.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
@@ -31,8 +32,8 @@ class BookServiceImplDeleteTest {
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
 
-        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
+        Book insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), Collections.emptyList());
+        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), Collections.emptyList());
         bookList = List.of(insertBook1, insertBook2);
     }
 

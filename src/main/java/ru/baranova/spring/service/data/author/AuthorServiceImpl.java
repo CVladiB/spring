@@ -25,7 +25,6 @@ public class AuthorServiceImpl implements AuthorService {
     private final AuthorDao authorDao;
     private final CheckService checkService;
     private final ParseService parseService;
-    private final BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn;
     private final Function<String, List<String>> surnameMinMaxFn;
     private final Function<String, List<String>> nameMinMaxFn;
     private final BiFunction<String, String, Function<String, List<String>>> nonexistentSurnameNameFn;
@@ -34,7 +33,8 @@ public class AuthorServiceImpl implements AuthorService {
         this.authorDao = authorDao;
         this.checkService = checkService;
         this.parseService = parseService;
-        correctInputStrFn = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
+        BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
+                = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
         surnameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_SURNAME);
         nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
         nonexistentSurnameNameFn = (surname, name) -> t -> checkService.checkIfNotExist(() -> readBySurnameAndName(surname, name));

@@ -22,9 +22,6 @@ class GenreServiceImplUpdateTest {
     private CheckService checkService;
     @Autowired
     private GenreService genreService;
-    private int minInput;
-    private int maxInputName;
-    private int maxInputDescription;
     private Genre insertGenre1;
     private Genre testGenre;
     private List<Genre> genreList;
@@ -35,9 +32,6 @@ class GenreServiceImplUpdateTest {
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
         testGenre = new Genre(null, "NameTest", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
-        minInput = 3;
-        maxInputName = 20;
-        maxInputDescription = 200;
     }
 
     @Test

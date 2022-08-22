@@ -34,7 +34,6 @@ public abstract class BusinessConstants {
 
     public interface EntityServiceLog {
         String WARNING_EXIST_MANY = "Существует несколько полей с указанными значениями, перепроверьте ввод или укажите Id";
-        String WARNING_CREATE = "Ошибка добавления поля, перепроверьте ввод или добавьте автора и жанры отдельно";
         String WARNING_NEED_ADMINISTRATOR = "Ошибка, обратитесь к администратору";
     }
 }
