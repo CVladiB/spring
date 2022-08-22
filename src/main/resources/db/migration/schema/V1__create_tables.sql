@@ -32,7 +32,7 @@ CREATE TABLE comment
     comment_author VARCHAR(20)  NOT NULL,
     comment_text   VARCHAR(200) NOT NULL,
     comment_date   DATE DEFAULT CURRENT_DATE,
-    book_id        INT          NOT NULL,
+    book_id        INT,
     FOREIGN KEY (book_id) REFERENCES book (book_id) ON DELETE CASCADE,
     UNIQUE (comment_author, book_id)
 );

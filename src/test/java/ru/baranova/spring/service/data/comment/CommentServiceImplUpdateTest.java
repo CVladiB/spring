@@ -12,7 +12,6 @@ import ru.baranova.spring.repository.comment.CommentDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.Date;
-import java.util.List;
 
 @SpringBootTest(classes = {CommentServiceImplTestConfig.class, StopSearchConfig.class})
 class CommentServiceImplUpdateTest {
@@ -29,10 +28,7 @@ class CommentServiceImplUpdateTest {
     @BeforeEach
     void setUp() {
         insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
         testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
-        List<Comment> commentList = List.of(insertComment1, insertComment2, insertComment3);
     }
 
     @Test

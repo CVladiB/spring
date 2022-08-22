@@ -6,6 +6,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.Bean;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
+import ru.baranova.spring.service.data.comment.CommentService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
 @TestConfiguration
@@ -16,15 +17,16 @@ public class LibraryServiceImplTestConfig {
     private AuthorService authorService;
     @MockBean
     private GenreService genreService;
+    @MockBean
+    private CommentService commentService;
     @SpyBean
     private LibraryServiceImpl libraryService;
 
     @Bean
     public LibraryServiceImpl libraryService(BookService bookService
             , AuthorService authorService
-            , GenreService genreService) {
-
-
-        return new LibraryServiceImpl(bookService, authorService, genreService);
+            , GenreService genreService
+            , CommentService commentService) {
+        return new LibraryServiceImpl(bookService, authorService, genreService, commentService);
     }
 }

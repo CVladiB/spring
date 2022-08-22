@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.repository.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
@@ -69,15 +70,22 @@ public class BookServiceImpl implements BookService {
     @Nullable
     @Override
     public Book update(@NonNull Integer id, String title, @NonNull Author author, @NonNull List<Genre> genreList) {
-        Book Book = null;
-        Book BookById = bookDao.getById(id);
-        if (checkService.doCheck(BookById, checkService::checkExist, t -> existTitleAndAuthorFn.apply(title, author.getId()))) {
-            Book = bookDao.update(id
-                    , checkService.correctOrDefault(title, correctInputStrTitleMinMaxFn, BookById::getTitle)
+        Book book = null;
+        Book bookById = bookDao.getById(id);
+        if (checkService.doCheck(bookById, checkService::checkExist, t -> existTitleAndAuthorFn.apply(title, author.getId()))) {
+            book = bookDao.update(bookById
+                    , checkService.correctOrDefault(title, correctInputStrTitleMinMaxFn, bookById::getTitle)
                     , author
                     , genreList);
         }
-        return Book;
+        return book;
+    }
+
+    @Override
+    public Book updateComment(Integer id, Comment comment) {
+        Book bookById = bookDao.getById(id);
+        bookById.getCommentList().add(comment);
+        return bookDao.updateComment(bookById, bookById.getCommentList());
     }
 
     @Override

@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
+import ru.baranova.spring.service.data.comment.CommentService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
 import java.util.List;
@@ -25,6 +27,7 @@ public class LibraryServiceImpl implements LibraryService {
     private final BookService bookService;
     private final AuthorService authorService;
     private final GenreService genreService;
+    private final CommentService commentService;
 
     @Nullable
     @Override
@@ -89,6 +92,27 @@ public class LibraryServiceImpl implements LibraryService {
         return bookService.update(id, title, author, genreList);
     }
 
+    @Nullable
+    @Override
+    public Book updateAddCommentToBook(@NonNull String commentAuthor, @NonNull String commentText, @lombok.NonNull Integer bookId) {
+        Comment comment = checkAndCreateCommentForBook(commentAuthor, commentText);
+        return bookService.updateComment(bookId, comment);
+    }
+
+    @Nullable
+    @Override
+    public Book updateAddCommentByIdToBook(@NonNull Integer commentId, @NonNull Integer bookId) {
+        Comment comment = commentService.readById(commentId);
+        return bookService.updateComment(bookId, comment);
+    }
+
+    @Nullable
+    @Override
+    public Book updateUpdateCommentToBook(@NonNull Integer commentId, @NonNull String commentText, @NonNull Integer bookId) {
+        Comment comment = commentService.update(commentId, commentText);
+        return bookService.updateComment(bookId, comment);
+    }
+
     @Override
     public boolean delete(Integer id) {
         return bookService.delete(id);
@@ -107,6 +131,20 @@ public class LibraryServiceImpl implements LibraryService {
             log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST_MANY);
         }
         return author;
+    }
+
+    @Nullable
+    public Comment checkAndCreateCommentForBook(String commentAuthor, String commentText) {
+        Comment comment = null;
+        List<Comment> commentList = commentService.readByAuthorOfComment(commentAuthor);
+        if (commentList.isEmpty()) {
+            comment = commentService.create(commentAuthor, commentText);
+        } else if (commentList.size() == 1 && commentList.get(0).getText().equals(commentText)) {
+            comment = commentList.get(0);
+        } else {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_EXIST_MANY);
+        }
+        return comment;
     }
 
     public List<Genre> checkAndCreateGenreForBook(List<String> genreNameList) {

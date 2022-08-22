@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 
 import javax.persistence.PersistenceException;
@@ -21,6 +22,8 @@ import java.util.List;
 public class BookDaoTest {
     @Autowired
     private BookDao bookDao;
+    @Autowired
+    private BookDaoTestConfig config;
     private Book insertBook1;
     private Book insertBook2;
     private Book insertBook3;
@@ -35,18 +38,21 @@ public class BookDaoTest {
 
         Genre insertGenre1 = new Genre(1, "Name1", "Description1");
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
-        Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2));
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", config.getDateWithoutTime());
+        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", config.getDateWithoutTime());
+
+        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), List.of(insertComment1, insertComment3));
+        insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), List.of(insertComment2));
+        insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1), List.of(insertComment4));
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2), List.of(insertComment4));
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }
 
     @Test
     void book__create__correctReturnNewBook() {
-        // todo
         List<Integer> listExistId = bookDao.getAll()
                 .stream()
                 .map(Book::getId)
@@ -66,9 +72,21 @@ public class BookDaoTest {
     }
 
     @Test
-    void book__create_NonexistentFieldsAuthorAndGenre__incorrectException() {
-        Assertions.assertThrows(PersistenceException.class,
-                () -> bookDao.create(testBook.getTitle(), testBook.getAuthor(), testBook.getGenreList()));
+    void book__create_NonexistentFieldsAuthorAndGenre__correctReturnNewBook() {
+        List<Integer> listExistId = bookDao.getAll()
+                .stream()
+                .map(Book::getId)
+                .toList();
+
+        Book expected = testBook;
+        Book actual = bookDao.create(testBook.getTitle()
+                , testBook.getAuthor()
+                , testBook.getGenreList());
+
+        Assertions.assertFalse(listExistId.contains(actual.getId()));
+        Assertions.assertEquals(expected.getTitle(), actual.getTitle());
+        Assertions.assertEquals(expected.getAuthor(), actual.getAuthor());
+        Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray());
     }
 
     @Test
@@ -86,37 +104,11 @@ public class BookDaoTest {
     }
 
     @Test
-    void book__create_NonexistentAuthorId__incorrectException() {
-        Assertions.assertThrows(
-                PersistenceException.class,
-                () -> bookDao.create(testBook.getTitle(), new Author(100, null, null), testBook.getGenreList()));
-    }
-
-    @Test
-    void book__create_NullGenreId__incorrectException() {
-        Assertions.assertThrows(
-                PersistenceException.class,
-                () -> bookDao.create(testBook.getTitle(), testBook.getAuthor(), null));
-    }
-
-    @Test
-    void book__create_NonexistentGenreId__incorrectException() {
-        Assertions.assertThrows(
-                PersistenceException.class,
-                () -> bookDao.create(testBook.getTitle(), testBook.getAuthor(), List.of(new Genre(100, null, null))));
-    }
-
-    @Test
     void book__getById__correctReturnBookById() {
         Integer id = insertBook1.getId();
         Book expected = insertBook1;
         Book actual = bookDao.getById(id);
-        Assertions.assertAll(
-                () -> Assertions.assertEquals(expected.getTitle(), actual.getTitle()),
-                () -> Assertions.assertEquals(expected.getAuthor(), actual.getAuthor()),
-                () -> Assertions.assertArrayEquals(expected.getGenreList().toArray(), actual.getGenreList().toArray()),
-                () -> Assertions.assertEquals(expected.getId(), actual.getId())
-        );
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -175,7 +167,7 @@ public class BookDaoTest {
     void book__getAll__returnListBooks() {
         List<Book> expected = bookList;
         List<Book> actual = bookDao.getAll();
-        Assertions.assertEquals(expected, actual);
+        Assertions.assertEquals(expected.get(2).getCommentList(), actual.get(2).getCommentList());
     }
 
     @Test
@@ -183,7 +175,7 @@ public class BookDaoTest {
         Integer id = insertBook3.getId();
         testBook.setId(id);
         Book expected = testBook;
-        bookDao.update(id
+        bookDao.update(testBook
                 , testBook.getTitle()
                 , testBook.getAuthor()
                 , testBook.getGenreList());
@@ -196,15 +188,15 @@ public class BookDaoTest {
         testBook.setId(100);
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
-                () -> bookDao.update(testBook.getId(), testBook.getTitle(), testBook.getAuthor(), testBook.getGenreList()));
+                () -> bookDao.update(testBook, testBook.getTitle(), testBook.getAuthor(), testBook.getGenreList()));
     }
 
     @Test
     void book__update_NullTitle__incorrectException() {
         Integer id = insertBook3.getId();
         Assertions.assertThrows(
-                PersistenceException.class,
-                () -> bookDao.update(id, null, testBook.getAuthor(), testBook.getGenreList()));
+                DataIntegrityViolationException.class,
+                () -> bookDao.update(testBook, null, testBook.getAuthor(), testBook.getGenreList()));
     }
 
     @Test

@@ -21,9 +21,6 @@ class GenreServiceImplCreateTest {
     private GenreService genreService;
     @Autowired
     private GenreDao genreDao;
-    private int minInput;
-    private int maxInputName;
-    private int maxInputDescription;
     private Genre insertGenre1;
     private Genre testGenre;
     private List<Genre> genreList;
@@ -34,9 +31,6 @@ class GenreServiceImplCreateTest {
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
         testGenre = new Genre(null, "NameTest", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
-        minInput = 3;
-        maxInputName = 20;
-        maxInputDescription = 200;
     }
 
     @Test

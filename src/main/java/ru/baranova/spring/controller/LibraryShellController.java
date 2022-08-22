@@ -69,6 +69,24 @@ public class LibraryShellController {
         return bc.COMPLETE_UPDATE;
     }
 
+    @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cc"})
+    public String updateByIdAddComment(String commentAuthor, String commentText, Integer bookId) {
+        libraryService.updateAddCommentToBook(commentAuthor, commentText, bookId);
+        return bc.COMPLETE_UPDATE;
+    }
+
+    @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cc-id"})
+    public String updateByIdAddComment(Integer commentId, Integer bookId) {
+        libraryService.updateAddCommentByIdToBook(commentId, bookId);
+        return bc.COMPLETE_UPDATE;
+    }
+
+    @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cu"})
+    public String updateByIdUpdateComment(Integer commentId, String commentText, Integer bookId) {
+        libraryService.updateUpdateCommentToBook(commentId, commentText, bookId);
+        return bc.COMPLETE_UPDATE;
+    }
+
     @ShellMethod(group = "Book", value = "Delete book", key = {"bd"})
     public String delete(Integer id) {
         libraryService.delete(id);

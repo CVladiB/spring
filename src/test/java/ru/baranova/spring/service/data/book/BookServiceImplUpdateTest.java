@@ -13,6 +13,7 @@ import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.repository.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
@@ -23,28 +24,17 @@ class BookServiceImplUpdateTest {
     private CheckService checkService;
     @Autowired
     private BookService bookService;
-    private int minInput;
-    private int maxInput;
     private Book insertBook1;
     private Book testBook;
 
     @BeforeEach
     void setUp() {
         Author insertAuthor1 = new Author(1, null, null);
-        Author insertAuthor2 = new Author(2, null, null);
         Author testAuthor = new Author(1, null, null);
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
-        Genre testGenre = new Genre(1, null, null);
-
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2));
-        List<Book> bookList = List.of(insertBook1, insertBook2, insertBook3);
-
-        minInput = 3;
-        maxInput = 40;
+        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), Collections.emptyList());
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre2), Collections.emptyList());
     }
 
     @Test
@@ -59,7 +49,7 @@ class BookServiceImplUpdateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
         testBook.setId(inputId);
-        Mockito.when(bookDao.update(inputId, inputTitle, inputAuthor, inputGenreList)).thenReturn(testBook);
+        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(testBook);
 
         Book expected = testBook;
         Book actual = bookService.update(inputId, inputTitle, inputAuthor, inputGenreList);
@@ -79,7 +69,7 @@ class BookServiceImplUpdateTest {
         Mockito.when(checkService.correctOrDefault(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(insertBook1.getTitle());
         testBook.setTitle(insertBook1.getTitle());
         testBook.setId(inputId);
-        Mockito.when(bookDao.update(inputId, insertBook1.getTitle(), inputAuthor, inputGenreList)).thenReturn(testBook);
+        Mockito.when(bookDao.update(insertBook1, insertBook1.getTitle(), inputAuthor, inputGenreList)).thenReturn(testBook);
 
         Book expected = testBook;
         Book actual = bookService.update(inputId, inputTitle, inputAuthor, inputGenreList);
@@ -109,7 +99,7 @@ class BookServiceImplUpdateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
-        Mockito.when(bookDao.update(inputId, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
+        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
 
         Assertions.assertNull(bookService.update(inputId, inputTitle, inputAuthor, inputGenreList));
     }
@@ -125,7 +115,7 @@ class BookServiceImplUpdateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
-        Mockito.when(bookDao.update(inputId, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
+        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
 
         Assertions.assertNull(bookService.update(inputId, inputTitle, inputAuthor, inputGenreList));
     }

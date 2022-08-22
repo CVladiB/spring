@@ -29,7 +29,6 @@ class CommentServiceImplReadTest {
         insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
         Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
         Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
-        Comment testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
         commentList = List.of(insertComment1, insertComment2, insertComment3);
     }
 

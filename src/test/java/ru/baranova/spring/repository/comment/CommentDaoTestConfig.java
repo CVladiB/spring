@@ -11,13 +11,12 @@ import java.util.Date;
 
 @TestConfiguration
 public class CommentDaoTestConfig {
-    private SimpleDateFormat sdf;
     @Getter
     private Date dateWithoutTime;
 
     @Bean
     public CommentDao commentDao(EntityManager em) throws ParseException {
-        sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         dateWithoutTime = sdf.parse(sdf.format(new Date()));
         return new CommentDaoJpa(em);
     }

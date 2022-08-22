@@ -22,19 +22,13 @@ class CommentServiceImplDeleteTest {
     private CommentDao commentDao;
     @Autowired
     private CommentService commentService;
-
-    private Comment insertComment1;
-    private Comment insertComment2;
-    private Comment insertComment3;
-    private Comment testComment;
     private List<Comment> commentList;
 
     @BeforeEach
     void setUp() {
-        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
-        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
         commentList = List.of(insertComment1, insertComment2, insertComment3);
     }
 

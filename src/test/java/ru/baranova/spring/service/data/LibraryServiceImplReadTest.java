@@ -10,10 +10,12 @@ import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.book.BookService;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -23,8 +25,6 @@ class LibraryServiceImplReadTest {
     @Autowired
     private LibraryServiceImpl libraryService;
     private Book insertBook1;
-    private Book insertBook2;
-    private Book insertBook3;
     private List<Book> bookList;
 
 
@@ -34,10 +34,14 @@ class LibraryServiceImplReadTest {
         Author insertAuthor2 = new Author(2, "Surname2", "Name2");
         Genre insertGenre1 = new Genre(1, "Name1", "Description1");
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
+        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", new Date());
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2));
-        insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1));
+        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), List.of(insertComment1, insertComment3));
+        Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), List.of(insertComment2));
+        Book insertBook3 = new Book(3, "Title3", insertAuthor2, List.of(insertGenre1), List.of(insertComment4));
         bookList = List.of(insertBook1, insertBook2, insertBook3);
     }
 

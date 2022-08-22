@@ -2,6 +2,7 @@ package ru.baranova.spring.service.data.book;
 
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.BaseService;
 
@@ -19,6 +20,8 @@ public interface BookService extends BaseService {
     List<Book> readAll();
 
     Book update(Integer id, String title, Author author, List<Genre> genreList);
+
+    Book updateComment(Integer id, Comment comment);
 
     boolean delete(Integer id);
 }

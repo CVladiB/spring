@@ -49,8 +49,8 @@ class LibraryServiceImplUpdateTest {
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2));
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2));
+        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), Collections.emptyList());
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2), Collections.emptyList());
     }
 
     @Test
