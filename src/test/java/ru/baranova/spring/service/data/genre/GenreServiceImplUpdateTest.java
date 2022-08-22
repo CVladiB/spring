@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import ru.baranova.spring.config.StopSearchConfig;
+import ru.baranova.spring.dao.entity.genre.GenreDao;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;

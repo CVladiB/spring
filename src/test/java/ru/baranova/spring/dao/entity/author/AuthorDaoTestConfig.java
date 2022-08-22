@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.author;
+package ru.baranova.spring.dao.entity.author;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

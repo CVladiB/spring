@@ -5,8 +5,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.baranova.spring.dao.entity.genre.GenreDao;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;

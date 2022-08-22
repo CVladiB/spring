@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.book;
+package ru.baranova.spring.dao.entity.book;
 
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;

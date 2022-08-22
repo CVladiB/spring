@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.genre;
+package ru.baranova.spring.dao.entity.genre;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

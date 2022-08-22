@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.genre;
+package ru.baranova.spring.dao.entity.genre;
 
 import ru.baranova.spring.model.Genre;
 

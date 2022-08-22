@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.baranova.spring.dao.entity.comment.CommentDao;
 import ru.baranova.spring.model.Comment;
-import ru.baranova.spring.repository.comment.CommentDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;

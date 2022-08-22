@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.genre;
+package ru.baranova.spring.dao.entity.genre;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

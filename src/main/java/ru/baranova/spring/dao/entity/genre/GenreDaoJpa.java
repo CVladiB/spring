@@ -1,10 +1,10 @@
-package ru.baranova.spring.repository.genre;
+package ru.baranova.spring.dao.entity.genre;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Genre;
 
@@ -16,7 +16,7 @@ import javax.persistence.TypedQuery;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class GenreDaoJpa implements GenreDao {
     @PersistenceContext

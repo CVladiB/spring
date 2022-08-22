@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.book;
+package ru.baranova.spring.dao.entity.comment;
 
 import lombok.Getter;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -10,15 +10,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @TestConfiguration
-public class BookDaoTestConfig {
+public class CommentDaoTestConfig {
     @Getter
     private Date dateWithoutTime;
 
     @Bean
-    public BookDao bookDao(EntityManager em) throws ParseException {
+    public CommentDao commentDao(EntityManager em) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         dateWithoutTime = sdf.parse(sdf.format(new Date()));
-        return new BookDaoJpa(em);
+        return new CommentDaoJpa(em);
     }
-
 }

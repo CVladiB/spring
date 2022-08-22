@@ -1,9 +1,9 @@
-package ru.baranova.spring.repository.comment;
+package ru.baranova.spring.dao.entity.comment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Comment;
 
@@ -13,7 +13,7 @@ import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class CommentDaoJpa implements CommentDao {
     private final EntityManager em;

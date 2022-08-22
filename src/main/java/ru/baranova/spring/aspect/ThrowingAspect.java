@@ -20,7 +20,7 @@ import java.util.List;
 @Component
 public class ThrowingAspect {
 
-    @Around("allMethodsRepository()")
+    @Around("allMethodsDaoEntity()")
     public Object appDataAccessExceptionHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
@@ -71,8 +71,8 @@ public class ThrowingAspect {
         }
     }
 
-    @Pointcut("execution(* ru.baranova.spring.repository..*(..))")
-    private void allMethodsRepository() {
+    @Pointcut("execution(* ru.baranova.spring.dao.entity..*(..))")
+    private void allMethodsDaoEntity() {
     }
 
     @Pointcut("execution(* ru.baranova.spring.service.data..*(..))")

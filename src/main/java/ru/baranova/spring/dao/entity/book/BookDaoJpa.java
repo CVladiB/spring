@@ -1,10 +1,10 @@
-package ru.baranova.spring.repository.book;
+package ru.baranova.spring.dao.entity.book;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
@@ -19,7 +19,7 @@ import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@Component
 @RequiredArgsConstructor
 public class BookDaoJpa implements BookDao {
     @PersistenceContext

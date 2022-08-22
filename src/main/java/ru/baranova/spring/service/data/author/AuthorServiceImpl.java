@@ -5,8 +5,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.baranova.spring.dao.entity.author.AuthorDao;
 import ru.baranova.spring.model.Author;
-import ru.baranova.spring.repository.author.AuthorDao;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 

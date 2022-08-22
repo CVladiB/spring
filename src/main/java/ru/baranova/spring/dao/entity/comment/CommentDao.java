@@ -1,4 +1,4 @@
-package ru.baranova.spring.repository.comment;
+package ru.baranova.spring.dao.entity.comment;
 
 import ru.baranova.spring.model.Comment;
 

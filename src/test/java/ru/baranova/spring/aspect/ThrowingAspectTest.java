@@ -9,8 +9,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
+import ru.baranova.spring.dao.entity.author.AuthorDao;
 import ru.baranova.spring.model.Author;
-import ru.baranova.spring.repository.author.AuthorDao;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.data.author.AuthorService;
 
