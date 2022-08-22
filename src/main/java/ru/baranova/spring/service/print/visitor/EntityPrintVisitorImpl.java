@@ -7,6 +7,7 @@ import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.dao.output.OutputDao;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
@@ -53,6 +54,11 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             }
 
             outputDao.output(sb.toString());
+
+            if (!book.getCommentList().isEmpty()) {
+                outputDao.output("Комментарии:");
+                book.getCommentList().stream().forEach(this::print);
+            }
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_BOOK_NULL);
         }
@@ -68,6 +74,16 @@ public class EntityPrintVisitorImpl implements EntityPrintVisitor {
             outputDao.output(str);
         } else {
             throw new NullPointerException(BusinessConstants.PrintService.WARNING_GENRE_NULL);
+        }
+    }
+
+    @Override
+    public void print(@NonNull Comment comment) {
+        if (checkService.doCheck(comment, checkService::checkAllFieldsAreNotNull)) {
+            String str = String.format("%s. %s - %s", comment.getDate(), comment.getAuthor(), comment.getText());
+            outputDao.output(str);
+        } else {
+            throw new NullPointerException(BusinessConstants.PrintService.WARNING_COMMENT_NULL);
         }
     }
 }

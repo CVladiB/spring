@@ -10,10 +10,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,8 @@ class EntityPrintVisitorImpBookTest {
     void setUp() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre, testGenre), List.of(testComment, testComment));
     }
 
     @AfterEach
@@ -48,10 +51,16 @@ class EntityPrintVisitorImpBookTest {
                 .stream()
                 .map(Genre::getName)
                 .collect(Collectors.joining(", ")));
+        String expectedComment = "Комментарии:" + System.lineSeparator() + testBook.getCommentList()
+                .stream()
+                .map(comment -> String.format("%s. %s - %s", comment.getDate(), comment.getAuthor(), comment.getText()))
+                .collect(Collectors.joining(System.lineSeparator()));
 
         Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(0)), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(1)), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = expectedTitle + expectedAuthor + expectedGenre + System.lineSeparator();
+        String expected = expectedTitle + expectedAuthor + expectedGenre + System.lineSeparator() + expectedComment + System.lineSeparator();
         printer.print(testBook);
         String actual = config.getOut().toString();
 
@@ -77,11 +86,17 @@ class EntityPrintVisitorImpBookTest {
                 .stream()
                 .map(Genre::getName)
                 .collect(Collectors.joining(", ")));
+        String expectedComment = "Комментарии:" + System.lineSeparator() + testBook.getCommentList()
+                .stream()
+                .map(comment -> String.format("%s. %s - %s", comment.getDate(), comment.getAuthor(), comment.getText()))
+                .collect(Collectors.joining(System.lineSeparator()));
 
         testBook.getAuthor().setId(null);
         Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(0)), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(1)), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = expectedTitle + expectedGenre + System.lineSeparator();
+        String expected = expectedTitle + expectedGenre + System.lineSeparator() + expectedComment + System.lineSeparator();
         printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
@@ -94,11 +109,17 @@ class EntityPrintVisitorImpBookTest {
                 .stream()
                 .map(Genre::getName)
                 .collect(Collectors.joining(", ")));
+        String expectedComment = "Комментарии:" + System.lineSeparator() + testBook.getCommentList()
+                .stream()
+                .map(comment -> String.format("%s. %s - %s", comment.getDate(), comment.getAuthor(), comment.getText()))
+                .collect(Collectors.joining(System.lineSeparator()));
 
         testBook.setAuthor(null);
         Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.FALSE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(0)), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(1)), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = expectedTitle + expectedGenre + System.lineSeparator();
+        String expected = expectedTitle + expectedGenre + System.lineSeparator() + expectedComment + System.lineSeparator();
         printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
@@ -108,11 +129,35 @@ class EntityPrintVisitorImpBookTest {
     void book__printNullGenre__correctOutput() {
         String expectedTitle = String.format("%d. \"%s\"", testBook.getId(), testBook.getTitle());
         String expectedAuthor = String.format(", %s %s.", testBook.getAuthor().getSurname(), testBook.getAuthor().getName().charAt(0));
+        String expectedComment = "Комментарии:" + System.lineSeparator() + testBook.getCommentList()
+                .stream()
+                .map(comment -> String.format("%s. %s - %s", comment.getDate(), comment.getAuthor(), comment.getText()))
+                .collect(Collectors.joining(System.lineSeparator()));
 
         testBook.setGenreList(Collections.emptyList());
         Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(0)), Mockito.any())).thenReturn(Boolean.TRUE);
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getCommentList().get(1)), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = expectedTitle + expectedAuthor + System.lineSeparator();
+        String expected = expectedTitle + expectedAuthor + System.lineSeparator() + expectedComment + System.lineSeparator();
+        printer.print(testBook);
+        String actual = config.getOut().toString();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__printNullComment__correctOutput() {
+        String expectedTitle = String.format("%d. \"%s\"", testBook.getId(), testBook.getTitle());
+        String expectedAuthor = String.format(", %s %s.", testBook.getAuthor().getSurname(), testBook.getAuthor().getName().charAt(0));
+        String expectedGenre = String.format(", жанр: %s", testBook.getGenreList()
+                .stream()
+                .map(Genre::getName)
+                .collect(Collectors.joining(", ")));
+
+        testBook.setCommentList(Collections.emptyList());
+        Mockito.when(checkService.doCheck(Mockito.eq(testBook.getAuthor()), Mockito.any())).thenReturn(Boolean.TRUE);
+
+        String expected = expectedTitle + expectedAuthor + expectedGenre + System.lineSeparator();
         printer.print(testBook);
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);

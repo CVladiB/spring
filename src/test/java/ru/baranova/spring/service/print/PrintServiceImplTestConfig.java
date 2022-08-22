@@ -11,6 +11,9 @@ import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @TestConfiguration
 public class PrintServiceImplTestConfig {
@@ -28,11 +31,16 @@ public class PrintServiceImplTestConfig {
     private ByteArrayOutputStream out;
     @Getter
     private PrintWriter writer;
+    private SimpleDateFormat sdf;
+    @Getter
+    private Date dateWithoutTime;
 
     @Bean
-    public PrintService printServiceImpl(EntityPrintVisitor entityPrintVisitorImpl) {
+    public PrintService printServiceImpl(EntityPrintVisitor entityPrintVisitorImpl) throws ParseException {
         out = new ByteArrayOutputStream();
         writer = new PrintWriter(out, true);
+        sdf = new SimpleDateFormat("yyyy-MM-dd");
+        dateWithoutTime = sdf.parse(sdf.format(new Date()));
         return new PrintServiceImpl(entityPrintVisitorImpl);
     }
 

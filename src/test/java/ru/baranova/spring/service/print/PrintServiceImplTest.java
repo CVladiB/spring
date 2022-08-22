@@ -10,9 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(classes = {PrintServiceImplTestConfig.class, StopSearchConfig.class})
@@ -25,6 +27,7 @@ class PrintServiceImplTest {
     private PrintServiceImplTestConfig config;
     private Author testAuthor;
     private Genre testGenre;
+    private Comment testComment;
     private Book testBook;
 
 
@@ -32,7 +35,8 @@ class PrintServiceImplTest {
     void setUp() {
         testAuthor = new Author(1, "SurnameTest", "NameTest");
         testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre));
+        testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), null);
     }
 
     @AfterEach
@@ -62,6 +66,19 @@ class PrintServiceImplTest {
         printService.printEntity(testGenre);
 
         String expected = "Print genre" + System.lineSeparator();
+        String actual = config.getOut().toString();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void comment__printEntity__correctOutput() {
+        Mockito.doAnswer(invocationOnMock -> {
+            config.getWriter().println("Print comment");
+            return null;
+        }).when(printer).print(testComment);
+        printService.printEntity(testComment);
+
+        String expected = "Print comment" + System.lineSeparator();
         String actual = config.getOut().toString();
         Assertions.assertEquals(expected, actual);
     }
