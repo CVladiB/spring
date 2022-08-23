@@ -44,18 +44,18 @@ public class Book implements EntityObject {
     @Column(name = "book_title", nullable = false)
     private String title;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "author_id")
     private Author author;
 
     @Fetch(FetchMode.SUBSELECT)
-    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "book_genre"
             , joinColumns = @JoinColumn(name = "book_id")
             , inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> genreList;
 
-    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
+    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "book_id")
     private List<Comment> commentList;
 
