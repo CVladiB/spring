@@ -11,11 +11,12 @@ import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
 
-import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -37,13 +38,14 @@ class LibraryShellControllerKeyTest {
         Author author = new Author(7, "surname", "name");
         genre1 = new Genre(7, "name1", "description");
         genre2 = new Genre(8, "name2", "description");
-        book = new Book(7, "title", author, List.of(genre1, genre2), Collections.emptyList());
+        Comment comment = new Comment(7, "CommentAuthor", "BlaBlaBla", new Date());
+        book = new Book(7, "title", author, List.of(genre1, genre2), List.of(comment));
     }
 
     @Test
     void create_correctKey() {
         String inputGenreNames = "name1,name2";
-        String expected = "Ошибка";
+        String expected = config.getWARNING();
         String actual = shell.evaluate(() -> config.getCreate()
                 + " " + book.getTitle()
                 + " " + book.getAuthor().getSurname()
@@ -77,7 +79,7 @@ class LibraryShellControllerKeyTest {
                         , List.of(genre1.getId(), genre2.getId())))
                 .thenThrow(NullPointerException.class);
 
-        String expected = "Ошибка";
+        String expected = config.getWARNING();
         String actual = shell.evaluate(() -> config.getCreateById()
                 + " " + book.getTitle()
                 + " " + book.getAuthor().getId()
@@ -145,7 +147,7 @@ class LibraryShellControllerKeyTest {
                         , List.of(genre1.getName(), genre2.getName())))
                 .thenThrow(NullPointerException.class);
 
-        String expected = "Ошибка";
+        String expected = config.getWARNING();
         String actual = shell.evaluate(() -> config.getUpdate()
                 + " " + book.getId()
                 + " " + book.getTitle()
@@ -178,7 +180,7 @@ class LibraryShellControllerKeyTest {
                         , List.of(genre1.getId(), genre2.getId())))
                 .thenThrow(NullPointerException.class);
 
-        String expected = "Ошибка";
+        String expected = config.getWARNING();
         String actual = shell.evaluate(() -> config.getUpdateById()
                 + " " + book.getId()
                 + " " + book.getTitle()
@@ -194,7 +196,76 @@ class LibraryShellControllerKeyTest {
                 + " " + book.getTitle()
                 + " " + book.getAuthor().getId()
                 + " " + book.getGenreList().toString());
-        Mockito.verify(libraryService, Mockito.never()).create(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.verify(libraryService, Mockito.never()).update(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void updateByIdAddComment_correctKey() {
+        Mockito.when(libraryService.updateAddCommentToBook(book.getId()
+                        , book.getCommentList().get(0).getAuthor()
+                        , book.getCommentList().get(0).getText()))
+                .thenThrow(NullPointerException.class);
+
+        String expected = config.getWARNING();
+        String actual = shell.evaluate(() -> config.getUpdateByIdAddComment()
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getAuthor()
+                + " " + book.getCommentList().get(0).getText()).toString();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateByIdAddComment_incorrectKey() {
+        shell.evaluate(() -> "smthWrong"
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getAuthor()
+                + " " + book.getCommentList().get(0).getText());
+        Mockito.verify(libraryService, Mockito.never()).updateAddCommentToBook(Mockito.any(), Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void updateByIdAddCommentById_correctKey() {
+        Mockito.when(libraryService.updateAddCommentByIdToBook(book.getId()
+                        , book.getCommentList().get(0).getId()))
+                .thenThrow(NullPointerException.class);
+
+        String expected = config.getWARNING();
+        String actual = shell.evaluate(() -> config.getUpdateByIdAddCommentById()
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getId()).toString();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateByIdAddCommentById_incorrectKey() {
+        shell.evaluate(() -> "smthWrong"
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getId());
+        Mockito.verify(libraryService, Mockito.never()).updateAddCommentByIdToBook(Mockito.any(), Mockito.any());
+    }
+
+    @Test
+    void updateByIdUpdateComment_correctKey() {
+        Mockito.when(libraryService.updateUpdateCommentToBook(book.getId()
+                        , book.getCommentList().get(0).getId()
+                        , book.getCommentList().get(0).getText()))
+                .thenThrow(NullPointerException.class);
+
+        String expected = config.getWARNING();
+        String actual = shell.evaluate(() -> config.getUpdateByIdUpdateComment()
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getId()
+                + " " + book.getCommentList().get(0).getText()).toString();
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateByIdUpdateComment_incorrectKey() {
+        shell.evaluate(() -> "smthWrong"
+                + " " + book.getId()
+                + " " + book.getCommentList().get(0).getAuthor()
+                + " " + book.getCommentList().get(0).getText());
+        Mockito.verify(libraryService, Mockito.never()).updateUpdateCommentToBook(Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test

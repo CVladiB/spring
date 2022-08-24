@@ -9,7 +9,7 @@ public interface GenreDao {
 
     Genre getById(Integer id);
 
-    Genre getByName(String name);
+    List<Genre> getByName(String name);
 
     List<Genre> getAll();
 

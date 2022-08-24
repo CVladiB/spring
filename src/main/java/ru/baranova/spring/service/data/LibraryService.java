@@ -19,11 +19,11 @@ public interface LibraryService extends BaseService {
 
     Book update(Integer id, String title, Integer authorId, List<Integer> genreIdList);
 
-    Book updateAddCommentToBook(String commentAuthor, String commentText, Integer bookId);
+    Book updateAddCommentToBook(Integer bookId, String commentAuthor, String commentText);
 
-    Book updateAddCommentByIdToBook(Integer commentId, Integer bookId);
+    Book updateAddCommentByIdToBook(Integer bookId, Integer commentId);
 
-    Book updateUpdateCommentToBook(Integer commentId, String commentText, Integer bookId);
+    Book updateUpdateCommentToBook(Integer bookId, Integer commentId, String commentText);
 
     boolean delete(Integer id);
 }

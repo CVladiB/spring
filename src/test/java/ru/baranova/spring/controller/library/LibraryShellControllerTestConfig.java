@@ -25,6 +25,9 @@ public class LibraryShellControllerTestConfig {
     private String readAll;
     private String update;
     private String updateById;
+    private String updateByIdAddComment;
+    private String updateByIdAddCommentById;
+    private String updateByIdUpdateComment;
     private String delete;
     private String COMPLETE_CREATE;
     private String COMPLETE_OUTPUT;
@@ -42,6 +45,9 @@ public class LibraryShellControllerTestConfig {
         readAll = "br-all";
         update = "bu";
         updateById = "bu-id";
+        updateByIdAddComment = "bu-id-cc";
+        updateByIdAddCommentById = "bu-id-cc-id";
+        updateByIdUpdateComment = "bu-id-cu";
         delete = "bd";
 
         COMPLETE_CREATE = "Новое поле добавлено, присвоен id - %d";
@@ -53,5 +59,4 @@ public class LibraryShellControllerTestConfig {
 
         return new LibraryShellController(libraryServiceImpl, parseServiceImpl, printer);
     }
-
 }

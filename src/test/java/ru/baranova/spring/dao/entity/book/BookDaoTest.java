@@ -175,6 +175,17 @@ public class BookDaoTest {
     }
 
     @Test
+    void book__getAll_EmptyList__emptyListResultException() {
+        Integer inputId = insertBook1.getId();
+        Integer inputId2 = insertBook2.getId();
+        Integer inputId3 = insertBook3.getId();
+        bookDao.delete(inputId);
+        bookDao.delete(inputId2);
+        bookDao.delete(inputId3);
+        Assertions.assertThrows(DataAccessException.class, () -> bookDao.getAll());
+    }
+
+    @Test
     void book__update__correctChangeAllFieldBookById() {
         Integer id = insertBook3.getId();
         testBook.setId(id);
@@ -197,7 +208,6 @@ public class BookDaoTest {
 
     @Test
     void book__update_NullTitle__incorrectException() {
-        Integer id = insertBook3.getId();
         Assertions.assertThrows(
                 DataIntegrityViolationException.class,
                 () -> bookDao.update(testBook, null, testBook.getAuthor(), testBook.getGenreList()));

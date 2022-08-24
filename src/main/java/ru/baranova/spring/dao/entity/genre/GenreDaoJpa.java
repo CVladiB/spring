@@ -39,25 +39,22 @@ public class GenreDaoJpa implements GenreDao {
         TypedQuery<Genre> query = em.createQuery(sql, Genre.class);
         query.setParameter("id", id);
         Genre genre = query.getSingleResult();
-        if (genre == null) {
-            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
-        }
         return genre;
     }
 
     @Override
-    public Genre getByName(@NonNull String name) throws DataAccessException, PersistenceException {
+    public List<Genre> getByName(@NonNull String name) throws DataAccessException, PersistenceException {
         String sql = """
                 select g from Genre g
                 where g.name = :name
                 """;
         TypedQuery<Genre> query = em.createQuery(sql, Genre.class);
         query.setParameter("name", name);
-        Genre genre = query.getSingleResult();
-        if (genre == null) {
-            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
+        List<Genre> genreList = query.getResultList();
+        if (genreList.isEmpty()) {
+            throw new DataIntegrityViolationException(bc.NOTHING_IN_BD);
         }
-        return genre;
+        return genreList;
     }
 
     @Override

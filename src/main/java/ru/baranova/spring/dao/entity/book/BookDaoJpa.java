@@ -46,9 +46,6 @@ public class BookDaoJpa implements BookDao {
         TypedQuery<Book> query = em.createQuery(sql, Book.class);
         query.setParameter("id", id);
         Book book = query.getSingleResult();
-        if (book == null) {
-            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
-        }
         return book;
     }
 
@@ -69,7 +66,7 @@ public class BookDaoJpa implements BookDao {
     }
 
     @Override
-    public List<Book> getByTitleAndAuthor(String title, Integer authorId) throws DataAccessException, PersistenceException {
+    public List<Book> getByTitleAndAuthor(@NonNull String title, @NonNull Integer authorId) throws DataAccessException, PersistenceException {
         String sql = """
                 select b from Book b
                 join fetch b.author

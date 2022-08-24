@@ -33,8 +33,8 @@ public class GenreShellController {
 
     @ShellMethod(group = "Genre", value = "Read genre by name", key = {"gr"})
     public String readByName(String name) {
-        Genre genre = genreService.readByName(name);
-        printer.print(genre);
+        List<Genre> genreList = genreService.readByName(name);
+        genreList.forEach(printer::print);
         return bc.COMPLETE_OUTPUT;
     }
 

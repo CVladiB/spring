@@ -71,9 +71,9 @@ class LibraryServiceImplCreateTest {
 
         testGenre1.setId(genreList.size() + 1);
         testGenre2.setId(genreList.size() + 2);
-        Mockito.when(genreService.readByName(inputGenreNameList.get(0))).thenReturn(null);
+        Mockito.when(genreService.readByName(inputGenreNameList.get(0))).thenReturn(Collections.emptyList());
         Mockito.when(genreService.create(inputGenreNameList.get(0), null)).thenReturn(testGenre1);
-        Mockito.when(genreService.readByName(inputGenreNameList.get(1))).thenReturn(null);
+        Mockito.when(genreService.readByName(inputGenreNameList.get(1))).thenReturn(Collections.emptyList());
         Mockito.when(genreService.create(inputGenreNameList.get(1), null)).thenReturn(testGenre2);
 
         testBook.setId(newId);

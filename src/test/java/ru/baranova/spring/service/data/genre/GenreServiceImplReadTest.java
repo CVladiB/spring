@@ -59,24 +59,28 @@ class GenreServiceImplReadTest {
     void genre__readByName__correctReturnObject() {
         String inputName = insertGenre1.getName();
 
-        Mockito.when(genreDao.getByName(inputName)).thenReturn(genreList.get(0));
+        Mockito.when(genreDao.getByName(inputName)).thenReturn(List.of(genreList.get(0)));
 
-        Genre expected = genreList.get(0);
-        Genre actual = genreService.readByName(inputName);
+        List<Genre> expected = List.of(genreList.get(0));
+        List<Genre> actual = genreService.readByName(inputName);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__readByName_NonexistentName__returnNull() {
         String inputName = "smth";
-        Assertions.assertNull(genreService.readByName(inputName));
+        List<Genre> expected = Collections.emptyList();
+        List<Genre> actual = genreService.readByName(inputName);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__readByName_Exception__returnNull() {
         String inputName = insertGenre1.getName();
-        Mockito.when(genreDao.getByName(inputName)).thenReturn(null);
-        Assertions.assertNull(genreService.readByName(inputName));
+        Mockito.when(genreDao.getByName(inputName)).thenReturn(Collections.emptyList());
+        List<Genre> expected = Collections.emptyList();
+        List<Genre> actual = genreService.readByName(inputName);
+        Assertions.assertEquals(expected, actual);
     }
 
 

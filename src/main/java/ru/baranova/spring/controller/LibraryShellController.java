@@ -70,20 +70,20 @@ public class LibraryShellController {
     }
 
     @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cc"})
-    public String updateByIdAddComment(String commentAuthor, String commentText, Integer bookId) {
-        libraryService.updateAddCommentToBook(commentAuthor, commentText, bookId);
+    public String updateByIdAddComment(Integer bookId, String commentAuthor, String commentText) {
+        libraryService.updateAddCommentToBook(bookId, commentAuthor, commentText);
         return bc.COMPLETE_UPDATE;
     }
 
     @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cc-id"})
-    public String updateByIdAddComment(Integer commentId, Integer bookId) {
-        libraryService.updateAddCommentByIdToBook(commentId, bookId);
+    public String updateByIdAddCommentById(Integer bookId, Integer commentId) {
+        libraryService.updateAddCommentByIdToBook(bookId, commentId);
         return bc.COMPLETE_UPDATE;
     }
 
     @ShellMethod(group = "Book", value = "Update book", key = {"bu-id-cu"})
-    public String updateByIdUpdateComment(Integer commentId, String commentText, Integer bookId) {
-        libraryService.updateUpdateCommentToBook(commentId, commentText, bookId);
+    public String updateByIdUpdateComment(Integer bookId, Integer commentId, String commentText) {
+        libraryService.updateUpdateCommentToBook(bookId, commentId, commentText);
         return bc.COMPLETE_UPDATE;
     }
 

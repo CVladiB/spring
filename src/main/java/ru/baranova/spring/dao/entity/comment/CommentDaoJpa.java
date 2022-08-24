@@ -35,9 +35,6 @@ public class CommentDaoJpa implements CommentDao {
         TypedQuery<Comment> query = em.createQuery(sql, Comment.class);
         query.setParameter("id", id);
         Comment comment = query.getSingleResult();
-        if (comment == null) {
-            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
-        }
         return comment;
     }
 

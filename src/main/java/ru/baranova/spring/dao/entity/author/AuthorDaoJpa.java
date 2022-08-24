@@ -38,9 +38,6 @@ public class AuthorDaoJpa implements AuthorDao {
         TypedQuery<Author> query = em.createQuery(sql, Author.class);
         query.setParameter("id", id);
         Author author = query.getSingleResult();
-        if (author == null) {
-            throw new DataIntegrityViolationException(bc.SHOULD_EXIST_INPUT);
-        }
         return author;
     }
 

@@ -82,7 +82,7 @@ class GenreShellControllerTest {
     void readByName_correct() {
         String inputName = genre.getName();
         Mockito.when(genreService.readByName(inputName))
-                .thenReturn(genre);
+                .thenReturn(List.of(genre));
         Mockito.doNothing().when(printer).print((Genre) Mockito.any());
         String expected = config.getCOMPLETE_OUTPUT();
         String actual = genreShellController.readByName(inputName);
@@ -92,7 +92,7 @@ class GenreShellControllerTest {
     @Test
     void readByName_incorrectRead() {
         String inputName = genre.getName();
-        Mockito.when(genreService.readByName(inputName)).thenReturn(genre);
+        Mockito.when(genreService.readByName(inputName)).thenReturn(List.of(genre));
         Mockito.doThrow(NullPointerException.class).when(printer).print((Genre) Mockito.any());
         String expected = config.getWARNING();
         String actual = genreShellController.readByName(inputName);

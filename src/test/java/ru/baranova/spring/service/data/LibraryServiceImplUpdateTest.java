@@ -10,12 +10,16 @@ import ru.baranova.spring.aspect.ThrowingAspect;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
+import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.book.BookService;
+import ru.baranova.spring.service.data.comment.CommentService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -27,12 +31,20 @@ class LibraryServiceImplUpdateTest {
     @Autowired
     private GenreService genreService;
     @Autowired
+    private CommentService commentService;
+    @Autowired
     private LibraryServiceImpl libraryService;
     private Genre testGenre1;
     private Genre testGenre2;
     private List<Genre> genreList;
     private Author testAuthor;
     private List<Author> authorList;
+    private Comment insertComment1;
+    private Comment insertComment2;
+    private Comment insertComment3;
+    private Comment insertComment4;
+    private Comment testComment;
+    private List<Comment> commentList;
     private Book insertBook1;
     private Book testBook;
 
@@ -49,8 +61,18 @@ class LibraryServiceImplUpdateTest {
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
 
-        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), Collections.emptyList());
-        testBook = new Book(null, "TitleTest", testAuthor, List.of(testGenre1, testGenre2), Collections.emptyList());
+        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
+        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
+        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
+        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", new Date());
+        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        commentList = List.of(insertComment1, insertComment2, insertComment3, insertComment4);
+        List<Comment> commentList13 = new ArrayList<>();
+        commentList13.add(insertComment1);
+        commentList13.add(insertComment3);
+
+        insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), commentList13);
+        testBook = new Book(null, "TitleTest", testAuthor, List.of(insertGenre1, insertGenre2), List.of(insertComment4));
     }
 
     @Test
@@ -61,18 +83,19 @@ class LibraryServiceImplUpdateTest {
         String inputAuthorName = testBook.getAuthor().getName();
         List<String> inputGenreNameList = testBook.getGenreList().stream().map(Genre::getName).toList();
 
+        testBook.setCommentList(Collections.emptyList());
         testBook.getAuthor().setId(authorList.size() + 1);
         Mockito.when(authorService.readBySurnameAndName(inputAuthorSurname, inputAuthorName)).thenReturn(Collections.emptyList());
         Mockito.when(authorService.create(inputAuthorSurname, inputAuthorName)).thenReturn(testAuthor);
 
         testGenre1.setId(genreList.size() + 1);
         testGenre2.setId(genreList.size() + 2);
-        Mockito.when(genreService.readByName(inputGenreNameList.get(0))).thenReturn(null);
+        Mockito.when(genreService.readByName(inputGenreNameList.get(0))).thenReturn(Collections.emptyList());
         Mockito.when(genreService.create(inputGenreNameList.get(0), null)).thenReturn(testGenre1);
-        Mockito.when(genreService.readByName(inputGenreNameList.get(1))).thenReturn(null);
+        Mockito.when(genreService.readByName(inputGenreNameList.get(1))).thenReturn(Collections.emptyList());
         Mockito.when(genreService.create(inputGenreNameList.get(1), null)).thenReturn(testGenre2);
         testBook.setId(inputId);
-        Mockito.when(bookService.update(inputId, inputTitle, testBook.getAuthor(), testBook.getGenreList()))
+        Mockito.when(bookService.update(Mockito.eq(inputId), Mockito.eq(inputTitle), Mockito.any(), Mockito.any()))
                 .thenReturn(testBook);
 
         Book expected = testBook;
@@ -270,4 +293,58 @@ class LibraryServiceImplUpdateTest {
         Assertions.assertThrows(NullPointerException.class
                 , () -> libraryService.update(inputId, inputTitle, inputAuthorId, inputGenreIdList));
     }
+
+    @Test
+    void book__updateAddCommentToBook__correctReturnNewObject() {
+        Integer inputId = insertBook1.getId();
+        String inputCommentAuthor = insertComment2.getAuthor();
+        String inputCommentText = insertComment2.getText();
+
+        Mockito.when(commentService.readByAuthorOfComment(inputCommentAuthor))
+                .thenReturn(Collections.emptyList());
+        Mockito.when(commentService.create(inputCommentAuthor, inputCommentText))
+                .thenReturn(insertComment2);
+        insertBook1.getCommentList().add(insertComment2);
+        Mockito.when(bookService.updateComment(Mockito.eq(inputId), Mockito.any()))
+                .thenReturn(insertBook1);
+
+        Book expected = insertBook1;
+        Book actual = libraryService.updateAddCommentToBook(inputId, inputCommentAuthor, inputCommentText);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__updateAddCommentByIdToBook__correctReturnNewObject() {
+        Integer inputIdBook = insertBook1.getId();
+        Integer inputIdComment = insertComment2.getId();
+
+        Mockito.when(commentService.readById(inputIdComment))
+                .thenReturn(insertComment2);
+        insertBook1.getCommentList().add(insertComment2);
+        Mockito.when(bookService.updateComment(Mockito.eq(inputIdBook), Mockito.any()))
+                .thenReturn(insertBook1);
+
+        Book expected = insertBook1;
+        Book actual = libraryService.updateAddCommentByIdToBook(inputIdBook, inputIdComment);
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void book__updateUpdateCommentToBook__correctReturnNewObject() {
+        Integer inputIdBook = insertBook1.getId();
+        Integer inputIdComment = insertComment2.getId();
+        String inputCommentText = insertComment2.getText();
+
+        testComment.setId(inputIdComment);
+        Mockito.when(commentService.update(inputIdComment, inputCommentText))
+                .thenReturn(testComment);
+        insertBook1.getCommentList().add(testComment);
+        Mockito.when(bookService.updateComment(Mockito.eq(inputIdBook), Mockito.any()))
+                .thenReturn(insertBook1);
+
+        Book expected = insertBook1;
+        Book actual = libraryService.updateUpdateCommentToBook(inputIdBook, inputIdComment, inputCommentText);
+        Assertions.assertEquals(expected, actual);
+    }
+
 }

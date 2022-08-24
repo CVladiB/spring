@@ -55,12 +55,12 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book readById(Integer id) {
+    public Book readById(@NonNull Integer id) {
         return bookService.readById(id);
     }
 
     @Override
-    public List<Book> readByTitle(String title) {
+    public List<Book> readByTitle(@NonNull String title) {
         return bookService.readByTitle(title);
     }
 
@@ -94,21 +94,21 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
-    public Book updateAddCommentToBook(@NonNull String commentAuthor, @NonNull String commentText, @lombok.NonNull Integer bookId) {
+    public Book updateAddCommentToBook(@NonNull Integer bookId, @NonNull String commentAuthor, @NonNull String commentText) {
         Comment comment = checkAndCreateCommentForBook(commentAuthor, commentText);
         return bookService.updateComment(bookId, comment);
     }
 
     @Nullable
     @Override
-    public Book updateAddCommentByIdToBook(@NonNull Integer commentId, @NonNull Integer bookId) {
+    public Book updateAddCommentByIdToBook(@NonNull Integer bookId, @NonNull Integer commentId) {
         Comment comment = commentService.readById(commentId);
         return bookService.updateComment(bookId, comment);
     }
 
     @Nullable
     @Override
-    public Book updateUpdateCommentToBook(@NonNull Integer commentId, @NonNull String commentText, @NonNull Integer bookId) {
+    public Book updateUpdateCommentToBook(@NonNull Integer bookId, @NonNull Integer commentId, @NonNull String commentText) {
         Comment comment = commentService.update(commentId, commentText);
         return bookService.updateComment(bookId, comment);
     }
@@ -134,7 +134,7 @@ public class LibraryServiceImpl implements LibraryService {
     }
 
     @Nullable
-    public Comment checkAndCreateCommentForBook(String commentAuthor, String commentText) {
+    public Comment checkAndCreateCommentForBook(@NonNull String commentAuthor, @NonNull String commentText) {
         Comment comment = null;
         List<Comment> commentList = commentService.readByAuthorOfComment(commentAuthor);
         if (commentList.isEmpty()) {
@@ -149,8 +149,8 @@ public class LibraryServiceImpl implements LibraryService {
 
     public List<Genre> checkAndCreateGenreForBook(List<String> genreNameList) {
         return genreNameList.stream()
-                .map(genreName -> genreService.readByName(genreName) == null ?
-                        genreService.create(genreName, null) : genreService.readByName(genreName))
+                .map(genreName -> genreService.readByName(genreName).isEmpty() ?
+                        genreService.create(genreName, null) : genreService.readByName(genreName).get(0))
                 .filter(Objects::nonNull)
                 .toList();
     }

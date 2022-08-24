@@ -92,20 +92,20 @@ class GenreDaoTest {
 
     @Test
     void genre__getByName__correctReturnGenreByName() {
-        Genre expected = insertGenre1;
-        Genre actual = genreDao.getByName(insertGenre1.getName());
+        List<Genre> expected = List.of(insertGenre1);
+        List<Genre> actual = genreDao.getByName(insertGenre1.getName());
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__getByName_NonexistentName__incorrectException() {
         String nonexistentName = "Name25";
-        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getByName(nonexistentName));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.getByName(nonexistentName));
     }
 
     @Test
     void genre__getByName_NullName__incorrectException() {
-        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getByName(null));
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.getByName(null));
     }
 
     @Test
