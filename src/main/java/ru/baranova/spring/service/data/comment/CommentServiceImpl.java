@@ -1,6 +1,9 @@
 package ru.baranova.spring.service.data.comment;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -8,6 +11,7 @@ import ru.baranova.spring.dao.entity.comment.CommentDao;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.service.app.CheckService;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -15,22 +19,26 @@ import java.util.function.Function;
 @Transactional
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@ConfigurationProperties(prefix = "app.service.comment-service")
 public class CommentServiceImpl implements CommentService {
-    private final static int MIN_INPUT = 3;
-    private final static int MAX_INPUT_AUTHOR = 20;
-    private final static int MAX_INPUT_TEXT = 200;
     private final CommentDao commentDao;
     private final CheckService checkService;
-    private final Function<String, List<String>> authorMinMaxFn;
-    private final Function<String, List<String>> textMinMaxFn;
+    @Setter
+    private int minInput;
+    @Setter
+    private int maxInputAuthor;
+    @Setter
+    private int maxInputText;
+    private Function<String, List<String>> authorMinMaxFn;
+    private Function<String, List<String>> textMinMaxFn;
 
-    public CommentServiceImpl(CommentDao commentDao, CheckService checkService) {
-        this.commentDao = commentDao;
-        this.checkService = checkService;
+    @PostConstruct
+    private void initFunction() {
         BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
                 = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLength(str, minValue, maxValue);
-        authorMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_AUTHOR);
-        textMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_TEXT);
+        authorMinMaxFn = correctInputStrFn.apply(minInput, maxInputAuthor);
+        textMinMaxFn = correctInputStrFn.apply(minInput, maxInputText);
     }
 
     @Nullable

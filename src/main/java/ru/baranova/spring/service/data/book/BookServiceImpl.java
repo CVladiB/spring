@@ -1,6 +1,9 @@
 package ru.baranova.spring.service.data.book;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -19,20 +23,22 @@ import java.util.function.Function;
 @Transactional
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@ConfigurationProperties(prefix = "app.service.book-service")
 public class BookServiceImpl implements BookService {
 
-    private final static int MIN_INPUT = 3;
-    private final static int MAX_INPUT = 40;
     private final BookDao bookDao;
     private final CheckService checkService;
+    @Setter
+    private int minInput;
+    @Setter
+    private int maxInputTitle;
+    private Function<String, List<String>> correctInputStrTitleMinMaxFn;
+    private BiFunction<String, Integer, List<String>> existTitleAndAuthorFn;
 
-    private final Function<String, List<String>> correctInputStrTitleMinMaxFn;
-    private final BiFunction<String, Integer, List<String>> existTitleAndAuthorFn;
-
-    public BookServiceImpl(BookDao bookDao, CheckService checkService) {
-        this.bookDao = bookDao;
-        this.checkService = checkService;
-        correctInputStrTitleMinMaxFn = str -> checkService.checkCorrectInputStrLength(str, MIN_INPUT, MAX_INPUT);
+    @PostConstruct
+    private void initFunction() {
+        correctInputStrTitleMinMaxFn = str -> checkService.checkCorrectInputStrLength(str, minInput, maxInputTitle);
         existTitleAndAuthorFn = (title, author) -> checkService.checkIfNotExist(() -> readByTitleAndAuthor(title, author));
     }
 
@@ -82,7 +88,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book updateComment(Integer id, Comment comment) {
+    public Book updateComment(@NonNull Integer id, @NonNull Comment comment) {
         Book bookById = bookDao.getById(id);
         bookById.getCommentList().add(comment);
         return bookDao.updateComment(bookById, bookById.getCommentList());

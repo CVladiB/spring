@@ -1,6 +1,9 @@
 package ru.baranova.spring.service.data.genre;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -9,6 +12,7 @@ import ru.baranova.spring.dao.entity.genre.GenreDao;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -16,25 +20,29 @@ import java.util.function.Function;
 @Transactional
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@ConfigurationProperties(prefix = "app.service.genre-service")
 public class GenreServiceImpl implements GenreService {
 
-    private final static int MIN_INPUT = 3;
-    private final static int MAX_INPUT_NAME = 20;
-    private final static int MAX_INPUT_DESCRIPTION = 200;
     private final GenreDao genreDaoJdbc;
     private final CheckService checkService;
-    private final Function<String, List<String>> nonexistentNameFn;
-    private final Function<String, List<String>> nameMinMaxFn;
-    private final Function<String, List<String>> descriptionMinMaxFn;
+    @Setter
+    private int minInput;
+    @Setter
+    private int maxInputName;
+    @Setter
+    private int maxInputDescription;
+    private Function<String, List<String>> nonexistentNameFn;
+    private Function<String, List<String>> nameMinMaxFn;
+    private Function<String, List<String>> descriptionMinMaxFn;
 
-    public GenreServiceImpl(GenreDao genreDaoJdbc, CheckService checkService) {
-        this.genreDaoJdbc = genreDaoJdbc;
-        this.checkService = checkService;
-        nonexistentNameFn = name -> checkService.checkIfNotExist(() -> getOrEmptyList(List.of(readByName(name))));
+    @PostConstruct
+    private void initFunction() {
         BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
                 = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
-        nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
-        descriptionMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_DESCRIPTION);
+        nameMinMaxFn = correctInputStrFn.apply(minInput, maxInputName);
+        descriptionMinMaxFn = correctInputStrFn.apply(minInput, maxInputDescription);
+        nonexistentNameFn = name -> checkService.checkIfNotExist(() -> readByName(name));
     }
 
     @Nullable
@@ -56,8 +64,8 @@ public class GenreServiceImpl implements GenreService {
 
     @Nullable
     @Override
-    public Genre readByName(@NonNull String name) {
-        return genreDaoJdbc.getByName(name);
+    public List<Genre> readByName(@NonNull String name) {
+        return getOrEmptyList(genreDaoJdbc.getByName(name));
     }
 
     @Override

@@ -1,6 +1,9 @@
 package ru.baranova.spring.service.data.author;
 
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import ru.baranova.spring.model.Author;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -17,27 +21,29 @@ import java.util.function.Function;
 @Transactional
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@ConfigurationProperties(prefix = "app.service.author-service")
 public class AuthorServiceImpl implements AuthorService {
-
-    private final static int MIN_INPUT = 3;
-    private final static int MAX_INPUT_SURNAME = 20;
-    private final static int MAX_INPUT_NAME = 15;
     private final AuthorDao authorDao;
     private final CheckService checkService;
     private final ParseService parseService;
-    private final Function<String, List<String>> surnameMinMaxFn;
-    private final Function<String, List<String>> nameMinMaxFn;
-    private final BiFunction<String, String, Function<String, List<String>>> nonexistentSurnameNameFn;
+    @Setter
+    private int minInput;
+    @Setter
+    private int maxInputSurname;
+    @Setter
+    private int maxInputName;
+    private Function<String, List<String>> surnameMinMaxFn;
+    private Function<String, List<String>> nameMinMaxFn;
+    private BiFunction<String, String, Function<String, List<String>>> nonexistentSurnameNameFn;
 
-    public AuthorServiceImpl(AuthorDao authorDao, CheckService checkService, ParseService parseService) {
-        this.authorDao = authorDao;
-        this.checkService = checkService;
-        this.parseService = parseService;
+    @PostConstruct
+    private void initFunction() {
         BiFunction<Integer, Integer, Function<String, List<String>>> correctInputStrFn
                 = (minValue, maxValue) -> str -> checkService.checkCorrectInputStrLengthAndSymbols(str, minValue, maxValue);
-        surnameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_SURNAME);
-        nameMinMaxFn = correctInputStrFn.apply(MIN_INPUT, MAX_INPUT_NAME);
-        nonexistentSurnameNameFn = (surname, name) -> t -> checkService.checkIfNotExist(() -> readBySurnameAndName(surname, name));
+        surnameMinMaxFn = correctInputStrFn.apply(minInput, maxInputSurname);
+        nameMinMaxFn = correctInputStrFn.apply(minInput, maxInputName);
+        nonexistentSurnameNameFn = (s, n) -> t -> checkService.checkIfNotExist(() -> readBySurnameAndName(s, n));
     }
 
     @Nullable
@@ -83,7 +89,6 @@ public class AuthorServiceImpl implements AuthorService {
         return author;
     }
 
-    @Nullable
     @Override
     public boolean delete(@NonNull Integer id) {
         return checkService.doCheck(authorDao.getById(id), checkService::checkExist)

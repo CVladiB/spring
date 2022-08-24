@@ -15,3 +15,20 @@ spring:
     show-sql: true
   main:
     allow-circular-references: true
+app:
+  service:
+    author-service:
+      min-input: 3
+      max-input-surname: 20
+      max-input-name: 15
+    genre-service:
+      min-input: 3
+      max-input-name: 20
+      max-input-description: 200
+    comment-service:
+      min-input: 3
+      max-input-author: 20
+      max-input-text: 200
+    book-service:
+      min-input: 3
+      max-input-title: 40

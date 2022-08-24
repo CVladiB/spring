@@ -10,7 +10,7 @@ public interface GenreService extends BaseService {
 
     Genre readById(Integer id);
 
-    Genre readByName(String name);
+    List<Genre> readByName(String name);
 
     List<Genre> readAll();
 
