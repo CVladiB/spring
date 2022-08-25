@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.entity.book;
+package ru.baranova.spring.repository.entity.book;
 
 
 import org.junit.jupiter.api.Assertions;

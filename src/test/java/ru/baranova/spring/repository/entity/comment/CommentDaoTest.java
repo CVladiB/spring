@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.entity.comment;
+package ru.baranova.spring.repository.entity.comment;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

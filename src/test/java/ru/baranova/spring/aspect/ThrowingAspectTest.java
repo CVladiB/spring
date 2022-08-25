@@ -9,8 +9,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.controller.AuthorShellController;
-import ru.baranova.spring.dao.entity.author.AuthorDao;
 import ru.baranova.spring.model.Author;
+import ru.baranova.spring.repository.entity.AuthorRepository;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.data.author.AuthorService;
 
@@ -21,7 +21,7 @@ class ThrowingAspectTest {
     @Autowired
     public ThrowingAspect throwingAspect;
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
     @Autowired
     private AuthorService authorService;
     @Autowired
@@ -37,7 +37,7 @@ class ThrowingAspectTest {
         Author test = new Author(id, inputSurname, inputName);
 
         Author expected = test;
-        Author actual = authorDao.create(inputSurname, inputName);
+        Author actual = authorRepository.save(test);
         Assertions.assertEquals(expected.getSurname(), actual.getSurname());
         Assertions.assertEquals(expected.getName(), actual.getName());
     }
@@ -45,13 +45,7 @@ class ThrowingAspectTest {
     @Test
     void appDataAccessExceptionHandler__catchExceptionReturnNull() {
         String input = "SmthsSmthsSmthsSmthsSmths";
-        Assertions.assertNull(authorDao.create(input, input));
-    }
-
-    @Test
-    void appDataAccessExceptionHandler__catchExceptionReturnFalse() {
-        Integer input = 100;
-        Assertions.assertFalse(authorDao.delete(input));
+        Assertions.assertNull(authorRepository.save(new Author(null, input, input)));
     }
 
     @Test
@@ -78,14 +72,8 @@ class ThrowingAspectTest {
     }
 
     @Test
-    void serviceNPEMaker__throwsNPEAfterFalse() {
-        Integer input = 100;
-        Assertions.assertThrows(NullPointerException.class, () -> authorService.delete(input));
-    }
-
-    @Test
     void serviceNPEMaker__throwsNPEAfterEmptyList() {
-        authorDao.getAll().stream().map(Author::getId).forEach(authorDao::delete);
+        authorRepository.deleteAll(authorRepository.findAll());
         Assertions.assertThrows(NullPointerException.class, () -> authorService.readAll());
     }
 

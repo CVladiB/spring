@@ -71,7 +71,7 @@ public class ThrowingAspect {
         }
     }
 
-    @Pointcut("execution(* ru.baranova.spring.dao.entity..*(..))")
+    @Pointcut("execution(* ru.baranova.spring.repository.entity..*(..))")
     private void allMethodsDaoEntity() {
     }
 

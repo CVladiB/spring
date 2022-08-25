@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import ru.baranova.spring.dao.entity.book.BookDao;
+import ru.baranova.spring.repository.entity.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
 

@@ -4,7 +4,7 @@ import ru.baranova.spring.model.Book;
 
 import java.util.List;
 
-public interface LibraryService extends BaseService {
+public interface LibraryService {
     Book create(String title, String authorSurname, String authorName, List<String> genreNameList);
 
     Book create(String title, Integer authorId, List<Integer> genreIdList);

@@ -1,7 +1,9 @@
-package ru.baranova.spring.dao.entity.genre;
+package ru.baranova.spring.repository.genre;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import ru.baranova.spring.repository.entity.genre.GenreDao;
+import ru.baranova.spring.repository.entity.genre.GenreDaoJpa;
 
 import javax.persistence.EntityManager;
 

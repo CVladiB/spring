@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.baranova.spring.dao.entity.comment.CommentDao;
 import ru.baranova.spring.model.Comment;
+import ru.baranova.spring.repository.entity.comment.CommentDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;

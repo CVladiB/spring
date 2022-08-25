@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.entity.genre;
+package ru.baranova.spring.repository.genre;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.entity.genre.GenreDao;
 
 import javax.persistence.PersistenceException;
 import java.util.List;

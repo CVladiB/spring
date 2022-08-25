@@ -8,8 +8,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.baranova.spring.dao.entity.genre.GenreDao;
 import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.entity.genre.GenreDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;
@@ -65,12 +65,12 @@ public class GenreServiceImpl implements GenreService {
     @Nullable
     @Override
     public List<Genre> readByName(@NonNull String name) {
-        return getOrEmptyList(genreDaoJdbc.getByName(name));
+        return genreDaoJdbc.getByName(name);
     }
 
     @Override
     public List<Genre> readAll() {
-        return getOrEmptyList(genreDaoJdbc.getAll());
+        return genreDaoJdbc.getAll();
     }
 
     @Nullable

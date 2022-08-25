@@ -7,11 +7,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.dao.entity.book.BookDao;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.entity.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.entity.book;
+package ru.baranova.spring.repository.entity.book;
 
 import lombok.Getter;
 import org.springframework.boot.test.context.TestConfiguration;

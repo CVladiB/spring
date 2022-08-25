@@ -4,11 +4,10 @@ import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.service.data.BaseService;
 
 import java.util.List;
 
-public interface BookService extends BaseService {
+public interface BookService {
     Book create(String title, Author author, List<Genre> genreList);
 
     Book readById(Integer id);

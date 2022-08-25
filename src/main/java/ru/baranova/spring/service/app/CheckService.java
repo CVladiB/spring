@@ -1,7 +1,6 @@
 package ru.baranova.spring.service.app;
 
 import ru.baranova.spring.model.EntityObject;
-import ru.baranova.spring.service.data.BaseService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface CheckService extends BaseService {
+public interface CheckService {
 
     default <T> boolean doCheck(T t, Function<T, List<String>>... checkFn) {
         List<String> checkResult = Arrays.stream(checkFn).flatMap(f -> f.apply(t).stream()).toList();

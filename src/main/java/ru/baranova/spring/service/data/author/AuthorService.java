@@ -1,11 +1,10 @@
 package ru.baranova.spring.service.data.author;
 
 import ru.baranova.spring.model.Author;
-import ru.baranova.spring.service.data.BaseService;
 
 import java.util.List;
 
-public interface AuthorService extends BaseService {
+public interface AuthorService {
     Author create(String surname, String name);
 
     Author readById(Integer id);

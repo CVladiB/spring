@@ -8,23 +8,23 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.baranova.spring.dao.entity.author.AuthorDao;
 import ru.baranova.spring.model.Author;
+import ru.baranova.spring.repository.entity.AuthorRepository;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "app.service.author-service")
 public class AuthorServiceImpl implements AuthorService {
-    private final AuthorDao authorDao;
+    private final AuthorRepository authorRepository;
     private final CheckService checkService;
     private final ParseService parseService;
     @Setter
@@ -46,6 +46,7 @@ public class AuthorServiceImpl implements AuthorService {
         nonexistentSurnameNameFn = (s, n) -> t -> checkService.checkIfNotExist(() -> readBySurnameAndName(s, n));
     }
 
+    @Transactional
     @Nullable
     @Override
     public Author create(@NonNull String surname, @NonNull String name) {
@@ -53,45 +54,61 @@ public class AuthorServiceImpl implements AuthorService {
         if (checkService.doCheck(null, nonexistentSurnameNameFn.apply(surname, name))
                 && checkService.doCheck(surname, surnameMinMaxFn)
                 && checkService.doCheck(name, nameMinMaxFn)) {
-            author = authorDao.create(surname, name);
+            author = authorRepository.save(Author.builder()
+                    .surname(surname)
+                    .name(name)
+                    .build());
         }
         return author;
     }
 
+    @Transactional
     @Nullable
     @Override
     public Author readById(@NonNull Integer id) {
-        return authorDao.getById(id);
+        return authorRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     @Override
     public List<Author> readBySurnameAndName(String surname, String name) {
-        return getOrEmptyList(authorDao.getBySurnameAndName(parseService.parseDashToNull(surname),
-                parseService.parseDashToNull(name))
-        );
+        return authorRepository.findBySurnameAndName(parseService.parseDashToNull(surname),
+                parseService.parseDashToNull(name));
     }
 
+    @Transactional
     @Override
     public List<Author> readAll() {
-        return getOrEmptyList(authorDao.getAll());
+        return authorRepository.findAll();
     }
 
+    @Transactional
     @Nullable
     @Override
     public Author update(@NonNull Integer id, String surname, String name) {
         Author author = null;
-        Author authorById = authorDao.getById(id);
-        if (checkService.doCheck(authorById, checkService::checkExist, t -> nonexistentSurnameNameFn.apply(surname, name).apply(null))) {
-            author = authorDao.update(id,
-                    checkService.correctOrDefault(surname, surnameMinMaxFn, authorById::getSurname),
-                    checkService.correctOrDefault(name, nameMinMaxFn, authorById::getName));
+        Optional<Author> authorById = authorRepository.findById(id);
+        if (authorById.isPresent() && checkService.doCheck(authorById.get()
+                , checkService::checkExist
+                , t -> nonexistentSurnameNameFn.apply(surname, name).apply(null))) {
+            author = authorRepository.save(Author.builder()
+                    .id(id)
+                    .surname(checkService.correctOrDefault(surname, surnameMinMaxFn, authorById.get()::getSurname))
+                    .name(checkService.correctOrDefault(name, nameMinMaxFn, authorById.get()::getName))
+                    .build());
         }
         return author;
     }
 
+    @Transactional
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkService.doCheck(authorDao.getById(id), checkService::checkExist)
-                && authorDao.delete(id);
+        Optional<Author> authorById = authorRepository.findById(id);
+        boolean isDelete = false;
+        if (authorById.isPresent()) {
+            authorRepository.delete(authorById.get());
+            isDelete = true;
+        }
+        return isDelete;
     }
 }

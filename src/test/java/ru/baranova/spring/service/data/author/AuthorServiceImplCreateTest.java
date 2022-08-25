@@ -7,8 +7,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.dao.entity.author.AuthorDao;
 import ru.baranova.spring.model.Author;
+import ru.baranova.spring.repository.entity.AuthorRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
@@ -20,7 +20,7 @@ class AuthorServiceImplCreateTest {
     @Autowired
     private AuthorService authorService;
     @Autowired
-    private AuthorDao authorDao;
+    private AuthorRepository authorRepository;
     private Author insertAuthor1;
     private Author testAuthor;
     private List<Author> authorList;
@@ -43,7 +43,7 @@ class AuthorServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
-        Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
+        Mockito.when(authorRepository.save(new Author(null, inputSurname, inputName))).thenReturn(testAuthor);
 
         Author expected = testAuthor;
         Author actual = authorService.create(inputSurname, inputName);
@@ -58,7 +58,7 @@ class AuthorServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(null);
+        Mockito.when(authorRepository.save(new Author(null, inputSurname, inputName))).thenReturn(null);
 
         Assertions.assertNull(authorService.create(inputSurname, inputName));
     }
@@ -82,7 +82,7 @@ class AuthorServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
-        Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
+        Mockito.when(authorRepository.save(new Author(null, inputSurname, inputName))).thenReturn(testAuthor);
 
         Author expected = testAuthor;
         Author actual = authorService.create(inputSurname, inputName);
@@ -100,7 +100,7 @@ class AuthorServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         testAuthor.setId(newId);
-        Mockito.when(authorDao.create(inputSurname, inputName)).thenReturn(testAuthor);
+        Mockito.when(authorRepository.save(new Author(null, inputSurname, inputName))).thenReturn(testAuthor);
 
         Author expected = testAuthor;
         Author actual = authorService.create(inputSurname, inputName);

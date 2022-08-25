@@ -8,11 +8,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.baranova.spring.dao.entity.book.BookDao;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
+import ru.baranova.spring.repository.entity.book.BookDao;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;
@@ -60,17 +60,17 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> readByTitle(@NonNull String title) {
-        return getOrEmptyList(bookDao.getByTitle(title));
+        return bookDao.getByTitle(title);
     }
 
     @Override
     public List<Book> readByTitleAndAuthor(@NonNull String title, @NonNull Integer authorId) {
-        return getOrEmptyList(bookDao.getByTitleAndAuthor(title, authorId));
+        return bookDao.getByTitleAndAuthor(title, authorId);
     }
 
     @Override
     public List<Book> readAll() {
-        return getOrEmptyList(bookDao.getAll());
+        return bookDao.getAll();
     }
 
     @Nullable

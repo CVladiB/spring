@@ -1,4 +1,4 @@
-package ru.baranova.spring.dao.entity.comment;
+package ru.baranova.spring.repository.entity.comment;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
