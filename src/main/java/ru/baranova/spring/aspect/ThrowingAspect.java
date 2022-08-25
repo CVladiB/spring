@@ -10,7 +10,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.baranova.spring.config.BusinessConstants;
 
-import javax.persistence.PersistenceException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -20,17 +19,12 @@ import java.util.List;
 @Component
 public class ThrowingAspect {
 
-    @Around("allMethodsDaoEntity()")
+    @Around("allMethodsRepositoryEntity()")
     public Object appDataAccessExceptionHandler(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             return joinPoint.proceed();
-        } catch (DataAccessException | PersistenceException e) {
-            if (e.getMessage().equals(BusinessConstants.DaoLog.NOTHING_IN_BD)
-                    || e.getMessage().equals(BusinessConstants.DaoLog.SHOULD_EXIST_INPUT)) {
-                log.info(e.getMessage());
-            } else {
-                log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
-            }
+        } catch (DataAccessException e) {
+            log.info(BusinessConstants.EntityServiceLog.WARNING_NEED_ADMINISTRATOR);
 
             Object returnValueIfException = null;
 
@@ -72,7 +66,7 @@ public class ThrowingAspect {
     }
 
     @Pointcut("execution(* ru.baranova.spring.repository.entity..*(..))")
-    private void allMethodsDaoEntity() {
+    private void allMethodsRepositoryEntity() {
     }
 
     @Pointcut("execution(* ru.baranova.spring.service.data..*(..))")

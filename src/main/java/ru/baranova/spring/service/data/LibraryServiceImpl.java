@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
@@ -19,7 +18,6 @@ import ru.baranova.spring.service.data.genre.GenreService;
 import java.util.List;
 import java.util.Objects;
 
-@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
