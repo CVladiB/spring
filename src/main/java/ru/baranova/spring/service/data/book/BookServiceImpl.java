@@ -12,22 +12,23 @@ import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.book.BookDao;
+import ru.baranova.spring.repository.entity.BookRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "app.service.book-service")
 public class BookServiceImpl implements BookService {
 
-    private final BookDao bookDao;
+    private final BookRepository bookRepository;
     private final CheckService checkService;
     @Setter
     private int minInput;
@@ -42,61 +43,83 @@ public class BookServiceImpl implements BookService {
         existTitleAndAuthorFn = (title, author) -> checkService.checkIfNotExist(() -> readByTitleAndAuthor(title, author));
     }
 
+    @Transactional
     @Nullable
     @Override
     public Book create(@NonNull String title, @NonNull Author author, @NonNull List<Genre> genreList) {
         Book book = null;
         if (checkService.doCheck(title, correctInputStrTitleMinMaxFn, t -> existTitleAndAuthorFn.apply(title, author.getId()))) {
-            book = bookDao.create(title, author, genreList);
+            book = bookRepository.save(Book.builder()
+                    .title(title)
+                    .author(author)
+                    .genreList(genreList)
+                    .commentList(new ArrayList<>())
+                    .build());
         }
         return book;
     }
 
+    @Transactional
     @Nullable
     @Override
     public Book readById(@NonNull Integer id) {
-        return bookDao.getById(id);
+        return bookRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     @Override
     public List<Book> readByTitle(@NonNull String title) {
-        return bookDao.getByTitle(title);
+        return bookRepository.findByTitle(title);
     }
 
+    @Transactional
     @Override
     public List<Book> readByTitleAndAuthor(@NonNull String title, @NonNull Integer authorId) {
-        return bookDao.getByTitleAndAuthor(title, authorId);
+        return bookRepository.findByTitleAndAuthor(title, authorId);
     }
 
+    @Transactional
     @Override
     public List<Book> readAll() {
-        return bookDao.getAll();
+        return bookRepository.findAll();
     }
 
+    @Transactional
     @Nullable
     @Override
     public Book update(@NonNull Integer id, String title, @NonNull Author author, @NonNull List<Genre> genreList) {
         Book book = null;
-        Book bookById = bookDao.getById(id);
-        if (checkService.doCheck(bookById, checkService::checkExist, t -> existTitleAndAuthorFn.apply(title, author.getId()))) {
-            book = bookDao.update(bookById
-                    , checkService.correctOrDefault(title, correctInputStrTitleMinMaxFn, bookById::getTitle)
-                    , author
-                    , genreList);
+        Optional<Book> bookById = bookRepository.findById(id);
+        if (bookById.isPresent() && checkService.doCheck(bookById.get(), checkService::checkExist, t -> existTitleAndAuthorFn.apply(title, author.getId()))) {
+            bookById.get().setTitle(checkService.correctOrDefault(title, correctInputStrTitleMinMaxFn, bookById.get()::getTitle));
+            bookById.get().setAuthor(author);
+            bookById.get().setGenreList(genreList);
+            book = bookRepository.save(bookById.get());
         }
         return book;
     }
 
+    @Transactional
     @Override
     public Book updateComment(@NonNull Integer id, @NonNull Comment comment) {
-        Book bookById = bookDao.getById(id);
-        bookById.getCommentList().add(comment);
-        return bookDao.updateComment(bookById, bookById.getCommentList());
+        Book book = null;
+        Optional<Book> bookById = bookRepository.findById(id);
+        if (bookById.isPresent()) {
+            bookById.get().getCommentList().add(comment);
+            book = bookRepository.save(bookById.get());
+        }
+        return book;
     }
 
+    @Transactional
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkService.doCheck(bookDao.getById(id), checkService::checkExist)
-                && bookDao.delete(id);
+        Optional<Book> bookById = bookRepository.findById(id);
+        boolean isDelete = false;
+        if (bookById.isPresent()) {
+            bookRepository.delete(bookById.get());
+            isDelete = true;
+        }
+        return isDelete;
     }
 }

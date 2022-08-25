@@ -11,17 +11,18 @@ import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.book.BookDao;
+import ru.baranova.spring.repository.entity.BookRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
 class BookServiceImplUpdateTest {
     @Autowired
-    private BookDao bookDao;
+    private BookRepository bookRepository;
     @Autowired
     private CheckService checkService;
     @Autowired
@@ -53,12 +54,12 @@ class BookServiceImplUpdateTest {
         List<Genre> inputGenreList = testBook.getGenreList();
         Integer inputId = insertBook1.getId();
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(insertBook1);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(insertBook1));
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
         testBook.setId(inputId);
-        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(testBook);
+        Mockito.when(bookRepository.save(Mockito.any())).thenReturn(testBook);
 
         Book expected = testBook;
         Book actual = bookService.update(inputId, inputTitle, inputAuthor, inputGenreList);
@@ -72,13 +73,13 @@ class BookServiceImplUpdateTest {
         List<Genre> inputGenreList = testBook.getGenreList();
         Integer inputId = insertBook1.getId();
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(insertBook1);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(insertBook1));
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(insertBook1.getTitle());
         testBook.setTitle(insertBook1.getTitle());
         testBook.setId(inputId);
-        Mockito.when(bookDao.update(insertBook1, insertBook1.getTitle(), inputAuthor, inputGenreList)).thenReturn(testBook);
+        Mockito.when(bookRepository.save(Mockito.any())).thenReturn(testBook);
 
         Book expected = testBook;
         Book actual = bookService.update(inputId, inputTitle, inputAuthor, inputGenreList);
@@ -92,7 +93,7 @@ class BookServiceImplUpdateTest {
         List<Genre> inputGenreList = testBook.getGenreList();
         Integer inputId = insertBook1.getId() + 1;
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(null);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.empty());
 
         Assertions.assertNull(bookService.update(inputId, inputTitle, inputAuthor, inputGenreList));
     }
@@ -104,11 +105,11 @@ class BookServiceImplUpdateTest {
         List<Genre> inputGenreList = testBook.getGenreList();
         Integer inputId = insertBook1.getId() + 1;
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(insertBook1);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(insertBook1));
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
-        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
+        Mockito.when(bookRepository.save(Mockito.any())).thenReturn(null);
 
         Assertions.assertNull(bookService.update(inputId, inputTitle, inputAuthor, inputGenreList));
     }
@@ -120,11 +121,11 @@ class BookServiceImplUpdateTest {
         List<Genre> inputGenreList = testBook.getGenreList();
         Integer inputId = insertBook1.getId();
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(insertBook1);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(insertBook1));
         Mockito.when(checkService.doCheck(Mockito.eq(insertBook1), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(null), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputTitle), Mockito.any(), Mockito.any())).thenReturn(inputTitle);
-        Mockito.when(bookDao.update(insertBook1, inputTitle, inputAuthor, inputGenreList)).thenReturn(null);
+        Mockito.when(bookRepository.save(Mockito.any())).thenReturn(null);
 
         Assertions.assertNull(bookService.update(inputId, inputTitle, inputAuthor, inputGenreList));
     }
@@ -134,9 +135,9 @@ class BookServiceImplUpdateTest {
         Comment inputComment = testBook.getCommentList().get(0);
         Integer inputId = insertBook1.getId();
 
-        Mockito.when(bookDao.getById(inputId)).thenReturn(insertBook1);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(insertBook1));
         insertBook1.getCommentList().add(inputComment);
-        Mockito.when(bookDao.updateComment(Mockito.any(), Mockito.any())).thenReturn(insertBook1);
+        Mockito.when(bookRepository.save(Mockito.any())).thenReturn(insertBook1);
 
         Book expected = insertBook1;
         Book actual = bookService.updateComment(inputId, inputComment);

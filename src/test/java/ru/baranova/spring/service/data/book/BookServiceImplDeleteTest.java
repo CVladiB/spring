@@ -10,20 +10,18 @@ import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.book.BookDao;
-import ru.baranova.spring.service.app.CheckService;
+import ru.baranova.spring.repository.entity.BookRepository;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = {BookServiceImplTestConfig.class, StopSearchConfig.class})
 class BookServiceImplDeleteTest {
     @Autowired
-    private BookDao bookDao;
+    private BookRepository bookRepository;
     @Autowired
     private BookService bookService;
-    @Autowired
-    private CheckService checkService;
     private List<Book> bookList;
 
     @BeforeEach
@@ -40,31 +38,15 @@ class BookServiceImplDeleteTest {
     @Test
     void book__delete__true() {
         Integer inputId = bookList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDao.delete(inputId)).thenReturn(Boolean.TRUE);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.of(bookList.get(1)));
+        Mockito.doNothing().when(bookRepository).delete(bookList.get(1));
         Assertions.assertTrue(bookService.delete(inputId));
-    }
-
-    @Test
-    void book__delete_Exception__false() {
-        Integer inputId = bookList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDao.delete(inputId)).thenReturn(false);
-        Assertions.assertFalse(bookService.delete(inputId));
     }
 
     @Test
     void book__delete_NonexistentId__false() {
         Integer inputId = bookList.size() + 1;
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertFalse(bookService.delete(inputId));
-    }
-
-    @Test
-    void book__delete_ExistNonexistentId__false() {
-        Integer inputId = bookList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(bookDao.delete(inputId)).thenReturn(Boolean.FALSE);
+        Mockito.when(bookRepository.findById(inputId)).thenReturn(Optional.empty());
         Assertions.assertFalse(bookService.delete(inputId));
     }
 }
