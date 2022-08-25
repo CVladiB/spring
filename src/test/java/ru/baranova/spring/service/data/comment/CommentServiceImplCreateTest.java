@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
-import ru.baranova.spring.repository.entity.comment.CommentDao;
+import ru.baranova.spring.repository.entity.CommentRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.Date;
@@ -19,7 +19,7 @@ class CommentServiceImplCreateTest {
     @Autowired
     private CheckService checkService;
     @Autowired
-    private CommentDao commentDao;
+    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
     private Comment testComment;
@@ -43,7 +43,7 @@ class CommentServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputAuthor), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputText), Mockito.any())).thenReturn(Boolean.TRUE);
         testComment.setId(newId);
-        Mockito.when(commentDao.create(inputAuthor, inputText)).thenReturn(testComment);
+        Mockito.when(commentRepository.save(Mockito.any())).thenReturn(testComment);
 
         Comment expected = testComment;
         Comment actual = commentService.create(inputAuthor, inputText);
@@ -59,7 +59,7 @@ class CommentServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputAuthor), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputText), Mockito.any())).thenReturn(Boolean.TRUE);
         testComment.setId(newId);
-        Mockito.when(commentDao.create(inputAuthor, inputText)).thenReturn(null);
+        Mockito.when(commentRepository.save(Mockito.any())).thenReturn(null);
 
         Assertions.assertNull(commentService.create(inputAuthor, inputText));
     }

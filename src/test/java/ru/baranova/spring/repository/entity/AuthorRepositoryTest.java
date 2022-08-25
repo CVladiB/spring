@@ -59,7 +59,7 @@ class AuthorRepositoryTest {
     }
 
     @Test
-    void author__getById__correctReturnAuthorById() {
+    void author__findById__correctReturnAuthorById() {
         Integer id = insertAuthor1.getId();
         Author expected = insertAuthor1;
         Author actual = authorRepository.findById(id).get();
@@ -67,7 +67,7 @@ class AuthorRepositoryTest {
     }
 
     @Test
-    void author__getById_NonexistentId__incorrectException() {
+    void author__findById_NonexistentId__incorrectException() {
         Integer nonexistentId = 100;
         Assertions.assertEquals(Optional.empty(), authorRepository.findById(nonexistentId));
 

@@ -8,21 +8,21 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.model.Comment;
-import ru.baranova.spring.repository.entity.comment.CommentDao;
+import ru.baranova.spring.repository.entity.CommentRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-@Transactional
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @ConfigurationProperties(prefix = "app.service.comment-service")
 public class CommentServiceImpl implements CommentService {
-    private final CommentDao commentDao;
+    private final CommentRepository commentRepository;
     private final CheckService checkService;
     @Setter
     private int minInput;
@@ -41,46 +41,60 @@ public class CommentServiceImpl implements CommentService {
         textMinMaxFn = correctInputStrFn.apply(minInput, maxInputText);
     }
 
+    @Transactional
     @Nullable
     @Override
     public Comment create(String author, String text) {
         Comment comment = null;
         if (checkService.doCheck(author, authorMinMaxFn) && checkService.doCheck(text, textMinMaxFn)) {
-            comment = commentDao.create(author, text);
+            comment = commentRepository.save(Comment.builder().author(author).text(text).build());
         }
         return comment;
     }
 
+    @Transactional
     @Nullable
     @Override
     public Comment readById(Integer id) {
-        return commentDao.getById(id);
+        return commentRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     @Nullable
     @Override
     public List<Comment> readByAuthorOfComment(String author) {
-        return commentDao.getByAuthorOfComment(author);
+        return commentRepository.getByAuthorOfComment(author);
     }
 
+    @Transactional
     @Nullable
     @Override
     public List<Comment> readAll() {
-        return commentDao.getAll();
+        return commentRepository.findAll();
     }
 
+    @Transactional
     @Nullable
     @Override
     public Comment update(Integer id, String text) {
         Comment comment = null;
-        if (checkService.doCheck(text, textMinMaxFn)) {
-            comment = commentDao.update(id, text);
+        Optional<Comment> commentById = commentRepository.findById(id);
+        if (commentById.isPresent() && checkService.doCheck(text, textMinMaxFn)) {
+            commentById.get().setText(text);
+            comment = commentRepository.save(commentById.get());
         }
         return comment;
     }
 
+    @Transactional
     @Override
     public Boolean delete(Integer id) {
-        return checkService.doCheck(commentDao.getById(id), checkService::checkExist) && commentDao.delete(id);
+        Optional<Comment> commentById = commentRepository.findById(id);
+        boolean isDelete = false;
+        if (commentById.isPresent()) {
+            commentRepository.delete(commentById.get());
+            isDelete = true;
+        }
+        return isDelete;
     }
 }

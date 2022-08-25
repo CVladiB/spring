@@ -8,16 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
-import ru.baranova.spring.repository.entity.comment.CommentDao;
+import ru.baranova.spring.repository.entity.CommentRepository;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = {CommentServiceImplTestConfig.class, StopSearchConfig.class})
 class CommentServiceImplReadTest {
     @Autowired
-    private CommentDao commentDao;
+    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
 
@@ -36,7 +37,7 @@ class CommentServiceImplReadTest {
     void comment__readById__correctReturnObject() {
         Integer inputId = commentList.size();
 
-        Mockito.when(commentDao.getById(inputId)).thenReturn(commentList.get(inputId - 1));
+        Mockito.when(commentRepository.findById(inputId)).thenReturn(Optional.of(commentList.get(inputId - 1)));
 
         Comment expected = commentList.get(inputId - 1);
         Comment actual = commentService.readById(inputId);
@@ -46,14 +47,15 @@ class CommentServiceImplReadTest {
     @Test
     void comment__readById_NonexistentId__returnNull() {
         Integer inputId = commentList.size() + 1;
+        Mockito.when(commentRepository.findById(inputId)).thenReturn(Optional.empty());
         Assertions.assertNull(commentService.readById(inputId));
     }
 
     @Test
     void comment__readById_Exception__returnNull() {
         Integer inputId = commentList.size();
-        Mockito.when(commentDao.getById(inputId)).thenReturn(null);
-        Assertions.assertNull(commentService.readById(inputId));
+        Mockito.when(commentRepository.findById(inputId)).thenReturn(null);
+        Assertions.assertThrows(NullPointerException.class, () -> commentService.readById(inputId));
     }
 
 
@@ -61,7 +63,7 @@ class CommentServiceImplReadTest {
     void comment__readByAuthor__correctReturnObject() {
         String inputAuthor = insertComment1.getAuthor();
 
-        Mockito.when(commentDao.getByAuthorOfComment(inputAuthor)).thenReturn(List.of(commentList.get(0), commentList.get(1)));
+        Mockito.when(commentRepository.getByAuthorOfComment(inputAuthor)).thenReturn(List.of(commentList.get(0), commentList.get(1)));
 
         List<Comment> expected = List.of(commentList.get(0), commentList.get(1));
         List<Comment> actual = commentService.readByAuthorOfComment(inputAuthor);
@@ -80,7 +82,7 @@ class CommentServiceImplReadTest {
     @Test
     void comment__readByAuthor_Exception__returnEmptyList() {
         String inputAuthor = insertComment1.getAuthor();
-        Mockito.when(commentDao.getByAuthorOfComment(inputAuthor)).thenReturn(Collections.emptyList());
+        Mockito.when(commentRepository.getByAuthorOfComment(inputAuthor)).thenReturn(Collections.emptyList());
 
         List<Comment> expected = Collections.emptyList();
         List<Comment> actual = commentService.readByAuthorOfComment(inputAuthor);
@@ -90,7 +92,7 @@ class CommentServiceImplReadTest {
 
     @Test
     void comment__readAll__correctReturnLstObject() {
-        Mockito.doReturn(commentList).when(commentDao).getAll();
+        Mockito.doReturn(commentList).when(commentRepository).findAll();
         List<Comment> expected = commentList;
         List<Comment> actual = commentService.readAll();
         Assertions.assertEquals(expected, actual);
@@ -98,7 +100,7 @@ class CommentServiceImplReadTest {
 
     @Test
     void comment__readAll_Exception__returnEmptyList() {
-        Mockito.when(commentDao.getAll()).thenReturn(Collections.emptyList());
+        Mockito.when(commentRepository.findAll()).thenReturn(Collections.emptyList());
         List<Comment> expected = Collections.emptyList();
         List<Comment> actual = commentService.readAll();
         Assertions.assertEquals(expected, actual);

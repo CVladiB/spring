@@ -1,6 +1,7 @@
 package ru.baranova.spring.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
 
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

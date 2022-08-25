@@ -8,18 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
-import ru.baranova.spring.repository.entity.comment.CommentDao;
+import ru.baranova.spring.repository.entity.CommentRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest(classes = {CommentServiceImplTestConfig.class, StopSearchConfig.class})
 class CommentServiceImplDeleteTest {
     @Autowired
     private CheckService checkService;
     @Autowired
-    private CommentDao commentDao;
+    private CommentRepository commentRepository;
     @Autowired
     private CommentService commentService;
     private List<Comment> commentList;
@@ -35,33 +36,15 @@ class CommentServiceImplDeleteTest {
     @Test
     void comment__delete__true() {
         Integer inputId = commentList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(commentDao.delete(inputId)).thenReturn(true);
+        Mockito.when(commentRepository.findById(inputId)).thenReturn(Optional.of(commentList.get(1)));
+        Mockito.doNothing().when(commentRepository).delete(commentList.get(1));
         Assertions.assertTrue(commentService.delete(inputId));
     }
 
     @Test
-    void comment__delete_Exception__false() {
-        Integer inputId = commentList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(commentDao.delete(inputId)).thenReturn(false);
-        Assertions.assertFalse(commentService.delete(inputId));
-    }
-
-    @Test
     void comment__delete_NonexistentId__false() {
-        Integer inputId = commentList.size() + 1;
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.FALSE);
-        Assertions.assertFalse(commentService.delete(inputId));
-    }
-
-    @Test
-    void comment__delete_ExistNonexistentId__false() {
         Integer inputId = commentList.size();
-        Mockito.when(checkService.doCheck(Mockito.any(), Mockito.any())).thenReturn(Boolean.TRUE);
-        Mockito.when(commentDao.delete(inputId)).thenReturn(false);
+        Mockito.when(commentRepository.findById(inputId)).thenReturn(Optional.empty());
         Assertions.assertFalse(commentService.delete(inputId));
     }
-
-
 }
