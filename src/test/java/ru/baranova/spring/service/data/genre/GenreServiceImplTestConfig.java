@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import ru.baranova.spring.repository.entity.genre.GenreDao;
+import ru.baranova.spring.repository.entity.GenreRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 
@@ -12,14 +12,14 @@ import ru.baranova.spring.service.app.CheckService;
 @ConfigurationProperties(prefix = "app.service.genre-service")
 public class GenreServiceImplTestConfig {
     @MockBean
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
     @MockBean
     private CheckService checkService;
 
     @Bean
-    public GenreService genreService(GenreDao genreDao
+    public GenreService genreService(GenreRepository genreRepository
             , CheckService checkService) {
-        return new GenreServiceImpl(genreDao, checkService);
+        return new GenreServiceImpl(genreRepository, checkService);
     }
 
 }

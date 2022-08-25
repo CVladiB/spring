@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.genre.GenreDao;
+import ru.baranova.spring.repository.entity.GenreRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import java.util.List;
@@ -20,7 +20,7 @@ class GenreServiceImplCreateTest {
     @Autowired
     private GenreService genreService;
     @Autowired
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
     private Genre insertGenre1;
     private Genre testGenre;
     private List<Genre> genreList;
@@ -43,7 +43,7 @@ class GenreServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
         testGenre.setId(newId);
-        Mockito.when(genreDao.create(inputName, inputDescription)).thenReturn(testGenre);
+        Mockito.when(genreRepository.save(new Genre(null, inputName, inputDescription))).thenReturn(testGenre);
 
         Genre expected = testGenre;
         Genre actual = genreService.create(inputName, inputDescription);
@@ -60,7 +60,7 @@ class GenreServiceImplCreateTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(inputDescription);
         testGenre.setId(newId);
-        Mockito.when(genreDao.create(inputName, inputDescription)).thenReturn(null);
+        Mockito.when(genreRepository.save(new Genre(null, inputName, inputDescription))).thenReturn(null);
 
         Assertions.assertNull(genreService.create(inputName, inputDescription));
     }
@@ -97,7 +97,7 @@ class GenreServiceImplCreateTest {
         Mockito.when(checkService.correctOrDefault(Mockito.eq(inputDescription), Mockito.any(), Mockito.eq(null))).thenReturn(null);
         testGenre.setId(newId);
         testGenre.setDescription(null);
-        Mockito.when(genreDao.create(inputName, null)).thenReturn(testGenre);
+        Mockito.when(genreRepository.save(new Genre(null, inputName, null))).thenReturn(testGenre);
 
         Genre expected = testGenre;
         Genre actual = genreService.create(inputName, inputDescription);

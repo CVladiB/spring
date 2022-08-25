@@ -1,25 +1,21 @@
-package ru.baranova.spring.repository.genre;
+package ru.baranova.spring.repository.entity;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.genre.GenreDao;
 
-import javax.persistence.PersistenceException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
-@Import(value = {GenreDaoTestConfig.class, StopSearchConfig.class})
-class GenreDaoTest {
+class GenreRepositoryTest {
     @Autowired
-    private GenreDao genreDao;
+    private GenreRepository genreRepository;
     private Genre insertGenre1;
     private Genre insertGenre2;
     private Genre testGenre;
@@ -35,13 +31,13 @@ class GenreDaoTest {
 
     @Test
     void genre__create__correctReturnNewGenre() {
-        List<Integer> listExistId = genreDao.getAll()
+        List<Integer> listExistId = genreRepository.findAll()
                 .stream()
                 .map(Genre::getId)
                 .toList();
 
         Genre expected = testGenre;
-        Genre actual = genreDao.create(testGenre.getName(), testGenre.getDescription());
+        Genre actual = genreRepository.save(testGenre);
 
         Assertions.assertFalse(listExistId.contains(actual.getId()));
         Assertions.assertEquals(expected.getName(), actual.getName());
@@ -50,23 +46,25 @@ class GenreDaoTest {
 
     @Test
     void genre__create_NullName__incorrectException() {
-        Assertions.assertThrows(PersistenceException.class,
-                () -> genreDao.create(null, testGenre.getDescription()));
+        testGenre.setName(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> genreRepository.save(testGenre));
     }
 
     @Test
     void genre__create_DuplicateName__incorrectException() {
-        Assertions.assertThrows(PersistenceException.class,
-                () -> genreDao.create(insertGenre1.getName(), insertGenre1.getDescription()));
+        insertGenre1.setId(null);
+        Assertions.assertThrows(DataIntegrityViolationException.class,
+                () -> genreRepository.save(insertGenre1));
     }
 
     @Test
     void genre__create_NullDescription_correctReturnNewGenre() {
-        List<Integer> listExistId = genreDao.getAll().stream().map(Genre::getId).toList();
+        List<Integer> listExistId = genreRepository.findAll().stream().map(Genre::getId).toList();
 
         testGenre.setDescription(null);
         Genre expected = testGenre;
-        Genre actual = genreDao.create(testGenre.getName(), null);
+        Genre actual = genreRepository.save(testGenre);
 
         Assertions.assertFalse(listExistId.contains(actual.getId()));
         Assertions.assertEquals(expected.getName(), actual.getName());
@@ -74,10 +72,10 @@ class GenreDaoTest {
     }
 
     @Test
-    void genre__getById__correctReturnGenreById() {
+    void genre__findById__correctReturnGenreById() {
         Integer id = insertGenre1.getId();
         Genre expected = insertGenre1;
-        Genre actual = genreDao.getById(id);
+        Genre actual = genreRepository.findById(id).get();
         Assertions.assertAll(
                 () -> Assertions.assertEquals(expected.getName(), actual.getName()),
                 () -> Assertions.assertEquals(expected.getDescription(), actual.getDescription()),
@@ -86,40 +84,40 @@ class GenreDaoTest {
     }
 
     @Test
-    void genre__getById_NonexistentId__incorrectException() {
+    void genre__findById_NonexistentId__incorrectException() {
         Integer nonexistentId = 100;
-        Assertions.assertThrows(PersistenceException.class, () -> genreDao.getById(nonexistentId));
+        Assertions.assertEquals(Optional.empty(), genreRepository.findById(nonexistentId));
     }
 
     @Test
     void genre__getByName__correctReturnGenreByName() {
         List<Genre> expected = List.of(insertGenre1);
-        List<Genre> actual = genreDao.getByName(insertGenre1.getName());
+        List<Genre> actual = genreRepository.findByName(insertGenre1.getName());
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__getByName_NonexistentName__incorrectException() {
         String nonexistentName = "Name25";
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.getByName(nonexistentName));
+        Assertions.assertEquals(Collections.emptyList(), genreRepository.findByName(nonexistentName));
     }
 
     @Test
-    void genre__getByName_NullName__incorrectException() {
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.getByName(null));
+    void genre__getByName_NullName__emptyListResult() {
+        Assertions.assertEquals(Collections.emptyList(), genreRepository.findByName(null));
     }
 
     @Test
     void genre__getAll__returnListGenres() {
         List<Genre> expected = genreList;
-        List<Genre> actual = genreDao.getAll();
+        List<Genre> actual = genreRepository.findAll();
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__getAll_Empty_emptyListResultException() {
-        genreList.stream().map(Genre::getId).forEach(genreDao::delete);
-        Assertions.assertThrows(DataAccessException.class, () -> genreDao.getAll());
+        genreRepository.deleteAll(genreList);
+        Assertions.assertEquals(Collections.emptyList(), genreRepository.findAll());
     }
 
     @Test
@@ -127,22 +125,28 @@ class GenreDaoTest {
         Integer id = insertGenre1.getId();
         testGenre.setId(id);
         Genre expected = testGenre;
-        Genre actual = genreDao.update(testGenre.getId(), testGenre.getName(), testGenre.getDescription());
+        Genre actual = genreRepository.save(testGenre);
         Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__update_NonexistentId__incorrectException() {
         testGenre.setId(100);
-        Assertions.assertThrows(DataIntegrityViolationException.class,
-                () -> genreDao.update(testGenre.getId(), testGenre.getName(), testGenre.getDescription()));
+        Genre actual = genreRepository.save(testGenre);
+
+        testGenre.setId(genreList.size() + 1);
+        Genre expected = testGenre;
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__update_NullName__incorrectException() {
         testGenre.setId(insertGenre1.getId());
-        Assertions.assertThrows(PersistenceException.class,
-                () -> genreDao.update(testGenre.getId(), null, testGenre.getDescription()));
+        testGenre.setName(null);
+        Genre expected = testGenre;
+        Genre actual = genreRepository.save(testGenre);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -151,34 +155,32 @@ class GenreDaoTest {
         testGenre.setId(id);
         testGenre.setDescription(null);
         Genre expected = testGenre;
-        Genre actual = genreDao.update(testGenre.getId(), testGenre.getName(), null);
+        Genre actual = genreRepository.save(testGenre);
         Assertions.assertEquals(expected, actual);
     }
 
 
     @Test
     void genre__delete__correctDelete() {
-        List<Genre> actualBeforeDelete = genreDao.getAll();
-        Integer inputId = insertGenre1.getId();
-        Integer inputId2 = insertGenre2.getId();
-
+        List<Genre> actualBeforeDelete = genreRepository.findAll();
         Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertTrue(genreDao.delete(inputId));
-        Assertions.assertTrue(genreDao.delete(inputId2));
+        genreRepository.delete(insertGenre1);
+        genreRepository.delete(insertGenre2);
+
+        List<Genre> expected = Collections.emptyList();
+        List<Genre> actual = genreRepository.findAll();
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void genre__delete_NonexistentId__notDelete() {
-        List<Genre> actualBeforeDelete = genreDao.getAll();
-        Integer inputId = actualBeforeDelete.size() + 1;
-        Integer inputId2 = actualBeforeDelete.size() + 2;
+        List<Genre> actualBeforeDelete = genreRepository.findAll();
+        Assertions.assertNotNull(actualBeforeDelete);
+        genreRepository.delete(testGenre);
+
 
         List<Genre> expected = actualBeforeDelete;
-        List<Genre> actual = genreDao.getAll();
-
-        Assertions.assertNotNull(actualBeforeDelete);
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.delete(inputId));
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> genreDao.delete(inputId2));
+        List<Genre> actual = genreRepository.findAll();
         Assertions.assertEquals(expected, actual);
     }
 }

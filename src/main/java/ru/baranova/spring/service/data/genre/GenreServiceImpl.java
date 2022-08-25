@@ -9,11 +9,12 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.model.Genre;
-import ru.baranova.spring.repository.entity.genre.GenreDao;
+import ru.baranova.spring.repository.entity.GenreRepository;
 import ru.baranova.spring.service.app.CheckService;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -24,7 +25,7 @@ import java.util.function.Function;
 @ConfigurationProperties(prefix = "app.service.genre-service")
 public class GenreServiceImpl implements GenreService {
 
-    private final GenreDao genreDaoJdbc;
+    private final GenreRepository genreRepository;
     private final CheckService checkService;
     @Setter
     private int minInput;
@@ -45,52 +46,66 @@ public class GenreServiceImpl implements GenreService {
         nonexistentNameFn = name -> checkService.checkIfNotExist(() -> readByName(name));
     }
 
+    @Transactional
     @Nullable
     @Override
     public Genre create(@NonNull String name, String description) {
         Genre genre = null;
         if (checkService.doCheck(name, nonexistentNameFn, nameMinMaxFn)) {
-            genre = genreDaoJdbc.create(name
-                    , checkService.correctOrDefault(description, descriptionMinMaxFn, null));
+            genre = genreRepository.save(Genre.builder()
+                    .name(name)
+                    .description(checkService.correctOrDefault(description, descriptionMinMaxFn, null))
+                    .build());
         }
         return genre;
     }
 
+    @Transactional
     @Nullable
     @Override
     public Genre readById(@NonNull Integer id) {
-        return genreDaoJdbc.getById(id);
+        return genreRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     @Nullable
     @Override
     public List<Genre> readByName(@NonNull String name) {
-        return genreDaoJdbc.getByName(name);
+        return genreRepository.findByName(name);
     }
 
+    @Transactional
     @Override
     public List<Genre> readAll() {
-        return genreDaoJdbc.getAll();
+        return genreRepository.findAll();
     }
 
+    @Transactional
     @Nullable
     @Override
     public Genre update(@NonNull Integer id, String name, String description) {
         Genre genre = null;
-        Genre genreById = genreDaoJdbc.getById(id);
-        if (checkService.doCheck(genreById, checkService::checkExist)
+        Optional<Genre> genreById = genreRepository.findById(id);
+        if (genreById.isPresent() && checkService.doCheck(genreById.get(), checkService::checkExist)
                 && checkService.doCheck(name, nonexistentNameFn)) {
-            genre = genreDaoJdbc.update(id
-                    , checkService.correctOrDefault(name, nameMinMaxFn, genreById::getName)
-                    , checkService.correctOrDefault(description, descriptionMinMaxFn, genreById::getDescription));
+            genre = genreRepository.save(Genre.builder()
+                    .id(id)
+                    .name(checkService.correctOrDefault(name, nameMinMaxFn, genreById.get()::getName))
+                    .description(checkService.correctOrDefault(description, descriptionMinMaxFn, genreById.get()::getDescription))
+                    .build());
         }
         return genre;
     }
 
-    @Nullable
+    @Transactional
     @Override
     public boolean delete(@NonNull Integer id) {
-        return checkService.doCheck(genreDaoJdbc.getById(id), checkService::checkExist)
-                && genreDaoJdbc.delete(id);
+        Optional<Genre> genreById = genreRepository.findById(id);
+        boolean isDelete = false;
+        if (genreById.isPresent()) {
+            genreRepository.delete(genreById.get());
+            isDelete = true;
+        }
+        return isDelete;
     }
 }
