@@ -11,7 +11,7 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.repository.entity.CommentRepository;
 import ru.baranova.spring.service.app.CheckService;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @SpringBootTest(classes = {CommentServiceImplTestConfig.class, StopSearchConfig.class})
@@ -28,8 +28,8 @@ class CommentServiceImplUpdateTest {
 
     @BeforeEach
     void setUp() {
-        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
     }
 
     @Test

@@ -9,8 +9,8 @@ import ru.baranova.spring.model.Comment;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,17 +25,17 @@ class CommentRepositoryTest {
     private Comment insertComment4;
     private Comment testComment;
     private List<Comment> commentList;
-    private Date dateWithoutTime;
+    private LocalDate localDate;
 
 
     @BeforeEach
     void setUp() throws ParseException {
-        dateWithoutTime = sdf.parse(sdf.format(new Date()));
-        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
-        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
-        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", dateWithoutTime);
-        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
-        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        localDate = LocalDate.now();
+        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", localDate);
+        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", localDate);
+        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", localDate);
+        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", localDate);
+        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", localDate);
         commentList = List.of(insertComment1, insertComment2, insertComment3, insertComment4);
     }
 
@@ -150,7 +150,7 @@ class CommentRepositoryTest {
     void comment__delete_NonexistentId__notDelete() {
         List<Comment> expected = commentRepository.findAll();
         Assertions.assertNotNull(expected);
-        commentRepository.delete(new Comment(100, "a", "t", new Date()));
+        commentRepository.delete(new Comment(100, "a", "t", localDate));
         List<Comment> actual = commentRepository.findAll();
         Assertions.assertEquals(expected, actual);
     }

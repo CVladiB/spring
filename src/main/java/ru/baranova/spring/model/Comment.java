@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import javax.persistence.Column;
@@ -15,9 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Builder
 @AllArgsConstructor
@@ -39,10 +36,8 @@ public class Comment implements EntityObject {
     @Column(name = "comment_text", nullable = false)
     private String text;
 
-    @CreationTimestamp
-    @Temporal(TemporalType.DATE)
-    @Column(name = "comment_date", nullable = false)
-    private Date date;
+    @Column(name = "comment_date", columnDefinition = "DATE", nullable = false)
+    private LocalDate date;
 
     @Override
     public void print(EntityPrintVisitor visitor) {

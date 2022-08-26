@@ -14,8 +14,8 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +34,7 @@ class EntityPrintVisitorImpBookTest {
     void setUp() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre, testGenre), List.of(testComment, testComment));
     }
 

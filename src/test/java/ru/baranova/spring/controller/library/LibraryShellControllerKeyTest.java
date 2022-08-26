@@ -16,7 +16,7 @@ import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.LibraryService;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -38,7 +38,7 @@ class LibraryShellControllerKeyTest {
         Author author = new Author(7, "surname", "name");
         genre1 = new Genre(7, "name1", "description");
         genre2 = new Genre(8, "name2", "description");
-        Comment comment = new Comment(7, "CommentAuthor", "BlaBlaBla", new Date());
+        Comment comment = new Comment(7, "CommentAuthor", "BlaBlaBla", LocalDate.now());
         book = new Book(7, "title", author, List.of(genre1, genre2), List.of(comment));
     }
 

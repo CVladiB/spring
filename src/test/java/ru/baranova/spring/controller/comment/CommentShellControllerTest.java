@@ -13,7 +13,7 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.service.data.comment.CommentService;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest(classes = {CommentShellControllerTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -30,7 +30,7 @@ class CommentShellControllerTest {
 
     @BeforeEach
     void setUp() {
-        comment = new Comment(7, "User", "Some Text BlaBla", new Date());
+        comment = new Comment(7, "User", "Some Text BlaBla", LocalDate.now());
     }
 
     @Test
@@ -111,7 +111,7 @@ class CommentShellControllerTest {
     @Test
     void readAll_correct() {
         Comment comment1 = comment;
-        Comment comment2 = new Comment(8, "NewUser", "Some Text BlaBla", new Date());
+        Comment comment2 = new Comment(8, "NewUser", "Some Text BlaBla", LocalDate.now());
         Mockito.when(commentService.readAll())
                 .thenReturn(List.of(comment1, comment2));
         Mockito.doNothing().when(printer).print((Comment) Mockito.any());
@@ -123,7 +123,7 @@ class CommentShellControllerTest {
     @Test
     void readAll_incorrectRead() {
         Comment comment1 = comment;
-        Comment comment2 = new Comment(8, "NewUser", "Some Text BlaBla", new Date());
+        Comment comment2 = new Comment(8, "NewUser", "Some Text BlaBla", LocalDate.now());
         Mockito.when(commentService.readAll()).thenReturn(List.of(comment1, comment2));
         Mockito.doThrow(NullPointerException.class).when(printer).print((Comment) Mockito.any());
         String expected = config.getWARNING();

@@ -10,7 +10,7 @@ import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.service.app.CheckService;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @SpringBootTest(classes = {EntityPrintVisitorImplTestConfig.class, StopSearchConfig.class})
 class EntityPrintVisitorImplCommentTest {
@@ -29,7 +29,7 @@ class EntityPrintVisitorImplCommentTest {
 
     @Test
     void comment__print__correctOutput() {
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
 
         Mockito.when(checkService.doCheck(Mockito.eq(testComment), Mockito.any())).thenReturn(Boolean.TRUE);
 
@@ -41,7 +41,7 @@ class EntityPrintVisitorImplCommentTest {
 
     @Test
     void comment__print_NullId__incorrectNPE() {
-        Comment testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         Mockito.when(checkService.doCheck(Mockito.eq(testComment), Mockito.any())).thenReturn(Boolean.FALSE);
 
         Assertions.assertThrows(NullPointerException.class, () -> printer.print(testComment));

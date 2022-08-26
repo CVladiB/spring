@@ -15,8 +15,8 @@ import ru.baranova.spring.model.EntityObject;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.app.config.CheckServiceImplTestConfig;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -136,7 +136,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull__true() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), List.of(testComment));
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
@@ -147,7 +147,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullFieldNestedField_AuthorId__true() {
         Author testAuthor = new Author(null, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(1, "NameTest", null);
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), List.of(testComment));
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
@@ -158,7 +158,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullFieldNestedField_GenreId__true() {
         Author testAuthor = new Author(1, "SurnameTest", "NameTest");
         Genre testGenre = new Genre(null, "NameTest", "DescriptionTest");
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), List.of(testComment));
         List<String> expected = Collections.emptyList();
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);
@@ -169,7 +169,7 @@ class CheckServiceImplTest {
     void book__isAllFieldsNotNull_NullField_AuthorNull__false() {
         Author testAuthor = null;
         Genre testGenre = new Genre(1, "NameTest", null);
-        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        Comment testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         Book testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), List.of(testComment));
         List<String> expected = List.of(config.getNOTHING_INPUT());
         List<String> actual = checkService.checkAllFieldsAreNotNull(testBook);

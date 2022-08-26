@@ -14,7 +14,7 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest(classes = {PrintServiceImplTestConfig.class, StopSearchConfig.class})
@@ -35,7 +35,7 @@ class PrintServiceImplTest {
     void setUp() {
         testAuthor = new Author(1, "SurnameTest", "NameTest");
         testGenre = new Genre(1, "NameTest", "DescriptionTest");
-        testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        testComment = new Comment(1, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         testBook = new Book(1, "TitleTest", testAuthor, List.of(testGenre), null);
     }
 

@@ -14,8 +14,8 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.book.BookService;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 @SpringBootTest(classes = {LibraryServiceImplTestConfig.class, StopSearchConfig.class, ThrowingAspect.class})
@@ -34,10 +34,10 @@ class LibraryServiceImplReadTest {
         Author insertAuthor2 = new Author(2, "Surname2", "Name2");
         Genre insertGenre1 = new Genre(1, "Name1", "Description1");
         Genre insertGenre2 = new Genre(2, "Name2", "Description2");
-        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
-        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", LocalDate.now());
+        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
 
         insertBook1 = new Book(1, "Title1", insertAuthor1, List.of(insertGenre1, insertGenre2), List.of(insertComment1, insertComment3));
         Book insertBook2 = new Book(2, "Title2", insertAuthor1, List.of(insertGenre2), List.of(insertComment2));

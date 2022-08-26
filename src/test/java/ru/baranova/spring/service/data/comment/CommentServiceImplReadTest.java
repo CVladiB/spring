@@ -10,8 +10,8 @@ import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.repository.entity.CommentRepository;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +27,9 @@ class CommentServiceImplReadTest {
 
     @BeforeEach
     void setUp() {
-        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
+        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", LocalDate.now());
         commentList = List.of(insertComment1, insertComment2, insertComment3);
     }
 

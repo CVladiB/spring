@@ -14,8 +14,8 @@ import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.repository.entity.BookRepository;
 import ru.baranova.spring.service.app.CheckService;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,10 +36,10 @@ class BookServiceImplUpdateTest {
         Author testAuthor = new Author(1, null, null);
         Genre insertGenre1 = new Genre(1, null, null);
         Genre insertGenre2 = new Genre(2, null, null);
-        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
-        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", new Date());
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", LocalDate.now());
+        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
         List<Comment> commentList = new ArrayList<>();
         commentList.add(insertComment1);
         commentList.add(insertComment3);

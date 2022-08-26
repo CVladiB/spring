@@ -13,7 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 
 @TestConfiguration
 public class PrintServiceImplTestConfig {
@@ -32,14 +32,14 @@ public class PrintServiceImplTestConfig {
     @Getter
     private PrintWriter writer;
     @Getter
-    private Date dateWithoutTime;
+    private LocalDate localDate;
 
     @Bean
     public PrintService printServiceImpl(EntityPrintVisitor entityPrintVisitorImpl) throws ParseException {
         out = new ByteArrayOutputStream();
         writer = new PrintWriter(out, true);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        dateWithoutTime = sdf.parse(sdf.format(new Date()));
+        localDate = LocalDate.now();
         return new PrintServiceImpl(entityPrintVisitorImpl);
     }
 

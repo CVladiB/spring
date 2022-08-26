@@ -15,8 +15,8 @@ import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.comment.CommentService;
 import ru.baranova.spring.service.data.genre.GenreService;
 
+import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -57,11 +57,11 @@ class LibraryServiceImplOtherMethodsTest {
         testGenre2 = new Genre(null, "Name2Test", "DescriptionTest");
         genreList = List.of(insertGenre1, insertGenre2);
 
-        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", new Date());
-        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", new Date());
-        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", new Date());
-        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", new Date());
-        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", new Date());
+        insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", LocalDate.now());
+        insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", LocalDate.now());
+        testComment = new Comment(null, "TestCommentAuthor", "TestBlaBlaBla", LocalDate.now());
         commentList = List.of(insertComment1, insertComment2, insertComment3, insertComment4);
     }
 

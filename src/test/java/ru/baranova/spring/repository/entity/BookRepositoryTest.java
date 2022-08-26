@@ -16,9 +16,9 @@ import ru.baranova.spring.model.Genre;
 import javax.persistence.EntityManager;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,12 +34,12 @@ public class BookRepositoryTest {
     private Book insertBook3;
     private Book testBook;
     private List<Book> bookList;
-    private Date dateWithoutTime;
+    private LocalDate localDate;
 
 
     @BeforeEach
     void setUp() throws ParseException {
-        dateWithoutTime = sdf.parse(sdf.format(new Date()));
+        localDate = LocalDate.now();
 
         Author insertAuthor1 = new Author(1, "Surname1", "Name1");
         Author insertAuthor2 = new Author(2, "Surname2", "Name2");
@@ -52,10 +52,10 @@ public class BookRepositoryTest {
         insertGenre1 = em.merge(insertGenre1);
         insertGenre2 = em.merge(insertGenre2);
 
-        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
-        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
-        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", dateWithoutTime);
-        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", dateWithoutTime);
+        Comment insertComment1 = new Comment(1, "CommentAuthor1", "BlaBlaBla", localDate);
+        Comment insertComment2 = new Comment(2, "CommentAuthor1", "BlaBlaBla", localDate);
+        Comment insertComment3 = new Comment(3, "CommentAuthor2", "BlaBlaBla", localDate);
+        Comment insertComment4 = new Comment(4, "CommentAuthor1", "BlaBlaBla", localDate);
         insertComment1 = em.merge(insertComment1);
         insertComment2 = em.merge(insertComment2);
         insertComment3 = em.merge(insertComment3);

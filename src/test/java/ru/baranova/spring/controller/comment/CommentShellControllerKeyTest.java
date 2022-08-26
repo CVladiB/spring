@@ -10,7 +10,7 @@ import ru.baranova.spring.config.StopSearchConfig;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.service.data.comment.CommentService;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @SpringBootTest(classes = {CommentShellControllerTestConfig.class, StopSearchConfig.class})
 class CommentShellControllerKeyTest {
@@ -24,7 +24,7 @@ class CommentShellControllerKeyTest {
 
     @BeforeEach
     void setUp() {
-        comment = new Comment(7, "User", "SomeTextBlaBla", new Date());
+        comment = new Comment(7, "User", "SomeTextBlaBla", LocalDate.now());
     }
 
     @Test
