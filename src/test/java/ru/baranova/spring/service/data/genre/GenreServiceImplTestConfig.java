@@ -1,0 +1,25 @@
+package ru.baranova.spring.service.data.genre;
+
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import ru.baranova.spring.repository.entity.GenreRepository;
+import ru.baranova.spring.service.app.CheckService;
+
+
+@TestConfiguration
+@ConfigurationProperties(prefix = "app.service.genre-service")
+public class GenreServiceImplTestConfig {
+    @MockBean
+    private GenreRepository genreRepository;
+    @MockBean
+    private CheckService checkService;
+
+    @Bean
+    public GenreService genreService(GenreRepository genreRepository
+            , CheckService checkService) {
+        return new GenreServiceImpl(genreRepository, checkService);
+    }
+
+}

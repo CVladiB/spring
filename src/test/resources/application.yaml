@@ -1,0 +1,34 @@
+spring:
+  main:
+    allow-circular-references: true
+  shell:
+    interactive:
+      enabled: false
+  flyway:
+    locations: [ 'classpath:db/migration/test', 'classpath:db/migration/schema' ]
+    create-schemas: true
+  datasource:
+    #http://localhost:8080/h2-console
+    url: jdbc:h2:mem:testdb;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+app:
+  service:
+    author-service:
+      min-input: 3
+      max_input_surname: 20
+      max_input_name: 15
+    genre-service:
+      min-input: 3
+      max_input_name: 20
+      max_input_description: 200
+    comment-service:
+      min_input: 3
+      max_input_author: 20
+      max_input_text: 200
+    book-service:
+      min_input: 3
+      max_input_title: 40

@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/library
+    username: library
+    password: strong_pass
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: 'classpath:db/migration'
+    create-schemas: true
+    schemas: [ 'library' ]
+  jpa:
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  main:
+    allow-circular-references: true
+app:
+  service:
+    author-service:
+      min-input: 3
+      max-input-surname: 20
+      max-input-name: 15
+    genre-service:
+      min-input: 3
+      max-input-name: 20
+      max-input-description: 200
+    comment-service:
+      min-input: 3
+      max-input-author: 20
+      max-input-text: 200
+    book-service:
+      min-input: 3
+      max-input-title: 40
