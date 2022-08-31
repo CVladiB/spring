@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,10 +33,5 @@ public class Genre implements EntityObject {
 
     @Column(name = "genre_description")
     private String description;
-
-    @Override
-    public void print(EntityPrintVisitor visitor) {
-        visitor.print(this);
-    }
 }
 

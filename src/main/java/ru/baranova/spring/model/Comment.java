@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,9 +37,4 @@ public class Comment implements EntityObject {
 
     @Column(name = "comment_date", columnDefinition = "DATE", nullable = false)
     private LocalDate date;
-
-    @Override
-    public void print(EntityPrintVisitor visitor) {
-        visitor.print(this);
-    }
 }

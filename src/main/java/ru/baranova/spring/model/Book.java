@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,9 +57,4 @@ public class Book implements EntityObject {
     @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private List<Comment> commentList;
-
-    @Override
-    public void print(EntityPrintVisitor visitor) {
-        visitor.print(this);
-    }
 }
