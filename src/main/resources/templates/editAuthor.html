@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit author</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+
+</head>
+<body>
+<form action="editAuthor.html" id="edit-form" th:action="@{/edit(id=*{id})}" th:method="POST" th:object="${author}">
+    <h3>Author Info:</h3>
+
+    <div class="row">
+        <label for="id-input">ID:</label>
+        <input id="id-input" readonly="readonly" th:value="*{id}" type="text" value="1"/>
+    </div>
+
+    <div class="row">
+        <label for="person-surname-input">Surname:</label>
+        <input id="person-surname-input" name="surname" th:value="*{surname}" type="text" value="Doe"/>
+    </div>
+
+    <div class="row">
+        <label for="person-name-input">Name:</label>
+        <input id="person-name-input" name="name" th:value="*{name}" type="text" value="John"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Save</button>
+        <a href="listAuthor.html" th:href="@{ar-all}">
+            <button type="button">Cancel</button>
+        </a>
+        <a href="listAuthor.html" th:href="@{ad(id=*{id})}">
+            <button type="button">Delete</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>
