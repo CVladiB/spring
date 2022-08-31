@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.controller.CommentRestController;
 import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.service.data.comment.CommentService;
 

@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import ru.baranova.spring.controller.AppController;
 import ru.baranova.spring.service.app.AppService;
 
 import java.io.ByteArrayOutputStream;
@@ -12,7 +11,7 @@ import java.io.PrintWriter;
 
 @Getter
 @TestConfiguration
-public class AppShellControllerTestConfig {
+public class AppRestControllerTestConfig {
     @MockBean
     private AppService appService;
     private ByteArrayOutputStream out;

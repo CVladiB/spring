@@ -3,13 +3,12 @@ package ru.baranova.spring.aspect;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import ru.baranova.spring.controller.AuthorShellController;
+import ru.baranova.spring.controller.author.AuthorRestController;
 import ru.baranova.spring.repository.entity.AuthorRepository;
 import ru.baranova.spring.service.app.CheckService;
 import ru.baranova.spring.service.app.ParseService;
 import ru.baranova.spring.service.data.author.AuthorService;
 import ru.baranova.spring.service.data.author.AuthorServiceImpl;
-import ru.baranova.spring.service.print.visitor.EntityPrintVisitor;
 
 import javax.persistence.EntityManager;
 
@@ -19,8 +18,6 @@ public class ThrowingAspectTestConfig {
     private CheckService checkService;
     @MockBean
     private ParseService parseService;
-    @MockBean
-    private EntityPrintVisitor printer;
 
     @Bean
     public ThrowingAspect throwingAspect() {
@@ -40,8 +37,7 @@ public class ThrowingAspectTestConfig {
     }
 
     @Bean
-    public AuthorShellController authorShellController(AuthorService authorService
-            , EntityPrintVisitor printer) {
-        return new AuthorShellController(authorService, printer);
+    public AuthorRestController authorShellController(AuthorService authorService) {
+        return new AuthorRestController(authorService);
     }
 }

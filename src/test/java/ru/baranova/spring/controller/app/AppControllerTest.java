@@ -7,17 +7,16 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.controller.AppController;
 import ru.baranova.spring.service.app.AppService;
 
-@SpringBootTest(classes = {AppShellControllerTestConfig.class, StopSearchConfig.class})
+@SpringBootTest(classes = {AppRestControllerTestConfig.class, StopSearchConfig.class})
 class AppControllerTest {
     @Autowired
     private AppService appService;
     @Autowired
     private AppController appController;
     @Autowired
-    private AppShellControllerTestConfig config;
+    private AppRestControllerTestConfig config;
 
     @AfterEach
     void tearDown() {

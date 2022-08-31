@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.controller.AuthorShellController;
+import ru.baranova.spring.controller.author.AuthorRestController;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.repository.entity.AuthorRepository;
 import ru.baranova.spring.service.app.CheckService;
@@ -25,7 +25,7 @@ class ThrowingAspectTest {
     @Autowired
     private AuthorService authorService;
     @Autowired
-    private AuthorShellController authorShellController;
+    private AuthorRestController authorRestController;
     @Autowired
     private CheckService checkService;
 
@@ -86,8 +86,8 @@ class ThrowingAspectTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.FALSE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.FALSE);
 
-        String expected = "Ошибка";
-        String actual = authorShellController.create(inputSurname, inputName);
+        Author expected = new Author();
+        Author actual = authorRestController.create(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 
@@ -101,8 +101,8 @@ class ThrowingAspectTest {
         Mockito.when(checkService.doCheck(Mockito.eq(inputSurname), Mockito.any())).thenReturn(Boolean.TRUE);
         Mockito.when(checkService.doCheck(Mockito.eq(inputName), Mockito.any())).thenReturn(Boolean.TRUE);
 
-        String expected = "Новое поле добавлено, присвоен id - " + id;
-        String actual = authorShellController.create(inputSurname, inputName);
+        Author expected = new Author(id, inputSurname, inputName);
+        Author actual = authorRestController.create(inputSurname, inputName);
         Assertions.assertEquals(expected, actual);
     }
 }
