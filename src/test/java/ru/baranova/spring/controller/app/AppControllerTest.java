@@ -7,18 +7,15 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.baranova.spring.config.StopSearchConfig;
-import ru.baranova.spring.controller.AppShellController;
-import ru.baranova.spring.dao.output.OutputDao;
+import ru.baranova.spring.controller.AppController;
 import ru.baranova.spring.service.app.AppService;
 
 @SpringBootTest(classes = {AppShellControllerTestConfig.class, StopSearchConfig.class})
-class AppShellControllerTest {
+class AppControllerTest {
     @Autowired
     private AppService appService;
     @Autowired
-    private OutputDao outputDao;
-    @Autowired
-    private AppShellController appShellController;
+    private AppController appController;
     @Autowired
     private AppShellControllerTestConfig config;
 
@@ -31,7 +28,7 @@ class AppShellControllerTest {
     void stopApplication_correctStopApp() {
         Mockito.when(appService.stopApplication()).thenReturn(0);
         String expected = "Correct exit";
-        String actual = appShellController.stopApplication();
+        String actual = appController.stopApplication();
         Assertions.assertEquals(expected, actual);
     }
 
@@ -39,7 +36,7 @@ class AppShellControllerTest {
     void stopApplication_correctErrorStopApp() {
         Mockito.when(appService.stopApplication()).thenReturn(1);
         String expected = "Error";
-        String actual = appShellController.stopApplication();
+        String actual = appController.stopApplication();
         Assertions.assertEquals(expected, actual);
     }
 
@@ -47,20 +44,7 @@ class AppShellControllerTest {
     void echo_correctReturnInput() {
         String test = "smth";
         String expected = test;
-        String actual = appShellController.echo(test);
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    void output_correctReturnInput() {
-        String test = "smth";
-        Mockito.doAnswer(invocation -> {
-            config.getWriter().println(test);
-            return null;
-        }).when(outputDao).output(test);
-        String expected = test + System.lineSeparator();
-        appShellController.output(test);
-        String actual = config.getOut().toString();
+        String actual = appController.echo(test);
         Assertions.assertEquals(expected, actual);
     }
 }
