@@ -1,4 +1,4 @@
-package ru.baranova.spring.controller;
+package ru.baranova.spring.controller.library;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;

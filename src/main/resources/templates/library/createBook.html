@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+<form th:action="@{/list/book}" th:method="POST" th:object="${book}">
+    <h3>Add book</h3>
+
+    <div class="row">
+        <label for="title">Title:</label>
+        <input id="title" th:field="*{title}" type="text" value="The Lord of the Rings"/>
+    </div>
+    <div class="row">
+        <label for="surname">Author surname:</label>
+        <input id="surname" th:field="*{author.surname}" type="text" value="Tolkien"/>
+    </div>
+    <div class="row">
+        <label for="name">Author name:</label>
+        <input id="name" th:field="*{author.name}" type="text" value="John"/>
+    </div>
+    <div class="row">
+        <label for="genre">Genre:</label>
+        <input id="genre" th:each="genre : ${book.genreList}" th:field="*{genre.name}" type="text"
+               value="High fantasy"/>
+    </div>
+
+
+    <div class="row">
+        <button type="submit">Add book</button>
+        <a href="listBook.html" th:href="@{br-all}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>

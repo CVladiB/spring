@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All books</title>
+
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .book {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .book tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .book td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+<h3>Books:</h3>
+<table class="book">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td th:text="${book.title}">The Lord of the Rings</td>
+        <td th:text="${book.author.surname}">Tolkien</td>
+        <td><a href="editBook.html" th:href="@{/list/book/bu(id=${book.id})}">Edit</a></td>
+    </tr>
+    </tbody>
+</table>
+
+
+<form id="create-form">
+    </br>
+    <div class="row">
+        <a href="createBook.html" th:href="@{/list/book/bc}">
+            <button type="button">Add new book</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>
