@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All genres</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .genre {
+            border: 1px solid lightgray;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .genre tr td, th {
+            padding: 5px;
+            border: 1px solid lightgray;
+        }
+
+        .genre td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<h3>Genres:</h3>
+<table class="genre">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Edit</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="genre : ${genres}">
+        <td th:text="${genre.id}">1</td>
+        <td th:text="${genre.name}">High fantasy</td>
+        <td><a href="editGenre.html" th:href="@{/list/genre/gu(id=${genre.id})}">Edit</a></td>
+    </tr>
+    </tbody>
+</table>
+
+<form id="create-form">
+    </br>
+    <div class="row">
+        <a href="createGenre.html" th:href="@{/list/genre/gc}">
+            <button type="button">Add new genre</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>
