@@ -27,7 +27,6 @@
 </head>
 <body>
 <h3>Authors:</h3>
-
 <table class="author">
     <thead>
     <tr>
@@ -40,19 +39,24 @@
     <tbody>
     <tr th:each="author : ${authors}">
         <td th:text="${author.id}">1</td>
-        <td th:text="${author.surname}">Doe</td>
+        <td th:text="${author.surname}">Tolkien</td>
         <td th:text="${author.name}">John</td>
-        <td><a href="editAuthor.html" th:href="@{ar-id(id=${author.id})}">Edit</a></td>
+        <td><a href="editAuthor.html" th:href="@{/list/author/au(id=${author.id})}">Edit</a></td>
     </tr>
     </tbody>
 </table>
 
 
 <form id="create-form">
+    </br>
     <div class="row">
         <a href="createAuthor.html" th:href="@{/list/author/ac}">
-            <button type="button">Add author</button>
+            <button type="button">Add new author</button>
         </a>
+        </br></br>
+        <!--        <a href="findAuthor.html" th:href="@{/list/author/ar}">-->
+        <!--            <button type="button">Find author</button>-->
+        <!--        </a>-->
     </div>
 </form>
 

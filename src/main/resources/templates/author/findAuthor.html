@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All authors</title>
+
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .author {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .author tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .author td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<form id="finding-form">
+    <div class="row">
+        <a href="listAuthor.html" th:href="@{/list/author/ar(surname=${author.surname})&(name=${author.name})}"
+           th:method="POST" th:object="${author}"></a>
+        <h4>Author finding:</h4>
+        <label for="surname">Surname:</label>
+        <input id="surname" th:field="*{surname}" type="text" value="Tolkien"/>
+        <label for="name">Name:</label>
+        <input id="name" name="name" th:field="*{name}" type="text" value="John"/>
+        <button type="submit">Find</button>
+        </br></br></br>
+    </div>
+</form>
+<form id="read-form">
+    </br>
+    <div class="row">
+        <a href="listAuthor.html" th:href="@{/list/author/ar-all}">
+            <button type="button">Read all authors</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>

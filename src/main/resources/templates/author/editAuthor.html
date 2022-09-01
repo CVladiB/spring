@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit author</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightcyan;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+
+</head>
+<body>
+<form action="editAuthor.html" id="edit-form" th:action="@{/list/author/au(id=${author.id})}" th:method="POST"
+      th:object="${author}">
+    <h3>Author Info:</h3>
+
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" readonly="readonly" th:value="*{id}" type="text" value="1"/>
+    </div>
+
+    <div class="row">
+        <label for="surname">Surname:</label>
+        <input id="surname" th:field="*{surname}" type="text" value="Tolkien"/>
+    </div>
+
+    <div class="row">
+        <label for="name">Name:</label>
+        <input id="name" name="name" th:field="*{name}" type="text" value="John"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Save</button>
+        <a href="listAuthor.html" th:href="@{/list/author/ar-all}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+
+
+<form action="editAuthor.html" id="delete-form" th:action="@{/list/author/ad(id=${author.id})}" th:method="POST"
+      th:object="${author}">
+    <button type="submit">Delete</button>
+</form>
+
+</body>
+</html>

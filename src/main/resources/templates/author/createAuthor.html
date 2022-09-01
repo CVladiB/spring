@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Create author</title>
+    <title>Add author</title>
     <style type="text/css">
         body {
             padding: 50px;
@@ -13,28 +13,24 @@
             width: 100px;
         }
 
-        input:read-only {
-            background: lightgray;
-        }
-
         .row {
             margin-top: 10px;
         }
     </style>
-
 </head>
+
 <body>
-<form action="createAuthor.html" id="create-form" th:action="@{/list/author/ac}" th:method="POST" th:object="${author}">
-    <h3>Add new author</h3>
+<form th:action="@{/list/author}" th:method="POST" th:object="${author}">
+    <h3>Add author</h3>
 
     <div class="row">
-        <label for="person-surname-input">Surname:</label>
-        <input id="person-surname-input" name="surname" th:value="*{surname}" type="text" value="Doe"/>
+        <label for="surname">Surname:</label>
+        <input id="surname" th:field="*{surname}" type="text" value="Tolkien"/>
     </div>
 
     <div class="row">
-        <label for="person-name-input">Name:</label>
-        <input id="person-name-input" name="name" th:value="*{name}" type="text" value="John"/>
+        <label for="name">Name:</label>
+        <input id="name" th:field="*{name}" type="text" value="John"/>
     </div>
 
     <div class="row">
