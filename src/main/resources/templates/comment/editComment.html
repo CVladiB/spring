@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit comment</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        input:read-only {
+            background: lightcyan;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        #text {
+            width: 300px;
+            height: 50px;
+        }
+
+    </style>
+
+</head>
+<body>
+<form action="editComment.html" id="edit-form" th:action="@{/list/comment/cu(id=${comment.id})}" th:method="POST"
+      th:object="${comment}">
+    <h3>Comment Info:</h3>
+
+    <div class="row">
+        <label for="id">ID:</label>
+        <input id="id" readonly="readonly" th:value="*{id}" type="text" value="1"/>
+    </div>
+
+    <div class="row">
+        <label for="author">Name:</label>
+        <input id="author" readonly="readonly" th:value="*{author}" type="text" value="Jonny"/>
+    </div>
+
+    <div class="row">
+        <label for="text"></label>
+        <input id="text" th:field="*{text}" type="text" value="Blablabal"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Save</button>
+        <a href="listComment.html" th:href="@{/list/comment/cr-all}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+
+
+<form action="editComment.html" id="delete-form" th:action="@{/list/comment/cd(id=${comment.id})}" th:method="POST"
+      th:object="${comment}">
+    <button type="submit">Delete</button>
+</form>
+
+</body>
+</html>

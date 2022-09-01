@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Add comment</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+
+        #text {
+            width: 300px;
+            height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+<form id="create-form" th:action="@{/list/comment}" th:method="POST" th:object="${comment}">
+    <h3>Add comment</h3>
+
+    <div class="row">
+        <label for="author">Name:</label>
+        <input id="author" th:field="*{author}" type="text" value="Jonny"/>
+    </div>
+
+    <div class="row">
+        <label for="text"></label>
+        <input id="text" th:field="*{text}" type="text" value="Blablabal"/>
+    </div>
+
+    <div class="row">
+        <button type="submit">Add comment</button>
+        <a href="listComment.html" th:href="@{cr-all}">
+            <button type="button">Cancel</button>
+        </a>
+    </div>
+</form>
+</body>
+</html>
