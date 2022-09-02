@@ -2,39 +2,37 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>All authors</title>
+    <title>All genres</title>
 
     <style type="text/css">
         body {
             padding: 50px;
         }
 
-        .author {
+        .genre {
             border: 1px solid steelblue;
             width: 300px;
             border-collapse: collapse;
         }
 
-        .author tr td, th {
+        .genre tr td, th {
             padding: 5px;
             border: 1px solid steelblue;
         }
 
-        .author td:last-child, td:first-child {
+        .genre td:last-child, td:first-child {
             width: 50px;
         }
     </style>
 </head>
 <body>
 
-<form action="listAuthor.html" id="finding-form" th:action="@{/list/author/ar-by-surname-name}" th:method="GET"
-      th:object="${author}">
+<form action="listGenre.html" id="finding-form" th:action="@{/list/genre/gr-by-name}" th:method="GET"
+      th:object="${genre}">
     <div class="row">
-        <h4>Author finding:</h4>
-        <label for="surname">Surname:</label>
-        <input id="surname" th:field="*{surname}" type="text" value="Tolkien"/>
+        <h4>Genre finding:</h4>
         <label for="name">Name:</label>
-        <input id="name" name="name" th:field="*{name}" type="text" value="John"/>
+        <input id="name" name="name" th:field="*{name}" type="text" value="High fantasy"/>
         <button type="submit">Find</button>
         </br></br></br>
     </div>
@@ -42,8 +40,8 @@
 <form id="read-form">
     </br>
     <div class="row">
-        <a href="listAuthor.html" th:href="@{/list/author/ar-all}">
-            <button type="button">Read all authors</button>
+        <a href="listGenre.html" th:href="@{/list/genre/gr-all}">
+            <button type="button">Read all genres</button>
         </a>
     </div>
 </form>

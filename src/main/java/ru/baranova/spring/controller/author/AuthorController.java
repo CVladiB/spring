@@ -38,10 +38,15 @@ public class AuthorController {
         return "author/editAuthor";
     }
 
-    // todo добавить строку поиска
     @GetMapping("/ar")
-    public String readBySurnameAndName(@RequestParam("surname") String surname, @RequestParam("name") String name, Model model) {
-        List<Author> authors = authorService.readBySurnameAndName(surname, name);
+    public String readBySurnameAndNameList(Model model) {
+        model.addAttribute("author", new Author());
+        return "author/findAuthor";
+    }
+
+    @GetMapping("/ar-by-surname-name")
+    public String readBySurnameAndName(@ModelAttribute("author") Author author, Model model) {
+        List<Author> authors = authorService.readBySurnameAndName(author.getSurname(), author.getName());
         model.addAttribute("authors", authors);
         return "author/listAuthor";
     }

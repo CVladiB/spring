@@ -31,7 +31,7 @@ public class CheckServiceImpl implements CheckService {
         List<String> logList = checkCorrectInputStrLength(str, min, max);
         if (!logList.isEmpty()) {
             return logList;
-        } else if (!checkSymbols.matcher(str).matches()) {
+        } else if (str != null && !checkSymbols.matcher(str).matches()) {
             return List.of(bc.CHAR_OR_NUMBER_INPUT);
         }
         return Collections.emptyList();

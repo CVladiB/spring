@@ -12,7 +12,7 @@ public class ParseServiceImpl implements ParseService {
     @Nullable
     @Override
     public String parseDashToNull(String str) {
-        return dash.equals(str) ? null : str;
+        return str.isEmpty() || dash.equals(str) ? null : str;
     }
 
 }

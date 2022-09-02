@@ -16,7 +16,7 @@ spring:
   main:
     allow-circular-references: true
 server:
-  port: 8181
+  port: 8081
 app:
   service:
     author-service:

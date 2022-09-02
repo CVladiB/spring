@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All comments</title>
+
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .comment {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .comment tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .comment td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<form action="listComment.html" id="finding-form" th:action="@{/list/comment/cr-by-author}" th:method="GET"
+      th:object="${comment}">
+    <div class="row">
+        <h4>Comment finding:</h4>
+        <label for="author">Author:</label>
+        <input id="author" name="author" th:field="${comment.author}" type="text" value="Jonny"/>
+        <button type="submit">Find</button>
+        </br></br></br>
+    </div>
+</form>
+<form id="read-form">
+    </br>
+    <div class="row">
+        <a href="listComment.html" th:href="@{/list/comment/cr-all}">
+            <button type="button">Read all comments</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>

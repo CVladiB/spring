@@ -39,8 +39,14 @@ public class GenreController {
     }
 
     @GetMapping("/gr")
-    public String readByName(@RequestParam("name") String name, Model model) {
-        List<Genre> genres = genreService.readByName(name);
+    public String readByNameList(Model model) {
+        model.addAttribute("genre", new Genre());
+        return "genre/findGenre";
+    }
+
+    @GetMapping("/gr-by-name")
+    public String readByName(@ModelAttribute("genre") Genre genre, Model model) {
+        List<Genre> genres = genreService.readByName(genre.getName());
         model.addAttribute("genres", genres);
         return "genre/listGenre";
     }

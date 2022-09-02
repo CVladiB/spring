@@ -38,10 +38,15 @@ public class CommentController {
         return "comment/editComment";
     }
 
-    // todo добавить строку поиска
     @GetMapping("/cr")
-    public String readByAuthor(@RequestParam("author") String author, Model model) {
-        List<Comment> comments = commentService.readByAuthorOfComment(author);
+    public String readByAuthorList(Model model) {
+        model.addAttribute("comment", new Comment());
+        return "comment/findComment";
+    }
+
+    @GetMapping("/cr-by-author")
+    public String readByAuthor(@ModelAttribute("comment") Comment comment, Model model) {
+        List<Comment> comments = commentService.readByAuthorOfComment(comment.getAuthor());
         model.addAttribute("comments", comments);
         return "comment/listComment";
     }

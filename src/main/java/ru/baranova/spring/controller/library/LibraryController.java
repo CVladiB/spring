@@ -13,6 +13,7 @@ import ru.baranova.spring.model.Comment;
 import ru.baranova.spring.model.Genre;
 import ru.baranova.spring.service.data.LibraryService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,7 +30,9 @@ public class LibraryController {
 
     @PostMapping
     public String create(@ModelAttribute("book") Book book) {
-        libraryService.create(book.getTitle(), book.getAuthor().getSurname(), book.getAuthor().getName(), book.getGenreList().stream().map(Genre::getName).toList());
+        List<String> genres = new ArrayList<>();
+        genres.add("GToChange");
+        libraryService.create(book.getTitle(), book.getAuthor().getSurname(), book.getAuthor().getName(), genres);
         return "redirect:/list/book/br-all";
     }
 
@@ -39,9 +42,11 @@ public class LibraryController {
         return "library/createBookById";
     }
 
-    @PostMapping("/bc-id")
+    @PostMapping("/id")
     public String createById(@ModelAttribute("book") Book book) {
-        libraryService.create(book.getTitle(), book.getAuthor().getId(), book.getGenreList().stream().map(Genre::getId).toList());
+        List<Integer> genres = new ArrayList<>();
+        genres.add(1);
+        libraryService.create(book.getTitle(), book.getAuthor().getId(), genres);
         return "redirect:/list/book/br-all";
     }
 
@@ -52,10 +57,22 @@ public class LibraryController {
         return "library/editBook";
     }
 
-    // todo добавить строку поиска
+    @GetMapping("/br-comment")
+    public String readCommentByBookId(@RequestParam("id") Integer id, Model model) {
+        Book book = libraryService.readById(id);
+        model.addAttribute("book", book);
+        return "library/listBookComment";
+    }
+
     @GetMapping("/br")
-    public String readByTitle(@RequestParam("title") String title, Model model) {
-        List<Book> books = libraryService.readByTitle(title);
+    public String readByTitleList(Model model) {
+        model.addAttribute("book", new Book());
+        return "library/findBook";
+    }
+
+    @GetMapping("/br-by-title")
+    public String readByTitle(@ModelAttribute("book") Book book, Model model) {
+        List<Book> books = libraryService.readByTitle(book.getTitle());
         model.addAttribute("books", books);
         return "library/listBook";
     }
@@ -65,9 +82,9 @@ public class LibraryController {
         List<Book> books = libraryService.readAll();
         model.addAttribute("books", books);
         return "library/listBook";
-
     }
 
+    // todo not save
     @GetMapping("/bu")
     public String updateList(@RequestParam("id") Integer id, Model model) {
         Book book = libraryService.readById(id);
@@ -75,12 +92,16 @@ public class LibraryController {
         return "library/editBook";
     }
 
+    // todo not save
     @PostMapping("/bu")
     public String update(@ModelAttribute("book") Book book, @RequestParam("id") Integer id) {
-        libraryService.update(book.getId(), book.getTitle(), book.getAuthor().getSurname(), book.getAuthor().getName(), book.getGenreList().stream().map(Genre::getName).toList());
+        List<String> genres = new ArrayList<>();
+        genres.add("GToChange");
+        libraryService.update(book.getId(), book.getTitle(), book.getAuthor().getSurname(), book.getAuthor().getName(), genres);
         return "redirect:/list/book/br-all";
     }
 
+    // todo not save
     @GetMapping("/bu-id")
     public String updateByIdList(@RequestParam("id") Integer id, Model model) {
         Book book = libraryService.readById(id);
@@ -88,6 +109,7 @@ public class LibraryController {
         return "library/editBookById";
     }
 
+    // todo not save
     @PostMapping("/bu-id")
     public String updateById(@ModelAttribute("book") Book book, @RequestParam("id") Integer id) {
         libraryService.update(book.getId(), book.getTitle(), book.getAuthor().getId(), book.getGenreList().stream().map(Genre::getId).toList());

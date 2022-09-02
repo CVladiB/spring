@@ -34,6 +34,7 @@
         <th>Title</th>
         <th>Author</th>
         <th>Edit</th>
+        <th>Comments</th>
     </tr>
     </thead>
     <tbody>
@@ -42,16 +43,32 @@
         <td th:text="${book.title}">The Lord of the Rings</td>
         <td th:text="${book.author.surname}">Tolkien</td>
         <td><a href="editBook.html" th:href="@{/list/book/bu(id=${book.id})}">Edit</a></td>
+        <td><a href="listBookComment.html" th:href="@{/list/book/br-comment(id=${book.id})}">Comments</a></td>
     </tr>
     </tbody>
 </table>
 
 
-<form id="create-form">
+<form id="form">
     </br>
     <div class="row">
         <a href="createBook.html" th:href="@{/list/book/bc}">
             <button type="button">Add new book</button>
+        </a>
+        <a href="createBookById.html" th:href="@{/list/book/bc-id}">
+            <button type="button">Add new book by id</button>
+        </a>
+    </div>
+    </br>
+    <div class="row">
+        <a href="findBook.html" th:href="@{/list/book/br}">
+            <button type="button">Find book</button>
+        </a>
+        <a href="findAuthor.html" th:href="@{/list/author/ar}">
+            <button type="button">Find existent author</button>
+        </a>
+        <a href="findGenre.html" th:href="@{/list/genre/gr}">
+            <button type="button">Find existent genre</button>
         </a>
     </div>
 </form>

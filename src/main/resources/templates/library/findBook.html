@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>All books</title>
+
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .book {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .book tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .book td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<form action="listBook.html" id="finding-form" th:action="@{/list/book/br-by-title}" th:method="GET"
+      th:object="${book}">
+    <div class="row">
+        <h4>Book finding:</h4>
+        <label for="title">Title:</label>
+        <input id="title" th:field="${book.title}" type="text" value="The Lord of the Rings"/>
+        <button type="submit">Find</button>
+        </br></br></br>
+    </div>
+</form>
+<form id="read-form">
+    </br>
+    <div class="row">
+        <a href="listBook.html" th:href="@{/list/book/br-all}">
+            <button type="button">Read all books</button>
+        </a>
+    </div>
+</form>
+
+</body>
+</html>

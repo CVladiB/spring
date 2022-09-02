@@ -45,16 +45,21 @@
         <label for="name">Author name:</label>
         <input id="name" th:field="*{author.name}" type="text" value="John"/>
     </div>
-    <div class="row">
-        <label for="genre">Genre:</label>
-        <input id="genre" th:each="genre : ${book.genreList}" th:field="*{genre.name}" type="text"
-               value="High fantasy"/>
-    </div>
+    <!--    <div class="row">-->
+    <!--        <label for="genre">Genre:</label>-->
+    <!--        <tbody>-->
+    <!--        <tr th:each="genre : *{book.genreList}">-->
+    <!--            <td><input id="genre" th:field="*{books[__${genre.index}__].name}" type="text"-->
+    <!--                       value="High fantasy"/></td>-->
+    <!--        </tr>-->
+    <!--        </tbody>-->
+
+    <!--    </div>-->
 
 
     <div class="row">
         <button type="submit">Save</button>
-        <a href="listbook.html" th:href="@{/list/book/ar-all}">
+        <a href="listBook.html" th:href="@{/list/book/br-all}">
             <button type="button">Cancel</button>
         </a>
     </div>

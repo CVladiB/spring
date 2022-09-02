@@ -54,7 +54,7 @@ public class GenreServiceImpl implements GenreService {
         if (checkService.doCheck(name, nonexistentNameFn, nameMinMaxFn)) {
             genre = genreRepository.save(Genre.builder()
                     .name(name)
-                    .description(checkService.correctOrDefault(description, descriptionMinMaxFn, null))
+                    .description(checkService.correctOrDefault(description, descriptionMinMaxFn, () -> null))
                     .build());
         }
         return genre;

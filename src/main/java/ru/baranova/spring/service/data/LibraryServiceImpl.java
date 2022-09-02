@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.baranova.spring.config.BusinessConstants;
 import ru.baranova.spring.model.Author;
 import ru.baranova.spring.model.Book;
@@ -29,6 +30,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book create(@NonNull String title
             , @NonNull String authorSurname
             , @NonNull String authorName
@@ -40,6 +42,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book create(@NonNull String title
             , @NonNull Integer authorId
             , @NonNull List<Integer> genreIdList) {
@@ -69,6 +72,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book update(@NonNull Integer id
             , String title
             , String authorSurname
@@ -81,6 +85,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book update(@NonNull Integer id
             , String title
             , Integer authorId
@@ -92,6 +97,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book updateAddCommentToBook(@NonNull Integer bookId, @NonNull String commentAuthor, @NonNull String commentText) {
         Comment comment = checkAndCreateCommentForBook(commentAuthor, commentText);
         return bookService.updateComment(bookId, comment);
@@ -99,6 +105,7 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book updateAddCommentByIdToBook(@NonNull Integer bookId, @NonNull Integer commentId) {
         Comment comment = commentService.readById(commentId);
         return bookService.updateComment(bookId, comment);
@@ -106,12 +113,14 @@ public class LibraryServiceImpl implements LibraryService {
 
     @Nullable
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public Book updateUpdateCommentToBook(@NonNull Integer bookId, @NonNull Integer commentId, @NonNull String commentText) {
         Comment comment = commentService.update(commentId, commentText);
         return bookService.updateComment(bookId, comment);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class})
     public boolean delete(Integer id) {
         return bookService.delete(id);
     }
@@ -148,7 +157,8 @@ public class LibraryServiceImpl implements LibraryService {
     public List<Genre> checkAndCreateGenreForBook(List<String> genreNameList) {
         return genreNameList.stream()
                 .map(genreName -> genreService.readByName(genreName).isEmpty() ?
-                        genreService.create(genreName, null) : genreService.readByName(genreName).get(0))
+                        genreService.create(genreName, null)
+                        : genreService.readByName(genreName).get(0))
                 .filter(Objects::nonNull)
                 .toList();
     }
