@@ -4,11 +4,9 @@
 
 **[TR-61162](https://jira.sigma-it.ru/browse/TR-61162)**
 
-Пройти  курс обучения Spring [OTUS](https://otus.ru/learning/140726/)
-  * [SRC курса - 2021-11](https://github.com/OtusTeam/Spring)
+Пройти  курс обучения Spring
   * домашние задание из курса выполнять в личном репозитории в https://gitlab.sigma-it.ru/
-  * по мере прохожения запонить страничку confluence c материалами курса (видео из группы [телеграмм] (https://t.me/+GILdOrH9jNAyNTAy) и со страницы курса)
-  * проверка домашнего задачания: Пацей Олег Сергеевич, Бурлаков Евгений Сергеевич
+  * по мере прохожения запонить страничку confluence c материалами курса (видео из группы  и со страницы курса)
   * [Документация](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
 
 
