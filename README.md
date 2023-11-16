@@ -5,10 +5,8 @@
 **[TR-61162](https://jira.sigma-it.ru/browse/TR-61162)**
 
 Пройти  курс обучения Spring
-  * домашние задание из курса выполнять в личном репозитории в https://gitlab.sigma-it.ru/
+  * домашние задание из курса выполнять в личном репозитории в отдельных ветках по номеру задания
   * по мере прохожения запонить страничку confluence c материалами курса (видео из группы и со страницы курса)
-  * [Документация](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/)
-
 
 
 **[TR-61149](https://jira.sigma-it.ru/browse/TR-61149)**
